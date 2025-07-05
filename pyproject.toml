@@ -1,0 +1,30 @@
+[project]
+name = "turtle-island"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "polars>=1.31.0",
+    "pyarrow>=20.0.0",
+]
+
+[project.optional-dependencies]
+all = [
+    "turtle_island[dev]",
+    "turtle_island[test]",
+]
+
+
+dev = [
+    "isort>=6.0.1",
+    "pre-commit>=4.2.0",
+    "jupyterlab>=4.4.4",
+]
+
+test = [
+    "pytest>=8.4.1",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
