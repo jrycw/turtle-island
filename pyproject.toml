@@ -1,7 +1,7 @@
 [project]
 name = "turtle-island"
 version = "0.1.0"
-description = "Add your description here"
+description = "Helper functions for writing concise and expressive Polars expressions with less boilerplate."
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
