@@ -271,3 +271,11 @@ def move_cols_to_end(
     └─────┴─────┴─────┘
     """
     return [pl.all().exclude(columns), pl.col(columns)]
+
+
+def is_nth_row(n: int, *, name: str = "is_nth_row") -> pl.Expr:
+    return create_index(name=name).mod(n).eq(0)
+
+
+def is_not_nth_row(n: int, *, name: str = "is_not_nth_row") -> pl.Expr:
+    return is_nth_row(n, name=name).not_()

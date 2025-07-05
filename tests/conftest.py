@@ -16,4 +16,7 @@ def df_abcd():
 
 @pytest.fixture(scope="module")
 def df_n():
+    """
+    n_row = 9
+    """
     return pl.DataFrame({"n": [100, 50, 72, 83, 97, 42, 20, 51, 77]})
