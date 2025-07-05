@@ -1,4 +1,4 @@
-from .general_expr import (
+from .exprs.general import (
     bucketize,
     case_when,
     create_index,
@@ -7,7 +7,7 @@ from .general_expr import (
     move_cols_to_end,
     move_cols_to_start,
 )
-from .html_expr import with_hyperlink
+from .exprs.html import with_hyperlink
 
 __all__ = [
     "bucketize",

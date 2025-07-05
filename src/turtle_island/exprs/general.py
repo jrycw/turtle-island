@@ -4,7 +4,7 @@ from typing import TypeVar
 import polars as pl
 from polars._typing import PolarsDataType
 
-from ._utils import _cast_datatype, _litify
+from .._utils import _cast_datatype, _litify
 
 T = TypeVar("T")
 

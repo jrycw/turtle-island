@@ -1,11 +1,6 @@
-import uuid
 from typing import Any, Collection
 
 import polars as pl
-
-
-def _create_uuid4_hex() -> str:
-    return uuid.uuid4().hex
 
 
 def _litify(items: Collection[Any]) -> list[pl.lit]:
