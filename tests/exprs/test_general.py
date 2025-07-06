@@ -198,24 +198,16 @@ def test_bucketize_fail_not_the_same_type():
 def test_is_nth_row(df_n):
     new_df = df_n.select(ti.is_nth_row(3))
     expected = pl.DataFrame(
-        {"is_nth_row": [True, False, False, True, False, False, True, False, False]}
-    )
-
-    assert_frame_equal(new_df, expected)
-
-
-def test_is_not_nth_row(df_n):
-    new_df = df_n.select(ti.is_not_nth_row(3))
-    expected = pl.DataFrame(
-        {"is_not_nth_row": [False, True, True, False, True, True, False, True, True]}
+        {"bool_nth_row": [True, False, False, True, False, False, True, False, False]}
     )
 
     assert_frame_equal(new_df, expected)
 
 
 def test_is_nth_row_ne(df_n):
-    n, name = 5, "cool_name"
-    is_nth_row_ne_df = df_n.select(~ti.is_nth_row(n, name=name))
-    is_not_nth_row_df = df_n.select(ti.is_not_nth_row(n, name=name))
+    new_df = df_n.select(~ti.is_nth_row(3))
+    expected = pl.DataFrame(
+        {"bool_nth_row": [False, True, True, False, True, True, False, True, True]}
+    )
 
-    assert_frame_equal(is_nth_row_ne_df, is_not_nth_row_df)
+    assert_frame_equal(new_df, expected)

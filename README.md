@@ -13,7 +13,7 @@ import turtle_island as ti
 
 ## ✨ Selected Functions
 
-### `case_when()`
+### case_when()
 A more ergonomic way to write chained `when-then-otherwise` logic in Polars:
 ```python
 df = pl.DataFrame({"x": [1, 2, 3, 4]})
@@ -49,7 +49,7 @@ shape: (4, 3)
 └─────┴─────────┴─────────┘
 ```
 
-### `create_index()`
+### create_index()
 Adds a sequential index column to the DataFrame:
 ```python
 df = pl.DataFrame({"a": [1, 3, 5], "b": [2, 4, 6]})
@@ -68,28 +68,70 @@ shape: (3, 3)
 └───────┴─────┴─────┘
 ```
 
-### `bucketize()`
+### bucketize()
 Assign values to rows based on index in a round-robin fashion:
 ```python
-df = pl.DataFrame({"a": [1, 2, 3, 4, 5]})
-df.with_columns(ti.bucketize("a", "b"))
+df = pl.DataFrame({"x": [1, 2, 3, 4, 5]})
+df.with_columns(ti.bucketize(True, False))
 ```
 ```
 shape: (5, 2)
 ┌─────┬────────────┐
-│ a   ┆ bucketized │
+│ x   ┆ bucketized │
 │ --- ┆ ---        │
-│ i64 ┆ str        │
+│ i64 ┆ bool       │
 ╞═════╪════════════╡
-│ 1   ┆ a          │
-│ 2   ┆ b          │
-│ 3   ┆ a          │
-│ 4   ┆ b          │
-│ 5   ┆ a          │
+│ 1   ┆ true       │
+│ 2   ┆ false      │
+│ 3   ┆ true       │
+│ 4   ┆ false      │
+│ 5   ┆ true       │
 └─────┴────────────┘
 ```
 
-### `move_cols_to_start()`
+### is_nth_row()
+Mark every second row:
+```python
+import polars as pl
+import turtle_island as ti
+
+df = pl.DataFrame({"x": [1, 2, 3, 4, 5]})
+df.with_columns(ti.is_nth_row(2))
+```
+```
+shape: (5, 2)
+┌─────┬──────────────┐
+│ x   ┆ bool_nth_row │
+│ --- ┆ ---          │
+│ i64 ┆ bool         │
+╞═════╪══════════════╡
+│ 1   ┆ true         │
+│ 2   ┆ false        │
+│ 3   ┆ true         │
+│ 4   ┆ false        │
+│ 5   ┆ true         │
+└─────┴──────────────┘
+```
+To invert the result:
+```python
+df.with_columns(~ti.is_nth_row(2))
+```
+```
+shape: (5, 2)
+┌─────┬──────────────┐
+│ x   ┆ bool_nth_row │
+│ --- ┆ ---          │
+│ i64 ┆ bool         │
+╞═════╪══════════════╡
+│ 1   ┆ false        │
+│ 2   ┆ true         │
+│ 3   ┆ false        │
+│ 4   ┆ true         │
+│ 5   ┆ false        │
+└─────┴──────────────┘
+```
+
+### move_cols_to_start()
 Reorder columns so that selected columns appear first:
 ```python
 df = pl.DataFrame({"a": [1, 2, 3], "b": ["x", "y", "z"], "c": [4.4, 5.5, 6.6]})
@@ -111,7 +153,7 @@ shape: (3, 3)
 │ z   ┆ 6.6 ┆ 3   │
 └─────┴─────┴─────┘
 ```
-### `move_cols_to_end()`
+### move_cols_to_end()
 Reorder columns so that selected columns appear last:
 ```python
 df = pl.DataFrame({"a": [1, 2, 3], "b": ["x", "y", "z"], "c": [4.4, 5.5, 6.6]})
@@ -134,7 +176,7 @@ shape: (3, 3)
 └─────┴─────┴─────┘
 ```
 
-### `with_hyperlink()`
+### with_hyperlink()
 Create an HTML anchor tag (`<a>`) from two columns — link text and URL:
 ```python
 df = pl.DataFrame({"name": ["GitHub"], "url": ["https://github.com/"]})

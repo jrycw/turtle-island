@@ -12,6 +12,8 @@ def test__litify(items):
 @pytest.mark.parametrize(
     "item, expected",
     [
+        (True, pl.Boolean),
+        (False, pl.Boolean),
         (1, pl.Int64),
         (1.0, pl.Float64),
         ("1.0", pl.String),

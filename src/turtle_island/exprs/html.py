@@ -3,24 +3,26 @@ import polars as pl
 
 def with_hyperlink(text: str, url: str, new_tab: bool = True) -> pl.Expr:
     """
-    Return a Polars expression that generates an HTML hyperlink (<a> tag) for each row.
+    Returns a Polars expression that generates an HTML hyperlink (<a> tag) for each row.
 
     Parameters
     ----------
     text
-        The name of the column containing the display text for the hyperlink.
+        Column name containing the display text for the hyperlink.
     url
-        The name of the column containing the destination URL for the hyperlink.
+        Column name containing the destination URL.
     new_tab
-        If True, the link opens in a new browser tab (`target="_blank"`). If False,
-        it opens in the current tab. Default is True.
+        Whether the link opens in a new browser tab (`target="_blank"`) or the current tab.
+        Defaults to `True`.
 
     Returns
     -------
     pl.Expr
+        A Polars expression generating the HTML anchor tag.
 
     Examples
     --------
+    Create an HTML anchor tag (<a>) combining link text and URL from two columns:
     ```{python}
     import polars as pl
     import turtle_island as ti

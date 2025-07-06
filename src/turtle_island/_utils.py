@@ -15,7 +15,9 @@ def _cast_datatype(expr: pl.Expr, item: Any) -> pl.Expr:
     the expression is cast to the appropriate type based on the
     provided value.
     """
-    if isinstance(item, int):
+    if item is True or item is False:
+        return expr.cast(pl.Boolean)
+    elif isinstance(item, int):
         return expr.cast(pl.Int64)
     elif isinstance(item, float):
         return expr.cast(pl.Float64)
