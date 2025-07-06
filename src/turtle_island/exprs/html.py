@@ -1,4 +1,5 @@
 import polars as pl
+from .._utils import _concat_str
 
 
 def with_hyperlink(text: str, url: str, new_tab: bool = True) -> pl.Expr:
@@ -40,12 +41,4 @@ def with_hyperlink(text: str, url: str, new_tab: bool = True) -> pl.Expr:
     └──────────────────────────────────────────────────────────┘
     """
     target: str = "_blank" if new_tab else "_self"
-    return pl.concat_str(
-        [
-            pl.lit('<a href="'),
-            url,
-            pl.lit(f'" target="{target}">'),
-            text,
-            pl.lit("</a>"),
-        ]
-    )
+    return _concat_str(f'<a href="<<X>>" target="{target}"><<X>></a>', url, text)

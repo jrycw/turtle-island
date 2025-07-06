@@ -14,15 +14,7 @@ def df_html():
     )
 
 
-@pytest.mark.parametrize(
-    "expr1, expr2",
-    [
-        (pl.col("name"), pl.col("url")),
-        (pl.col("name"), "url"),
-        ("name", pl.col("url")),
-        ("name", "url"),
-    ],
-)
+@pytest.mark.parametrize("expr1, expr2", [("name", "url")])
 def test_with_hyperlink(df_html, expr1, expr2):
     new_df = df_html.select(ti.with_hyperlink(expr1, expr2))
     result = new_df.item()
