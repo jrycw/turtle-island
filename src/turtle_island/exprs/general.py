@@ -175,11 +175,11 @@ def bucketize(*items: T, name: str = "bucketized") -> pl.Expr:
     ```
     Here, rows are alternately labeled `True` and `False`.
     """
-    if len(items) <= 1:
+    n = len(items)
+    if n <= 1:
         raise ValueError(f"{items} must contain a minimum of two items.")
     if len(set(type(item) for item in items)) != 1:
         raise ValueError(f"{items} must contain only one unique type.")
-    n = len(items)
     mod_expr = create_index().mod(n)
     *litified, litified_otherwise = _litify(items)
     caselist = [(mod_expr.eq(i), lit) for i, lit in enumerate(litified)]
