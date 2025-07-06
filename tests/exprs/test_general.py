@@ -195,8 +195,8 @@ def test_bucketize_fail_not_the_same_type():
     assert "must contain only one unique type." in exc_info.value.args[0]
 
 
-def test_is_nth_row(df_n):
-    new_df = df_n.select(ti.is_nth_row(3))
+def test_is_every_nth_row(df_n):
+    new_df = df_n.select(ti.is_every_nth_row(3))
     expected = pl.DataFrame(
         {"bool_nth_row": [True, False, False, True, False, False, True, False, False]}
     )
@@ -204,8 +204,8 @@ def test_is_nth_row(df_n):
     assert_frame_equal(new_df, expected)
 
 
-def test_is_nth_row_ne(df_n):
-    new_df = df_n.select(~ti.is_nth_row(3))
+def test_is_every_nth_row_ne(df_n):
+    new_df = df_n.select(~ti.is_every_nth_row(3))
     expected = pl.DataFrame(
         {"bool_nth_row": [False, True, True, False, True, True, False, True, True]}
     )

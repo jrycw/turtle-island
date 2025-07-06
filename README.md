@@ -89,14 +89,14 @@ shape: (5, 2)
 └─────┴────────────┘
 ```
 
-### is_nth_row()
+### is_every_nth_row()
 Mark every second row:
 ```python
 import polars as pl
 import turtle_island as ti
 
 df = pl.DataFrame({"x": [1, 2, 3, 4, 5]})
-df.with_columns(ti.is_nth_row(2))
+df.with_columns(ti.is_every_nth_row(2))
 ```
 ```
 shape: (5, 2)
@@ -114,7 +114,7 @@ shape: (5, 2)
 ```
 To invert the result:
 ```python
-df.with_columns(~ti.is_nth_row(2))
+df.with_columns(~ti.is_every_nth_row(2))
 ```
 ```
 shape: (5, 2)

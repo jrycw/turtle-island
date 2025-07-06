@@ -187,7 +187,7 @@ def bucketize(*items: T, name: str = "bucketized") -> pl.Expr:
     return _cast_datatype(expr, items[0])
 
 
-def is_nth_row(n: int, *, name: str = "bool_nth_row") -> pl.Expr:
+def is_every_nth_row(n: int, *, name: str = "bool_nth_row") -> pl.Expr:
     """
     Returns a Polars expression that is `True` for every `n`-th row (index modulo `n` equals 0).
 
@@ -211,7 +211,7 @@ def is_nth_row(n: int, *, name: str = "bool_nth_row") -> pl.Expr:
     import turtle_island as ti
 
     df = pl.DataFrame({"x": [1, 2, 3, 4, 5]})
-    df.with_columns(ti.is_nth_row(2))
+    df.with_columns(ti.is_every_nth_row(2))
     ```
     ```
     shape: (5, 1)
@@ -229,7 +229,7 @@ def is_nth_row(n: int, *, name: str = "bool_nth_row") -> pl.Expr:
     ```
     To invert the result:
     ```{python}
-    df.with_columns(~ti.is_nth_row(2))
+    df.with_columns(~ti.is_every_nth_row(2))
     ```
     ```
     shape: (5, 1)
