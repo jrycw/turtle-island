@@ -49,11 +49,11 @@ shape: (4, 3)
 └─────┴─────────┴─────────┘
 ```
 
-### create_index()
+### make_index()
 Adds a sequential index column to the DataFrame:
 ```python
 df = pl.DataFrame({"a": [1, 3, 5], "b": [2, 4, 6]})
-df.select(ti.create_index(), pl.all())
+df.select(ti.make_index(), pl.all())
 ```
 ```
 shape: (3, 3)
@@ -176,11 +176,11 @@ shape: (3, 3)
 └─────┴─────┴─────┘
 ```
 
-### with_hyperlink()
+### make_hyperlink()
 Create an HTML anchor tag (`<a>`) from two columns — link text and URL:
 ```python
 df = pl.DataFrame({"name": ["GitHub"], "url": ["https://github.com/"]})
-df.select(ti.with_hyperlink("name", "url").alias("link"))
+df.select(ti.make_hyperlink("name", "url").alias("link"))
 ```
 ```
 shape: (1, 1)

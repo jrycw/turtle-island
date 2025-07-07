@@ -2,9 +2,9 @@ import polars as pl
 from .._utils import _concat_str
 
 
-def with_hyperlink(text: str, url: str, new_tab: bool = True) -> pl.Expr:
+def make_hyperlink(text: str, url: str, new_tab: bool = True) -> pl.Expr:
     """
-    Returns a Polars expression that generates an HTML hyperlink (<a> tag) for each row.
+    Returns a Polars expression that generates an HTML hyperlink (`<a>` tag) for each row.
 
     Parameters
     ----------
@@ -23,22 +23,21 @@ def with_hyperlink(text: str, url: str, new_tab: bool = True) -> pl.Expr:
 
     Examples
     --------
-    Create an HTML anchor tag (<a>) combining link text and URL from two columns:
+    Create an HTML anchor tag (`<a>`) combining link text and URL from two columns:
     ```{python}
     import polars as pl
     import turtle_island as ti
 
-    df = pl.DataFrame({"name": ["GitHub"], "url": ["https://github.com/"]})
-    df.select(ti.with_hyperlink("name", "url").alias("link"))
+    df = pl.DataFrame(
+        {
+            "name": ["Turtle Island"],
+            "url": ["https://github.com/jrycw/turtle-island"],
+        }
+    )
+    df.with_columns(ti.make_hyperlink("name", "url").alias("link")).style
     ```
-    shape: (1, 1)
-    ┌──────────────────────────────────────────────────────────┐
-    │ link                                                     │
-    │ ---                                                      │
-    │ str                                                      │
-    ╞══════════════════════════════════════════════════════════╡
-    │ <a href="https://github.com/" target="_blank">GitHub</a> │
-    └──────────────────────────────────────────────────────────┘
     """
     target: str = "_blank" if new_tab else "_self"
-    return _concat_str(f'<a href="<<X>>" target="{target}"><<X>></a>', url, text)
+    return _concat_str(
+        f'<a href="<<X>>" target="{target}"><<X>></a>', url, text
+    )

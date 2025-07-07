@@ -17,7 +17,10 @@ def test__litify(items):
         (1, pl.Int64),
         (1.0, pl.Float64),
         ("1.0", pl.String),
-        (object(), pl.Int64),  # the type of `pl.col("a")` is `pl.Int64``
+        (
+            object(),
+            pl.Int64,
+        ),  # the type of `pl.col("a")` is `pl.Int64``
     ],
 )
 def test__cast_datatype(df_abcd, item, expected):
@@ -72,10 +75,15 @@ def test__concat_str_fail_col_names_not_all_str():
     fox = "fox"
     with pytest.raises(ValueError) as exc_info:
         assert _concat_str(
-            "The quick brown <<X>> jumps over the lazy <<X>>.", fox, 123
+            "The quick brown <<X>> jumps over the lazy <<X>>.",
+            fox,
+            123,
         )  # 123 is int type
 
-    assert "All column names must be of type string." in exc_info.value.args[0]
+    assert (
+        "All column names must be of type string."
+        in exc_info.value.args[0]
+    )
 
 
 def test__concat_str_fail_params_not_match():
@@ -85,4 +93,7 @@ def test__concat_str_fail_params_not_match():
             "The quick brown <<X>> jumps over the lazy <<X>>.", fox
         )  # `dog` is missed
 
-    assert "which does not match the number of column names" in exc_info.value.args[0]
+    assert (
+        "which does not match the number of column names"
+        in exc_info.value.args[0]
+    )

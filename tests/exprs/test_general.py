@@ -55,9 +55,17 @@ def test_case_when_lit(df_x):
     assert_frame_equal(df_ti, df_pl)
 
 
-def test_create_index(df_x):
-    df_ti = df_x.select(ti.create_index(), pl.all())
+def test_make_index(df_x):
+    df_ti = df_x.select(ti.make_index(), pl.all())
     df_pl = df_x.with_row_index()
+
+    assert_frame_equal(df_ti, df_pl)
+
+
+@pytest.mark.parametrize("offset", [0, 1, 10, 100])
+def test_make_index_offset(df_x, offset):
+    df_ti = df_x.select(ti.make_index(offset=offset), pl.all())
+    df_pl = df_x.with_row_index(offset=offset)
 
     assert_frame_equal(df_ti, df_pl)
 
@@ -163,7 +171,17 @@ def test_bucketize_multicols(df_n):
     expected = pl.DataFrame(
         {
             "binarized": [1, 2, 1, 2, 1, 2, 1, 2, 1],
-            "trinarized": [1.1, 2.2, 3.3, 1.1, 2.2, 3.3, 1.1, 2.2, 3.3],
+            "trinarized": [
+                1.1,
+                2.2,
+                3.3,
+                1.1,
+                2.2,
+                3.3,
+                1.1,
+                2.2,
+                3.3,
+            ],
             "bucketized": [
                 "one",
                 "two",
@@ -198,7 +216,19 @@ def test_bucketize_fail_not_the_same_type():
 def test_is_every_nth_row(df_n):
     new_df = df_n.select(ti.is_every_nth_row(3))
     expected = pl.DataFrame(
-        {"bool_nth_row": [True, False, False, True, False, False, True, False, False]}
+        {
+            "bool_nth_row": [
+                True,
+                False,
+                False,
+                True,
+                False,
+                False,
+                True,
+                False,
+                False,
+            ]
+        }
     )
 
     assert_frame_equal(new_df, expected)
@@ -207,7 +237,19 @@ def test_is_every_nth_row(df_n):
 def test_is_every_nth_row_ne(df_n):
     new_df = df_n.select(~ti.is_every_nth_row(3))
     expected = pl.DataFrame(
-        {"bool_nth_row": [False, True, True, False, True, True, False, True, True]}
+        {
+            "bool_nth_row": [
+                False,
+                True,
+                True,
+                False,
+                True,
+                True,
+                False,
+                True,
+                True,
+            ]
+        }
     )
 
     assert_frame_equal(new_df, expected)

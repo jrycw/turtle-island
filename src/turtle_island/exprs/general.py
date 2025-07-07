@@ -10,7 +10,8 @@ T = TypeVar("T")
 
 
 def case_when(
-    caselist: list[tuple[pl.Expr, pl.Expr]], otherwise: pl.Expr | None = None
+    caselist: list[tuple[pl.Expr, pl.Expr]],
+    otherwise: pl.Expr | None = None,
 ) -> pl.Expr:
     """
     Simplifies conditional logic in Polars by chaining multiple `when-then-otherwise` expressions.
@@ -33,6 +34,7 @@ def case_when(
     Examples
     -------
     `expr_ti` is constructed by `case_when()`, which should be equivalent to `expr_pl`.
+
     When evaluated in a Polars context (e.g., `with_columns()`), both expressions will produce the same result.
     ```{python}
     import polars as pl
@@ -55,20 +57,7 @@ def case_when(
         .alias("size_pl")
     )
 
-    df.with_columns(expr_ti, expr_pl)
-    ```
-    ```
-    shape: (4, 3)
-    ┌─────┬─────────┬─────────┐
-    │ x   ┆ size_ti ┆ size_pl │
-    │ --- ┆ ---     ┆ ---     │
-    │ i64 ┆ str     ┆ str     │
-    ╞═════╪═════════╪═════════╡
-    │ 1   ┆ small   ┆ small   │
-    │ 2   ┆ medium  ┆ medium  │
-    │ 3   ┆ medium  ┆ medium  │
-    │ 4   ┆ large   ┆ large   │
-    └─────┴─────────┴─────────┘
+    df.with_columns(expr_ti, expr_pl).style
     ```
     """
     (first_when, first_then), *cases = caselist
@@ -86,7 +75,7 @@ def case_when(
     return expr
 
 
-def create_index(name: str = "index") -> pl.Expr:
+def make_index(name: str = "index", offset: int = 0) -> pl.Expr:
     """
     Returns a Polars expression that creates a virtual row index.
 
@@ -100,6 +89,8 @@ def create_index(name: str = "index") -> pl.Expr:
     ----------
     name
         The name to assign to the generated index column.
+    offset
+        Start the index at this offset. Cannot be negative.
 
     Returns
     -------
@@ -114,22 +105,12 @@ def create_index(name: str = "index") -> pl.Expr:
     import turtle_island as ti
 
     df = pl.DataFrame({"a": [1, 3, 5], "b": [2, 4, 6]})
-    df.select(ti.create_index(), pl.all())
-    ```
-    ```
-    shape: (3, 3)
-    ┌───────┬─────┬─────┐
-    │ index ┆ a   ┆ b   │
-    │ ---   ┆ --- ┆ --- │
-    │ u32   ┆ i64 ┆ i64 │
-    ╞═══════╪═════╪═════╡
-    │ 0     ┆ 1   ┆ 2   │
-    │ 1     ┆ 3   ┆ 4   │
-    │ 2     ┆ 5   ┆ 6   │
-    └───────┴─────┴─────┘
+    df.select(ti.make_index(), pl.all()).style
     ```
     """
-    return pl.int_range(pl.len(), dtype=pl.UInt32).alias(name)
+    start = offset
+    end = start + pl.len()
+    return pl.int_range(start, end, dtype=pl.UInt32).alias(name)
 
 
 def bucketize(*items: T, name: str = "bucketized") -> pl.Expr:
@@ -157,21 +138,7 @@ def bucketize(*items: T, name: str = "bucketized") -> pl.Expr:
     import turtle_island as ti
 
     df = pl.DataFrame({"x": [1, 2, 3, 4, 5]})
-    df.with_columns(ti.bucketize(True, False))
-    ```
-    ```
-    shape: (5, 2)
-    ┌─────┬────────────┐
-    │ x   ┆ bucketized │
-    │ --- ┆ ---        │
-    │ i64 ┆ bool       │
-    ╞═════╪════════════╡
-    │ 1   ┆ true       │
-    │ 2   ┆ false      │
-    │ 3   ┆ true       │
-    │ 4   ┆ false      │
-    │ 5   ┆ true       │
-    └─────┴────────────┘
+    df.with_columns(ti.bucketize(True, False)).style
     ```
     Here, rows are alternately labeled `True` and `False`.
     """
@@ -180,7 +147,7 @@ def bucketize(*items: T, name: str = "bucketized") -> pl.Expr:
         raise ValueError(f"{items} must contain a minimum of two items.")
     if len(set(type(item) for item in items)) != 1:
         raise ValueError(f"{items} must contain only one unique type.")
-    mod_expr = create_index().mod(n)
+    mod_expr = make_index().mod(n)
     *litified, litified_otherwise = _litify(items)
     caselist = [(mod_expr.eq(i), lit) for i, lit in enumerate(litified)]
     expr = case_when(caselist, litified_otherwise).alias(name)
@@ -211,46 +178,21 @@ def is_every_nth_row(n: int, *, name: str = "bool_nth_row") -> pl.Expr:
     import turtle_island as ti
 
     df = pl.DataFrame({"x": [1, 2, 3, 4, 5]})
-    df.with_columns(ti.is_every_nth_row(2))
-    ```
-    ```
-    shape: (5, 1)
-    ┌──────────────┐
-    │ bool_nth_row │
-    │ ---          │
-    │ bool         │
-    ╞══════════════╡
-    │ true         │
-    │ false        │
-    │ true         │
-    │ false        │
-    │ true         │
-    └──────────────┘
+    df.with_columns(ti.is_every_nth_row(2)).style
     ```
     To invert the result:
     ```{python}
-    df.with_columns(~ti.is_every_nth_row(2))
-    ```
-    ```
-    shape: (5, 1)
-    ┌──────────────┐
-    │ bool_nth_row │
-    │ ---          │
-    │ bool         │
-    ╞══════════════╡
-    │ false        │
-    │ true         │
-    │ false        │
-    │ true         │
-    │ false        │
-    └──────────────┘
+    df.with_columns(~ti.is_every_nth_row(2)).style
     ```
     """
-    return create_index(name=name).mod(n).eq(0)
+    return make_index(name=name).mod(n).eq(0)
 
 
 def move_cols_to_start(
-    columns: str | PolarsDataType | Collection[str] | Collection[PolarsDataType],
+    columns: str
+    | PolarsDataType
+    | Collection[str]
+    | Collection[PolarsDataType],
 ) -> list[pl.Expr]:
     """
     Returns a list of Polars expressions that reorders columns to place the specified columns first.
@@ -273,31 +215,24 @@ def move_cols_to_start(
     import polars as pl
     import turtle_island as ti
 
-    df = pl.DataFrame({"a": [1, 2, 3], "b": ["x", "y", "z"], "c": [4.4, 5.5, 6.6]})
-    df.select(ti.move_cols_to_start(["b", "c"]))
+    df = pl.DataFrame(
+        {"a": [1, 2, 3], "b": ["x", "y", "z"], "c": [4.4, 5.5, 6.6]}
+    )
+    df.select(ti.move_cols_to_start(["b", "c"])).style
     ```
     Or by data type:
     ```{python}
-    df.select(ti.move_cols_to_start([pl.Float64, pl.String]))
-    ```
-    ```
-    shape: (3, 3)
-    ┌─────┬─────┬─────┐
-    │ b   ┆ c   ┆ a   │
-    │ --- ┆ --- ┆ --- │
-    │ str ┆ f64 ┆ i64 │
-    ╞═════╪═════╪═════╡
-    │ x   ┆ 4.4 ┆ 1   │
-    │ y   ┆ 5.5 ┆ 2   │
-    │ z   ┆ 6.6 ┆ 3   │
-    └─────┴─────┴─────┘
+    df.select(ti.move_cols_to_start([pl.Float64, pl.String])).style
     ```
     """
     return [pl.col(columns), pl.all().exclude(columns)]
 
 
 def move_cols_to_end(
-    columns: str | PolarsDataType | Collection[str] | Collection[PolarsDataType],
+    columns: str
+    | PolarsDataType
+    | Collection[str]
+    | Collection[PolarsDataType],
 ) -> list[pl.Expr]:
     """
     Returns a list of Polars expressions that reorders columns to place the specified columns last.
@@ -321,23 +256,11 @@ def move_cols_to_end(
     import turtle_island as ti
 
     df = pl.DataFrame({"a": [1, 2, 3], "b": ["x", "y", "z"], "c": [4.4, 5.5, 6.6]})
-    df.select(ti.move_cols_to_end(["a", "b"]))
+    df.select(ti.move_cols_to_end(["a", "b"])).style
     ```
     Or by data type:
     ```{python}
-    df.select(ti.move_cols_to_end([pl.String, pl.Int64]))
-    ```
-    ```
-    shape: (3, 3)
-    ┌─────┬─────┬─────┐
-    │ c   ┆ a   ┆ b   │
-    │ --- ┆ --- ┆ --- │
-    │ f64 ┆ i64 ┆ str │
-    ╞═════╪═════╪═════╡
-    │ 4.4 ┆ 1   ┆ x   │
-    │ 5.5 ┆ 2   ┆ y   │
-    │ 6.6 ┆ 3   ┆ z   │
-    └─────┴─────┴─────┘
+    df.select(ti.move_cols_to_end([pl.String, pl.Int64])).style
     ```
     """
     return [pl.all().exclude(columns), pl.col(columns)]
