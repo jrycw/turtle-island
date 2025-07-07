@@ -1,0 +1,21 @@
+---
+jupyter: python3
+aliases:
+  - ../index.html
+html-table-processing: none
+---
+
+# Turtle Island
+**Turtle Island** is a lightweight utility library that provides helper functions to reduce boilerplate when writing Polars expressions. It aims to simplify common expression patterns and improve developer productivity when working with the Polars API.
+
+::: {.callout-warning}
+# Disclaimer
+**Turtle Island** is in early development. The API is still evolving and may change without notice. Use with caution in production environments.
+::: 
+
+## Recommended Import
+To keep your code clean and idiomatic, it's recommended to import **Turtle Island** as a top-level module:
+
+```python
+import turtle_island as ti
+```

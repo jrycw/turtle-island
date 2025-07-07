@@ -1,0 +1,56 @@
+project:
+  type: website
+
+html-table-processing: none
+
+website:
+  title: "Turtle Island"
+  site-url: https://jrycw.github.io/turtle-island/
+  description: "A Utility Kit for Polars Expressions"
+  page-navigation: true
+  navbar:
+    left:
+      - text: Intro
+        file: articles/intro.qmd
+      - reference/index.qmd
+
+quartodoc:
+  package: turtle_island
+  dir: reference
+  title: API Reference
+  css: reference/_styles-quartodoc.css
+  renderer:
+    style: markdown
+    table_style: description-list
+
+  # write sidebar data
+  sidebar:
+    file: "_sidebar.yml"
+    collapse-level: 1
+
+  sections:
+    - title: General
+      desc: >
+        Expressions for general-purpose data transformation.
+      contents:
+        - case_when
+        - make_index
+        - bucketize
+        - is_every_nth_row
+        - move_cols_to_start
+        - move_cols_to_end
+    - title: HTML
+      desc: >
+        Expressions for generating HTML tags.
+      contents:
+        - make_hyperlink
+
+format:
+  html:
+    theme:
+      light: spacelab
+    respect-user-color-scheme: true
+    css:
+      - styles.css
+      - reference/_styles-quartodoc.css
+    toc: true
