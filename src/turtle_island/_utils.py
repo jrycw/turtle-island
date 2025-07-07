@@ -27,7 +27,7 @@ def _cast_datatype(expr: pl.Expr, item: Any) -> pl.Expr:
 
 
 def _concat_str(
-    template: str, *col_names: list[str], sep: str = "<<X>>"
+    template: str, *col_names: list[str], sep: str = "**X**"
 ) -> pl.Expr:
     if not all(isinstance(col_name, str) for col_name in col_names):
         raise ValueError("All column names must be of type string.")

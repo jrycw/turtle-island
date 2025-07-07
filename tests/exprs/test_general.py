@@ -199,14 +199,14 @@ def test_bucketize_multicols(df_n):
     assert_frame_equal(new_df, expected)
 
 
-def test_bucketize_fail_one_item():
+def test_bucketize_raise_one_item():
     with pytest.raises(ValueError) as exc_info:
         assert ti.bucketize(1)
 
     assert "must contain a minimum of two items." in exc_info.value.args[0]
 
 
-def test_bucketize_fail_not_the_same_type():
+def test_bucketize_raise_not_the_same_type():
     with pytest.raises(ValueError) as exc_info:
         assert ti.bucketize(1, "1")
 

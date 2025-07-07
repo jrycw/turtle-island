@@ -32,7 +32,7 @@ def test__concat_str():
     quick, lazy = "quick", "lazy"
     fox, dog = "fox", "dog"
     concat_str_expr = _concat_str(
-        f"The {quick} brown <<X>> jumps over the {lazy} <<X>>.",
+        f"The {quick} brown **X** jumps over the {lazy} **X**.",
         fox,
         dog,
     )
@@ -71,11 +71,11 @@ def test__concat_str_sep():
     assert concat_str_expr.meta.eq(expected)
 
 
-def test__concat_str_fail_col_names_not_all_str():
+def test__concat_str_raise_col_names_not_all_str():
     fox = "fox"
     with pytest.raises(ValueError) as exc_info:
         assert _concat_str(
-            "The quick brown <<X>> jumps over the lazy <<X>>.",
+            "The quick brown **X** jumps over the lazy **X**.",
             fox,
             123,
         )  # 123 is int type
@@ -86,11 +86,11 @@ def test__concat_str_fail_col_names_not_all_str():
     )
 
 
-def test__concat_str_fail_params_not_match():
+def test__concat_str_raise_params_not_match():
     fox = "fox"
     with pytest.raises(ValueError) as exc_info:
         assert _concat_str(
-            "The quick brown <<X>> jumps over the lazy <<X>>.", fox
+            "The quick brown **X** jumps over the lazy **X**.", fox
         )  # `dog` is missed
 
     assert (

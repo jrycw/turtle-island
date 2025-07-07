@@ -6,7 +6,7 @@ from .exprs.general import (
     move_cols_to_end,
     move_cols_to_start,
 )
-from .exprs.html import make_hyperlink
+from .exprs.html import make_tooltip, make_hyperlink
 
 __all__ = [
     "bucketize",
@@ -15,5 +15,6 @@ __all__ = [
     "is_every_nth_row",
     "move_cols_to_end",
     "move_cols_to_start",
+    "make_tooltip",
     "make_hyperlink",
 ]

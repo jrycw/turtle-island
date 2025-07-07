@@ -47,6 +47,7 @@ quartodoc:
         Expressions for generating HTML tags.
       contents:
         - make_hyperlink
+        - make_tooltip
 
 format:
   html:
