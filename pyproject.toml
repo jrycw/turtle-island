@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Helper functions for writing concise and expressive Polars expressions with less boilerplate."
 readme = "README.md"
 license.file = "LICENSE"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "polars>=1.31.0",
     "pyarrow>=20.0.0",
