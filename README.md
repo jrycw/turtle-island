@@ -1,4 +1,9 @@
+[![Tests](https://github.com/jrycw/turtle-island/actions/workflows/ci_tests.yml/badge.svg)](https://github.com/jrycw/turtle-island/actions/workflows/ci_tests.yml)
+[![Documentation](https://github.com/jrycw/turtle-island/actions/workflows/ci_docs.yml/badge.svg)](https://github.com/jrycw/turtle-island/actions/workflows/ci_docs.yml)
+[![License](https://img.shields.io/github/license/jrycw/turtle-island)](https://img.shields.io/github/license/jrycw/turtle-island)
+
 # 🐢 Turtle Island
+
 **Turtle Island** is a lightweight utility library that provides helper functions to reduce boilerplate when writing [Polars](https://pola.rs) expressions. It aims to simplify common expression patterns and improve developer productivity when working with the Polars API.
 
 > ⚠️ **Disclaimer**: This project is in early development. The API is still evolving and may change without notice. Use with caution in production environments.
