@@ -13,6 +13,9 @@ website:
       - text: Intro
         file: articles/intro.qmd
       - reference/index.qmd
+    right:
+      - icon: github
+        href: https://github.com/jrycw/turtle-island
 
 quartodoc:
   package: turtle_island
