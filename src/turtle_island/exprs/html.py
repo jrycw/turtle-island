@@ -46,10 +46,10 @@ def make_hyperlink(
             "url": ["https://github.com/jrycw/turtle-island"],
         }
     )
-    df.with_columns(ti.make_hyperlink("name", "url").alias("link"))
+    df.with_columns(ti.make_hyperlink("name", "url"))
     ```
     ```{python}
-    df.with_columns(ti.make_hyperlink("name", "url").alias("link")).style
+    df.with_columns(ti.make_hyperlink("name", "url")).style
     ```
     """
     target = "_blank" if new_tab else "_self"
@@ -107,10 +107,10 @@ def make_tooltip(
             "description": ["A Utility Kit for Polars Expressions"],
         }
     )
-    df.with_columns(ti.make_tooltip("name", "description").alias("tooltip"))
+    df.with_columns(ti.make_tooltip("name", "description"))
     ```
     ```{python}
-    df.with_columns(ti.make_tooltip("name", "description").alias("tooltip")).style
+    df.with_columns(ti.make_tooltip("name", "description")).style
     ```
     """
 
