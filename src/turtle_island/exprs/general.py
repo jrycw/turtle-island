@@ -173,7 +173,7 @@ def is_every_nth_row(
     Parameters
     ----------
     n
-        The interval to use for row selection.
+        The interval to use for row selection. Should be positive.
     offset
         Start the index at this offset. Cannot be negative.
     name
