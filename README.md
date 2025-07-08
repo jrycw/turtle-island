@@ -1,4 +1,5 @@
 [![Tests](https://github.com/jrycw/turtle-island/actions/workflows/ci_tests.yml/badge.svg)](https://github.com/jrycw/turtle-island/actions/workflows/ci_tests.yml)
+[![codecov](https://codecov.io/gh/jrycw/turtle-island/branch/master/graph/badge.svg)](https://codecov.io/gh/jrycw/turtle-island)
 [![Documentation](https://github.com/jrycw/turtle-island/actions/workflows/ci_docs.yml/badge.svg)](https://github.com/jrycw/turtle-island/actions/workflows/ci_docs.yml)
 [![License](https://img.shields.io/github/license/jrycw/turtle-island)](https://img.shields.io/github/license/jrycw/turtle-island)
 
