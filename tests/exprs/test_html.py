@@ -18,6 +18,9 @@ def df_html():
 @pytest.mark.parametrize("expr1, expr2", [("name", "url")])
 def test_make_hyperlink(df_html, expr1, expr2):
     new_df = df_html.select(ti.make_hyperlink(expr1, expr2))
+
+    assert "hyperlink" in new_df.columns
+
     result = new_df.item()
     expected = '<a href="https://github.com/jrycw/turtle-island" target="_blank">Turtle Island</a>'
 
@@ -35,9 +38,20 @@ def test_make_hyperlink_newtab(df_html, new_tab, expected):
     assert expected in new_df.item()
 
 
+@pytest.mark.parametrize(
+    "expr1, expr2, name", [("name", "url", "cool_name")]
+)
+def test_make_alias(df_html, expr1, expr2, name):
+    new_df = df_html.select(ti.make_hyperlink(expr1, expr2, name=name))
+
+    assert name in new_df.columns
+
+
 @pytest.mark.parametrize("expr1, expr2", [("name", "description")])
 def test_make_tooltip(df_html, expr1, expr2):
     new_df = df_html.select(ti.make_tooltip(expr1, expr2))
+    assert "tooltip" in new_df.columns
+
     result = new_df.item()
     expected = '<abbr style="cursor: help; text-decoration: underline; text-decoration-style: dotted; color: blue; " title="A Utility Kit for Polars Expressions">Turtle Island</abbr>'
 
@@ -66,6 +80,15 @@ def test_make_tooltip_options(
 
     assert text_decoration_style in result
     assert color in result
+
+
+@pytest.mark.parametrize(
+    "expr1, expr2, name", [("name", "url", "cool_name")]
+)
+def test_make_tooltip_alias(df_html, expr1, expr2, name):
+    new_df = df_html.select(ti.make_tooltip(expr1, expr2, name=name))
+
+    assert name in new_df.columns
 
 
 @pytest.mark.parametrize(

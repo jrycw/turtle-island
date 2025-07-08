@@ -4,7 +4,9 @@ import polars as pl
 from .._utils import _concat_str
 
 
-def make_hyperlink(text: str, url: str, new_tab: bool = True) -> pl.Expr:
+def make_hyperlink(
+    text: str, url: str, new_tab: bool = True, *, name: str = "hyperlink"
+) -> pl.Expr:
     """
     Returns a Polars expression that generates an HTML hyperlink (`<a>` tag) for each row.
 
@@ -22,6 +24,8 @@ def make_hyperlink(text: str, url: str, new_tab: bool = True) -> pl.Expr:
     new_tab
         Whether the link opens in a new browser tab (`target="_blank"`) or the current tab.
         Defaults to `True`.
+    name
+        The name of the resulting column. Defaults to "hyperlink".
 
     Returns
     -------
@@ -51,7 +55,7 @@ def make_hyperlink(text: str, url: str, new_tab: bool = True) -> pl.Expr:
     target = "_blank" if new_tab else "_self"
     return _concat_str(
         f'<a href="**X**" target="{target}">**X**</a>', url, text
-    )
+    ).alias(name)
 
 
 def make_tooltip(
@@ -59,6 +63,8 @@ def make_tooltip(
     tooltip: str,
     text_decoration_style: Literal["solid", "dotted", "none"] = "dotted",
     color: str | Literal["none"] = "blue",
+    *,
+    name: str = "tooltip",
 ) -> str:
     """
     Returns a Polars expression that generates an HTML tooltip for each row.
@@ -72,16 +78,16 @@ def make_tooltip(
     ----------
     label
         Column name containing the main text to display.
-
     tooltip
         Column name containing containing the text shown when hovering over the label.
 
     text_decoration_style
         A string indicating the style of underline decoration. Options are `"solid"`,
         `"dotted"`, or "none".
-
     color
         A string indicating the text color. If "none", no color styling is applied.
+    name
+        The name of the resulting column. Defaults to "make_tooltip".
 
     Returns
     -------
@@ -130,4 +136,4 @@ def make_tooltip(
 
     return _concat_str(
         f'<abbr style="{style}" title="**X**">**X**</abbr>', tooltip, label
-    )
+    ).alias(name)
