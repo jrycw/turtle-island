@@ -30,7 +30,7 @@ test = [
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
-addopts = "--cov=turtle_island --cov-branch --cov-report=xml"
+addopts = "--cov=turtle_island --cov-report=term-missing --cov-branch --cov-report=xml"
 
 
 [tool.ruff]
