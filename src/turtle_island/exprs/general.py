@@ -86,7 +86,7 @@ def make_index(name: str = "index", offset: int = 0) -> pl.Expr:
     Borrowed from the [Polars documentation](https://docs.pola.rs/api/python/stable/reference/dataframe/api/polars.DataFrame.with_row_index.html)
     and adapted for expression-level use.
 
-    Unlike `with_row_index()`, which works at the DataFrame level,
+    Unlike [pl.DataFrame.with_row_index()](https://docs.pola.rs/api/python/stable/reference/dataframe/api/polars.DataFrame.with_row_index.html), which works at the DataFrame level,
     this expression can be composed inline and reused without materializing an actual column.
 
     Parameters
@@ -162,14 +162,22 @@ def is_every_nth_row(
     """
     Returns a Polars expression that is `True` for every `n`-th row (index modulo `n` equals 0).
 
+    `is_every_nth_row()` can be seen as the complement of [pl.Expr.gather_every()](https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.Expr.gather_every.html).
+
+    While `gather_every()` is typically used in a `select()` context and may return a
+    DataFrame with fewer rows, `is_every_nth_row()` produces a predicate expression
+    that can be used with `select()` or `with_columns()` to preserve the original row structure for
+    further processing, or with `filter()` to achieve the same result as
+    `gather_every()`.
+
     Parameters
     ----------
     n
         The interval to use for row selection.
-    name
-        The alias name for the resulting column.
     offset
         Start the index at this offset. Cannot be negative.
+    name
+        The alias name for the resulting column.
 
     Returns
     -------
@@ -189,6 +197,14 @@ def is_every_nth_row(
     To invert the result:
     ```{python}
     df.with_columns(~ti.is_every_nth_row(2)).style
+    ```
+    You can use offset to adjust the starting index:
+    ```{python}
+    df.with_columns(ti.is_every_nth_row(3, 1)).style
+    ```
+    Here is the output to serve as a reference for `pl.Expr.gather_every()`:
+    ```{python}
+    df.select(pl.col("x").gather_every(3, 1)).style
     ```
     """
     if n <= 0:
