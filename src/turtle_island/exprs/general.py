@@ -60,22 +60,24 @@ def case_when(
     df.with_columns(expr_ti, expr_pl).style
     ```
     """
+    from polars.expr.whenthen import Then
+
     (first_when, first_then), *cases = caselist
 
     # first
-    expr = pl.when(first_when).then(first_then)
+    expr: Then = pl.when(first_when).then(first_then)
 
     # middles
     for when, then in cases:
-        expr = expr.when(when).then(then)
+        expr: Then = expr.when(when).then(then)  # type: ignore[no-redef]
 
     # last
-    expr = expr.otherwise(otherwise)
+    expr: pl.Expr = expr.otherwise(otherwise)  # type: ignore[no-redef]
 
     return expr
 
 
-def _make_index(start: int, end: int, *, name: str) -> pl.Expr:
+def _make_index(start: int, end: int | pl.Expr, *, name: str) -> pl.Expr:
     return pl.int_range(start, end, dtype=pl.UInt32).alias(name)
 
 
@@ -164,11 +166,11 @@ def is_every_nth_row(
 
     `is_every_nth_row()` can be seen as the complement of [pl.Expr.gather_every()](https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.Expr.gather_every.html).
 
-    While `gather_every()` is typically used in a `select()` context and may return a
+    While `pl.Expr.gather_every()` is typically used in a `select()` context and may return a
     DataFrame with fewer rows, `is_every_nth_row()` produces a predicate expression
     that can be used with `select()` or `with_columns()` to preserve the original row structure for
     further processing, or with `filter()` to achieve the same result as
-    `gather_every()`.
+    `pl.Expr.gather_every()`.
 
     Parameters
     ----------

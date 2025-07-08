@@ -65,7 +65,7 @@ def make_tooltip(
     color: str | Literal["none"] = "blue",
     *,
     name: str = "tooltip",
-) -> str:
+) -> pl.Expr:
     """
     Returns a Polars expression that generates an HTML tooltip for each row.
 

@@ -3,7 +3,7 @@ from typing import Any, Collection
 import polars as pl
 
 
-def _litify(items: Collection[Any]) -> list[pl.lit]:
+def _litify(items: Collection[Any]) -> list[pl.Expr]:
     return [pl.lit(item) for item in items]
 
 
@@ -27,7 +27,7 @@ def _cast_datatype(expr: pl.Expr, item: Any) -> pl.Expr:
 
 
 def _concat_str(
-    template: str, *col_names: list[str], sep: str = "**X**"
+    template: str, *col_names: str, sep: str = "**X**"
 ) -> pl.Expr:
     if not all(isinstance(col_name, str) for col_name in col_names):
         raise ValueError("All column names must be of type string.")
@@ -39,7 +39,7 @@ def _concat_str(
             f"which does not match the number of column names ({len_col_names})."
         )
     col_names_iter = iter(col_names)
-    concat_str_list = []
+    concat_str_list: list[pl.Expr | str] = []
     for lit in _litify(splitted):
         concat_str_list.append(lit)
         if col_name := next(col_names_iter, None):
