@@ -87,7 +87,7 @@ def make_tooltip(
     color
         A string indicating the text color. If "none", no color styling is applied.
     name
-        The name of the resulting column. Defaults to "make_tooltip".
+        The name of the resulting column. Defaults to "tooltip".
 
     Returns
     -------
