@@ -213,43 +213,158 @@ def test_bucketize_raise_not_the_same_type():
     assert "must contain only one unique type." in exc_info.value.args[0]
 
 
-def test_is_every_nth_row(df_n):
-    new_df = df_n.select(ti.is_every_nth_row(3))
-    expected = pl.DataFrame(
-        {
-            "bool_nth_row": [
-                True,
-                False,
-                False,
-                True,
-                False,
-                False,
-                True,
-                False,
-                False,
-            ]
-        }
+@pytest.mark.parametrize(
+    "n,  s_bool",
+    [
+        (1, [True, True, True, True, True, True, True, True, True]),
+        (2, [True, False, True, False, True, False, True, False, True]),
+        (3, [True, False, False, True, False, False, True, False, False]),
+        (4, [True, False, False, False, True, False, False, False, True]),
+        (5, [True, False, False, False, False, True, False, False, False]),
+        (6, [True, False, False, False, False, False, True, False, False]),
+        (7, [True, False, False, False, False, False, False, True, False]),
+        (8, [True, False, False, False, False, False, False, False, True]),
+        (
+            9,
+            [True, False, False, False, False, False, False, False, False],
+        ),
+        (
+            10,
+            [True, False, False, False, False, False, False, False, False],
+        ),
+    ],
+)
+def test_is_every_nth_row(df_n, n, s_bool):
+    expr = ti.is_every_nth_row(n)
+    new_df = df_n.select(expr)
+    expected = pl.DataFrame({"bool_nth_row": s_bool})
+
+    assert_frame_equal(new_df, expected)
+
+    # https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.Expr.gather_every.html
+    assert_frame_equal(
+        df_n.filter(expr), df_n.select(pl.col("n").gather_every(n))
     )
+
+
+@pytest.mark.parametrize(
+    "n,  s_bool",
+    [
+        (
+            1,
+            [
+                False,
+                False,
+                False,
+                False,
+                False,
+                False,
+                False,
+                False,
+                False,
+            ],
+        ),
+        (2, [False, True, False, True, False, True, False, True, False]),
+        (3, [False, True, True, False, True, True, False, True, True]),
+        (4, [False, True, True, True, False, True, True, True, False]),
+        (5, [False, True, True, True, True, False, True, True, True]),
+        (6, [False, True, True, True, True, True, False, True, True]),
+        (7, [False, True, True, True, True, True, True, False, True]),
+        (8, [False, True, True, True, True, True, True, True, False]),
+        (9, [False, True, True, True, True, True, True, True, True]),
+        (10, [False, True, True, True, True, True, True, True, True]),
+    ],
+)
+def test_is_every_nth_row_ne(df_n, n, s_bool):
+    expr = ~ti.is_every_nth_row(n)
+    new_df = df_n.select(expr)
+    expected = pl.DataFrame({"bool_nth_row": s_bool})
 
     assert_frame_equal(new_df, expected)
 
 
-def test_is_every_nth_row_ne(df_n):
-    new_df = df_n.select(~ti.is_every_nth_row(3))
-    expected = pl.DataFrame(
-        {
-            "bool_nth_row": [
-                False,
-                True,
-                True,
-                False,
-                True,
-                True,
-                False,
-                True,
-                True,
-            ]
-        }
-    )
+@pytest.mark.parametrize(
+    "n,  s_bool",
+    [
+        (1, [True, True, True, True, True, True, True, True, True]),
+        (2, [True, False, True, False, True, False, True, False, True]),
+        (3, [True, False, False, True, False, False, True, False, False]),
+        (4, [True, False, False, False, True, False, False, False, True]),
+        (5, [True, False, False, False, False, True, False, False, False]),
+        (6, [True, False, False, False, False, False, True, False, False]),
+        (7, [True, False, False, False, False, False, False, True, False]),
+        (8, [True, False, False, False, False, False, False, False, True]),
+        (
+            9,
+            [True, False, False, False, False, False, False, False, False],
+        ),
+        (
+            10,
+            [True, False, False, False, False, False, False, False, False],
+        ),
+    ],
+)
+def test_is_every_nth_row_ne_twice(df_n, n, s_bool):
+    expr = ~(~ti.is_every_nth_row(n))
+    new_df = df_n.select(expr)
+    expected = pl.DataFrame({"bool_nth_row": s_bool})
 
     assert_frame_equal(new_df, expected)
+
+    # Verify that the results are equal
+    assert_frame_equal(
+        df_n.filter(expr), df_n.select(pl.col("n").gather_every(n))
+    )
+
+
+@pytest.mark.parametrize(
+    "n, offset, s_bool",
+    [
+        (
+            3,
+            0,
+            [True, False, False, True, False, False, True, False, False],
+        ),
+        (
+            3,
+            1,
+            [False, True, False, False, True, False, False, True, False],
+        ),
+        (
+            3,
+            2,
+            [False, False, True, False, False, True, False, False, True],
+        ),
+        (
+            3,
+            3,
+            [False, False, False, True, False, False, True, False, False],
+        ),
+        (
+            3,
+            4,
+            [False, False, False, False, True, False, False, True, False],
+        ),
+    ],
+)
+def test_is_every_nth_row_offset(df_n, n, offset, s_bool):
+    new_df = df_n.select(ti.is_every_nth_row(n, offset))
+    expected = pl.DataFrame({"bool_nth_row": s_bool})
+
+    assert_frame_equal(new_df, expected)
+
+
+@pytest.mark.parametrize("n", [0, -1, -10, -100])
+def test_is_every_nth_row_raise_neg_n(n):
+    with pytest.raises(ValueError) as exc_info:
+        ti.is_every_nth_row(n)
+
+    assert "n should be positive." in exc_info.value.args[0]
+
+
+@pytest.mark.parametrize("offset", [-1, -10, -100])
+def test_is_every_nth_row_raise_neg_offset(offset):
+    with pytest.raises(ValueError) as exc_info:
+        ti.is_every_nth_row(999, offset=offset)
+
+    assert "offset cannot be negative." in exc_info.value.args[0]

@@ -75,6 +75,10 @@ def case_when(
     return expr
 
 
+def _make_index(start: int, end: int, *, name: str) -> pl.Expr:
+    return pl.int_range(start, end, dtype=pl.UInt32).alias(name)
+
+
 def make_index(name: str = "index", offset: int = 0) -> pl.Expr:
     """
     Returns a Polars expression that creates a virtual row index.
@@ -108,9 +112,7 @@ def make_index(name: str = "index", offset: int = 0) -> pl.Expr:
     df.select(ti.make_index(), pl.all()).style
     ```
     """
-    start = offset
-    end = start + pl.len()
-    return pl.int_range(start, end, dtype=pl.UInt32).alias(name)
+    return _make_index(offset, pl.len() + offset, name=name)
 
 
 def bucketize(*items: T, name: str = "bucketized") -> pl.Expr:
@@ -154,7 +156,9 @@ def bucketize(*items: T, name: str = "bucketized") -> pl.Expr:
     return _cast_datatype(expr, items[0])
 
 
-def is_every_nth_row(n: int, *, name: str = "bool_nth_row") -> pl.Expr:
+def is_every_nth_row(
+    n: int, offset: int = 0, *, name: str = "bool_nth_row"
+) -> pl.Expr:
     """
     Returns a Polars expression that is `True` for every `n`-th row (index modulo `n` equals 0).
 
@@ -164,6 +168,8 @@ def is_every_nth_row(n: int, *, name: str = "bool_nth_row") -> pl.Expr:
         The interval to use for row selection.
     name
         The alias name for the resulting column.
+    offset
+        Start the index at this offset. Cannot be negative.
 
     Returns
     -------
@@ -185,7 +191,14 @@ def is_every_nth_row(n: int, *, name: str = "bool_nth_row") -> pl.Expr:
     df.with_columns(~ti.is_every_nth_row(2)).style
     ```
     """
-    return make_index(name=name).mod(n).eq(0)
+    if n <= 0:
+        raise ValueError("n should be positive.")
+    if offset < 0:
+        raise ValueError("offset cannot be negative.")
+
+    offset_rows = pl.repeat(False, n=offset, dtype=pl.Boolean)
+    rest_rows = _make_index(0, pl.len() - offset, name=name).mod(n).eq(0)
+    return offset_rows.append(rest_rows).alias(name)
 
 
 def move_cols_to_start(
