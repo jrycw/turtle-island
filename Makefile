@@ -13,4 +13,4 @@ preview:
 test:
 	uv sync --group test && \
 	make install && \
-	uv run pytest
+	uv run pytest --cov --cov-branch --cov-report=xml
