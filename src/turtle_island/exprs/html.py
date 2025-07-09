@@ -120,11 +120,11 @@ def make_tooltip(
     # Throw if `text_decoration_style` is not one of the allowed values
     if text_decoration_style not in ["none", "solid", "dotted"]:
         raise ValueError(
-            "Text_decoration_style must be one of 'none', 'solid', or 'dotted'"
+            "`text_decoration_style=` must be one of 'none', 'solid', or 'dotted'"
         )
 
     if color is None:
-        raise ValueError("color must be a string or 'none', not None.")
+        raise ValueError("`color=` must be a string or 'none', not None.")
 
     style = "cursor: help; "
 

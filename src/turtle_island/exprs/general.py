@@ -1,12 +1,10 @@
 from collections.abc import Collection
-from typing import TypeVar
+from typing import Any
 
 import polars as pl
 from polars._typing import PolarsDataType
 
 from .._utils import _cast_datatype, _litify
-
-T = TypeVar("T")
 
 
 def case_when(
@@ -57,7 +55,7 @@ def case_when(
         .alias("size_pl")
     )
 
-    df.with_columns(expr_ti, expr_pl).style
+    df.with_columns(expr_ti, expr_pl)
     ```
     """
     from polars.expr.whenthen import Then
@@ -111,51 +109,152 @@ def make_index(name: str = "index", offset: int = 0) -> pl.Expr:
     import turtle_island as ti
 
     df = pl.DataFrame({"a": [1, 3, 5], "b": [2, 4, 6]})
-    df.select(ti.make_index(), pl.all()).style
+    df.select(ti.make_index(), pl.all())
     ```
     """
     return _make_index(offset, pl.len() + offset, name=name)
 
 
-def bucketize(*items: T, name: str = "bucketized") -> pl.Expr:
+def _make_bucketize_castwhen(
+    exprs: Collection[Any], *, is_litify: bool, name: str
+) -> pl.Expr:
+    if is_litify:
+        # turn items into exprs
+        exprs: list[pl.Expr] = _litify(exprs)  # type: ignore[no-redef]
+    n = len(exprs)
+    mod_expr = make_index().mod(n)
+    *whenthen_exprs, otherwise_expr = exprs
+    caselist: list[tuple[pl.Expr, pl.Expr]] = [
+        (mod_expr.eq(i), expr) for i, expr in enumerate(whenthen_exprs)
+    ]
+    return case_when(caselist, otherwise_expr).alias(name)
+
+
+def bucketize_lit(
+    *items: Any,
+    coalesce_to: pl.DataType | None = None,
+    name: str = "bucketized",
+) -> pl.Expr:
     """
-    Returns a Polars expression that assigns a label to each row based on its index,
-    cycling through the provided items in a round-robin fashion.
+    Returns a Polars expression that assigns a label to each row based on its index, cycling through the provided items in a round-robin fashion.
+
+    `bucketize_lit()` is a simplified version of
+    [bucketize()](bucketize.html#turtle_island.bucketize), designed for common
+    use cases involving literal values. For more advanced scenarios, consider using
+    `bucketize()` directly.
 
     Parameters
     ----------
     items
-        The values to cycle through. All items must be of the same type, and at least two must be given.
+        Literal values to cycle through. All items must be of the same type,
+        and at least two must be provided. See the table below for supported
+        types and their conversions.
+    coalesce_to
+        An optional Polars data type to cast the resulting expression to.
     name
         The name of the resulting column. Defaults to "bucketized".
 
     Returns
     -------
     pl.Expr
-        A Polars expression that cycles through the values based on the row index modulo.
+        A Polars expression that cycles through the provided values based on the row index modulo.
+
+    Supported Type Conversions
+    --------------------------
+    | Python Type          | Converted To       |
+    |----------------------|--------------------|
+    | `bool`               | `pl.Boolean`       |
+    | `datetime.datetime`  | `pl.Datetime`      |
+    | `datetime.date`      | `pl.Date`          |
+    | `datetime.time`      | `pl.Time`          |
+    | `datetime.timedelta` | `pl.Duration`      |
+    | `int`                | `pl.Int64`         |
+    | `float`              | `pl.Float64`       |
+    | `str`                | `pl.String`        |
+    | `list`, `tuple`      | `pl.List`          |
+    | Others               | no cast involved   |
 
     Examples
     -------
-    Useful for alternating values across rows by index:
+    Cycle through boolean values to mark alternating rows:
     ```{python}
     import polars as pl
     import turtle_island as ti
 
     df = pl.DataFrame({"x": [1, 2, 3, 4, 5]})
-    df.with_columns(ti.bucketize(True, False)).style
+    df.with_columns(ti.bucketize_lit(True, False))
     ```
-    Here, rows are alternately labeled `True` and `False`.
+    Cast the result to a specific data type using `coalesce_to=`:
+    ```{python}
+    df.with_columns(ti.bucketize_lit(True, False, coalesce_to=pl.Int64))
+    ```
     """
-    n = len(items)
-    if n <= 1:
-        raise ValueError(f"{items} must contain a minimum of two items.")
+    if len(items) <= 1:
+        raise ValueError("`items=` must contain a minimum of two items.")
     if len(set(type(item) for item in items)) != 1:
-        raise ValueError(f"{items} must contain only one unique type.")
-    mod_expr = make_index().mod(n)
-    *litified, litified_otherwise = _litify(items)
-    caselist = [(mod_expr.eq(i), lit) for i, lit in enumerate(litified)]
-    expr = case_when(caselist, litified_otherwise).alias(name)
+        raise ValueError("`items=` must contain only one unique type.")
+    expr = _make_bucketize_castwhen(items, is_litify=True, name=name)
+    if coalesce_to is not None:
+        return expr.cast(coalesce_to)
     return _cast_datatype(expr, items[0])
+
+
+def bucketize(
+    *exprs: pl.Expr,
+    coalesce_to: pl.DataType | None = None,
+    name: str = "bucketized",
+) -> pl.Expr:
+    """
+    Returns a Polars expression that assigns a label to each row based on its index, cycling through the provided expressions in a round-robin fashion.
+
+    `bucketize()` is the more general form of
+    [bucketize_lit()](bucketize_lit.html#turtle_island.bucketize_lit), allowing you
+    to pass Polars expressions instead of literal values. This enables more flexible
+    use cases, such as referencing and transforming existing column values.
+
+    Parameters
+    ----------
+    exprs
+        A list of Polars expressions to cycle through. All expressions must resolve
+        to the same data type. At least two expressions must be provided.
+    coalesce_to
+        An optional Polars data type to cast the resulting expression to.
+    name
+        The name of the resulting column. Defaults to "bucketized".
+
+    Returns
+    -------
+    pl.Expr
+        A Polars expression that cycles through the input expressions based on the row index modulo.
+
+    Examples
+    -------
+    Alternate between a column expression and a literal value:
+    ```{python}
+    import polars as pl
+    import turtle_island as ti
+
+    df = pl.DataFrame({"x": [1, 2, 3, 4, 5]})
+    df.with_columns(ti.bucketize(pl.col("x").add(10), pl.lit(100)))
+    ```
+    This alternates between the values of `x + 10` and the literal `100`.
+    Make sure all expressions resolve to the same type—in this case, integers.
+
+    You can also cast the result to a specific type using `coalesce_to=`:
+    ```{python}
+    df.with_columns(
+        ti.bucketize(pl.col("x").add(10), pl.lit(100), coalesce_to=pl.String)
+    )
+    ```
+    """
+    if len(exprs) <= 1:
+        raise ValueError(
+            "`exprs=` must contain a minimum of two expressions."
+        )
+    expr = _make_bucketize_castwhen(exprs, is_litify=False, name=name)
+    if coalesce_to is not None:
+        return expr.cast(coalesce_to)
+    return expr
 
 
 def is_every_nth_row(
@@ -194,25 +293,25 @@ def is_every_nth_row(
     import turtle_island as ti
 
     df = pl.DataFrame({"x": [1, 2, 3, 4, 5]})
-    df.with_columns(ti.is_every_nth_row(2)).style
+    df.with_columns(ti.is_every_nth_row(2))
     ```
     To invert the result:
     ```{python}
-    df.with_columns(~ti.is_every_nth_row(2)).style
+    df.with_columns(~ti.is_every_nth_row(2))
     ```
     You can use offset to adjust the starting index:
     ```{python}
-    df.with_columns(ti.is_every_nth_row(3, 1)).style
+    df.with_columns(ti.is_every_nth_row(3, 1))
     ```
     Here is the output to serve as a reference for `pl.Expr.gather_every()`:
     ```{python}
-    df.select(pl.col("x").gather_every(3, 1)).style
+    df.select(pl.col("x").gather_every(3, 1))
     ```
     """
     if n <= 0:
-        raise ValueError("n should be positive.")
+        raise ValueError("`n=` should be positive.")
     if offset < 0:
-        raise ValueError("offset cannot be negative.")
+        raise ValueError("`offset=` cannot be negative.")
 
     offset_rows = pl.repeat(False, n=offset, dtype=pl.Boolean)
     rest_rows = _make_index(0, pl.len() - offset, name=name).mod(n).eq(0)
@@ -249,11 +348,11 @@ def move_cols_to_start(
     df = pl.DataFrame(
         {"a": [1, 2, 3], "b": ["x", "y", "z"], "c": [4.4, 5.5, 6.6]}
     )
-    df.select(ti.move_cols_to_start(["b", "c"])).style
+    df.select(ti.move_cols_to_start(["b", "c"]))
     ```
     Or by data type:
     ```{python}
-    df.select(ti.move_cols_to_start([pl.Float64, pl.String])).style
+    df.select(ti.move_cols_to_start([pl.Float64, pl.String]))
     ```
     """
     return [pl.col(columns), pl.all().exclude(columns)]
@@ -287,11 +386,11 @@ def move_cols_to_end(
     import turtle_island as ti
 
     df = pl.DataFrame({"a": [1, 2, 3], "b": ["x", "y", "z"], "c": [4.4, 5.5, 6.6]})
-    df.select(ti.move_cols_to_end(["a", "b"])).style
+    df.select(ti.move_cols_to_end(["a", "b"]))
     ```
     Or by data type:
     ```{python}
-    df.select(ti.move_cols_to_end([pl.String, pl.Int64])).style
+    df.select(ti.move_cols_to_end([pl.String, pl.Int64]))
     ```
     """
     return [pl.all().exclude(columns), pl.col(columns)]

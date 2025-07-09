@@ -110,27 +110,14 @@ def test_move_cols_to_end(df_abcd, columns, result):
     assert new_df.columns == result
 
 
-def test_bucketize_int(df_n):
-    new_df = df_n.select(ti.bucketize(1, 2))
-    expected = pl.DataFrame({"bucketized": [1, 2, 1, 2, 1, 2, 1, 2, 1]})
-
-    assert_frame_equal(new_df, expected)
-
-
-def test_bucketize_float(df_n):
-    new_df = df_n.select(ti.bucketize(1.1, 2.2, 3.3))
-    expected = pl.DataFrame(
-        {"bucketized": [1.1, 2.2, 3.3, 1.1, 2.2, 3.3, 1.1, 2.2, 3.3]}
-    )
-
-    assert_frame_equal(new_df, expected)
-
-
-def test_bucketize_str(df_n):
-    new_df = df_n.select(ti.bucketize("one", "two", "three", "four"))
-    expected = pl.DataFrame(
-        {
-            "bucketized": [
+@pytest.mark.parametrize(
+    "items, result",
+    [
+        ((1, 2), [1, 2, 1, 2, 1, 2, 1, 2, 1]),
+        ((1.1, 2.2, 3.3), [1.1, 2.2, 3.3, 1.1, 2.2, 3.3, 1.1, 2.2, 3.3]),
+        (
+            ("one", "two", "three", "four"),
+            [
                 "one",
                 "two",
                 "three",
@@ -140,33 +127,50 @@ def test_bucketize_str(df_n):
                 "three",
                 "four",
                 "one",
-            ]
-        }
-    )
+            ],
+        ),
+        ((1, 1, 1), [1, 1, 1, 1, 1, 1, 1, 1, 1]),  # test same item
+    ],
+)
+def test_bucketize_lit(df_n, items, result):
+    new_df = df_n.select(ti.bucketize_lit(*items))
+    expected = pl.DataFrame({"bucketized": result})
+
+    assert_frame_equal(new_df, expected)
+
+
+@pytest.mark.parametrize(
+    "items, result, coalesce_to",
+    [
+        ((1, 2), ["1", "2", "1", "2", "1", "2", "1", "2", "1"], pl.String),
+        ((True, False), [1, 0, 1, 0, 1, 0, 1, 0, 1], pl.Int64),
+        (
+            (0, 1),
+            [False, True, False, True, False, True, False, True, False],
+            pl.Boolean,
+        ),
+    ],
+)
+def test_bucketize_lit_coalesce_to(df_n, items, result, coalesce_to):
+    new_df = df_n.select(ti.bucketize_lit(*items, coalesce_to=coalesce_to))
+    expected = pl.DataFrame({"bucketized": result})
 
     assert_frame_equal(new_df, expected)
 
 
 @pytest.mark.parametrize("name", ["cool_name"])
-def test_bucketize_alias(df_n, name):
-    new_df = df_n.select(ti.bucketize(1, 2, name=name))
+def test_bucketize_lit_alias(df_n, name):
+    new_df = df_n.select(ti.bucketize_lit(1, 2, name=name))
     expected = pl.DataFrame({name: [1, 2, 1, 2, 1, 2, 1, 2, 1]})
 
     assert_frame_equal(new_df, expected)
 
 
-def test_bucketize_same_item(df_n):
-    new_df = df_n.select(ti.bucketize(1, 1, 1))
-    expected = pl.DataFrame({"bucketized": [1, 1, 1, 1, 1, 1, 1, 1, 1]})
-
-    assert_frame_equal(new_df, expected)
-
-
-def test_bucketize_multicols(df_n):
+def test_bucketize_lit_multicols(df_n):
     new_df = df_n.select(
-        ti.bucketize(1, 2, name="binarized"),
-        ti.bucketize(1.1, 2.2, 3.3, name="trinarized"),
-        ti.bucketize("one", "two", "three", "four", name="bucketized"),
+        ti.bucketize_lit(1, 2, name="binarized"),
+        ti.bucketize_lit(1.1, 2.2, 3.3, name="trinarized"),
+        ti.bucketize_lit("one", "two", "three", "four", name="bucketized"),
     )
     expected = pl.DataFrame(
         {
@@ -199,18 +203,93 @@ def test_bucketize_multicols(df_n):
     assert_frame_equal(new_df, expected)
 
 
+def test_bucketize_lit_raise_one_item():
+    with pytest.raises(ValueError) as exc_info:
+        assert ti.bucketize_lit(1)
+
+    assert (
+        "`items=` must contain a minimum of two items."
+        in exc_info.value.args[0]
+    )
+
+
+def test_bucketize_lit_raise_not_the_same_type():
+    with pytest.raises(ValueError) as exc_info:
+        assert ti.bucketize_lit(1, "1")
+
+    assert (
+        "`items=` must contain only one unique type."
+        in exc_info.value.args[0]
+    )
+
+
+@pytest.mark.parametrize(
+    "exprs, result",
+    [
+        (
+            (
+                pl.lit("one"),
+                pl.lit("two"),
+                pl.lit("three"),
+                pl.lit("four"),
+            ),
+            [
+                "one",
+                "two",
+                "three",
+                "four",
+                "one",
+                "two",
+                "three",
+                "four",
+                "one",
+            ],
+        ),
+        (
+            (
+                pl.col("n").cast(pl.String),
+                pl.col("n").add(10).cast(pl.String),
+            ),
+            ["1", "12", "3", "14", "5", "16", "7", "18", "9"],
+        ),
+    ],
+)
+def test_bucketize(df_n, exprs, result):
+    new_df = df_n.select(ti.bucketize(*exprs))
+    expected = pl.DataFrame({"bucketized": result})
+    assert_frame_equal(new_df, expected)
+
+
+@pytest.mark.parametrize(
+    "exprs, result, coalesce_to",
+    [
+        (
+            (pl.col("n"), pl.col("n").add(10)),
+            ["1", "12", "3", "14", "5", "16", "7", "18", "9"],
+            pl.String,
+        ),
+        (
+            (pl.lit(True), pl.lit(False)),
+            [1, 0, 1, 0, 1, 0, 1, 0, 1],
+            pl.Int64,
+        ),
+    ],
+)
+def test_bucketize_coalesce_to(df_n, exprs, result, coalesce_to):
+    new_df = df_n.select(ti.bucketize(*exprs, coalesce_to=coalesce_to))
+    expected = pl.DataFrame({"bucketized": result})
+
+    assert_frame_equal(new_df, expected)
+
+
 def test_bucketize_raise_one_item():
     with pytest.raises(ValueError) as exc_info:
-        assert ti.bucketize(1)
+        assert ti.bucketize(pl.lit(1))
 
-    assert "must contain a minimum of two items." in exc_info.value.args[0]
-
-
-def test_bucketize_raise_not_the_same_type():
-    with pytest.raises(ValueError) as exc_info:
-        assert ti.bucketize(1, "1")
-
-    assert "must contain only one unique type." in exc_info.value.args[0]
+    assert (
+        "`exprs=` must contain a minimum of two expressions."
+        in exc_info.value.args[0]
+    )
 
 
 @pytest.mark.parametrize(
@@ -359,7 +438,7 @@ def test_is_every_nth_row_raise_neg_n(n):
     with pytest.raises(ValueError) as exc_info:
         ti.is_every_nth_row(n)
 
-    assert "n should be positive." in exc_info.value.args[0]
+    assert "`n=` should be positive." in exc_info.value.args[0]
 
 
 @pytest.mark.parametrize("offset", [-1, -10, -100])
@@ -367,4 +446,4 @@ def test_is_every_nth_row_raise_neg_offset(offset):
     with pytest.raises(ValueError) as exc_info:
         ti.is_every_nth_row(999, offset=offset)
 
-    assert "offset cannot be negative." in exc_info.value.args[0]
+    assert "`offset=` cannot be negative." in exc_info.value.args[0]

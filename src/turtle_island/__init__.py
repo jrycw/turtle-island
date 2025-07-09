@@ -1,5 +1,6 @@
 from .exprs.general import (
     bucketize,
+    bucketize_lit,
     case_when,
     make_index,
     is_every_nth_row,
@@ -10,6 +11,7 @@ from .exprs.html import make_tooltip, make_hyperlink
 
 __all__ = [
     "bucketize",
+    "bucketize_lit",
     "case_when",
     "make_index",
     "is_every_nth_row",

@@ -1,3 +1,4 @@
+import datetime
 import polars as pl
 from turtle_island._utils import _litify, _cast_datatype, _concat_str
 import pytest
@@ -14,13 +15,17 @@ def test__litify(items):
     [
         (True, pl.Boolean),
         (False, pl.Boolean),
+        (datetime.datetime(2025, 1, 1), pl.Datetime),
+        (datetime.date(2025, 1, 1), pl.Date),
+        (datetime.time(13, 0), pl.Time),
+        (datetime.timedelta(hours=1), pl.Duration),
         (1, pl.Int64),
         (1.0, pl.Float64),
         ("1.0", pl.String),
-        (
-            object(),
-            pl.Int64,
-        ),  # the type of `pl.col("a")` is `pl.Int64``
+        ([1, 2, 3], pl.List),
+        ((1, 2, 3), pl.List),
+        # the type of `pl.col("a")` is `pl.Int64` => return self without casting
+        (object(), pl.Int64),
     ],
 )
 def test__cast_datatype(df_abcd, item, expected):

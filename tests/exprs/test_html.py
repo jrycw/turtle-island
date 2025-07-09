@@ -104,7 +104,7 @@ def test_make_tooltip_raise_text_decoration_style(
         )
 
     assert (
-        "Text_decoration_style must be one of 'none', 'solid', or 'dotted'"
+        "`text_decoration_style=` must be one of 'none', 'solid', or 'dotted'"
         in exc_info.value.args[0]
     )
 
@@ -117,6 +117,6 @@ def test_make_tooltip_raise_color(expr1, expr2, color):
         ti.make_tooltip(expr1, expr2, color=color)
 
     assert (
-        "color must be a string or 'none', not None."
+        "`color=` must be a string or 'none', not None."
         in exc_info.value.args[0]
     )
