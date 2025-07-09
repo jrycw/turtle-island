@@ -118,9 +118,6 @@ shape: (5, 2)
 ### is_every_nth_row()
 Mark every second row:
 ```python
-import polars as pl
-import turtle_island as ti
-
 df = pl.DataFrame({"x": [1, 2, 3, 4, 5]})
 df.with_columns(ti.is_every_nth_row(2))
 ```
