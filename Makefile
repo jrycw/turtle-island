@@ -1,6 +1,10 @@
-.PHONY: install preview ruf test_pre test testv0 testv1 testv2 testv3
+.PHONY: ruf install preview test_pre test testv0 testv1 testv2 testv3
+
+ruf:
+	ruff format tests/ src/
 
 install:
+	make ruf && \
 	uv pip install .[]
 
 preview:
@@ -9,9 +13,6 @@ preview:
 	cd docs && \
 	quartodoc build --verbose && \
 	quarto preview --port 8001
-
-ruf:
-	ruff format tests/ src/
 
 test_pre:
 	uv sync --group test && \
