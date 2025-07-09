@@ -208,9 +208,10 @@ def bucketize(
     Returns a Polars expression that assigns a label to each row based on its index, cycling through the provided expressions in a round-robin fashion.
 
     `bucketize()` is the more general form of
-    [bucketize_lit()](bucketize_lit.html#turtle_island.bucketize_lit), allowing you
-    to pass Polars expressions instead of literal values. This enables more flexible
-    use cases, such as referencing and transforming existing column values.
+    [bucketize_lit()](bucketize_lit.html#turtle_island.bucketize_lit),
+    allowing you to pass Polars expressions instead of just literal values.
+    This enables advanced use cases such as referencing or transforming
+    existing column values.
 
     Parameters
     ----------
@@ -250,6 +251,7 @@ def bucketize(
     ### Be cautious when using `pl.lit()` as the first expression
 
     Polars will automatically infer the data type of `pl.lit()`. For example, `pl.lit(1)` is inferred as `pl.Int32`.
+
     To avoid unexpected type mismatches, it's recommended to explicitly set the desired data type using `coalesce_to=`.
     :::
     """
