@@ -73,12 +73,32 @@ shape: (3, 3)
 │ 2     ┆ 5   ┆ 6   │
 └───────┴─────┴─────┘
 ```
-
 ### bucketize()
-Assign values to rows based on index in a round-robin fashion:
+Assign values to rows in a round-robin pattern using Polars expressions:
 ```python
 df = pl.DataFrame({"x": [1, 2, 3, 4, 5]})
-df.with_columns(ti.bucketize(True, False))
+df.with_columns(ti.bucketize(pl.col("x"), pl.col("x").add(100)))
+```
+```
+shape: (5, 2)
+┌─────┬────────────┐
+│ x   ┆ bucketized │
+│ --- ┆ ---        │
+│ i64 ┆ i64        │
+╞═════╪════════════╡
+│ 1   ┆ 1          │
+│ 2   ┆ 102        │
+│ 3   ┆ 3          │
+│ 4   ┆ 104        │
+│ 5   ┆ 5          │
+└─────┴────────────┘
+```
+
+### bucketize_lit()
+Assign values to rows in a round-robin pattern using literal values:
+```python
+df = pl.DataFrame({"x": [1, 2, 3, 4, 5]})
+df.with_columns(ti.bucketize_lit(True, False))
 ```
 ```
 shape: (5, 2)
