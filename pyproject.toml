@@ -33,6 +33,11 @@ test = [
 pythonpath = ["src"]
 addopts = "--cov=turtle_island --cov-report=term-missing --cov-branch --cov-report=xml"
 
+[tool.coverage.run]
+omit = [
+    "tests/*",
+    "*/tests/*",
+]
 
 [tool.ruff]
 line-length = 75
