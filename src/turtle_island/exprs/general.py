@@ -14,7 +14,7 @@ def case_when(
     """
     Simplifies conditional logic in Polars by chaining multiple `when-then-otherwise` expressions.
 
-    Inspired by [pandas.Series.case_when](https://pandas.pydata.org/docs/reference/api/pandas.Series.case_when.html),
+    Inspired by [pd.Series.case_when()](https://pandas.pydata.org/docs/reference/api/pandas.Series.case_when.html),
     this provides a more ergonomic way to express chained conditional logic in Polars.
 
     Parameters
