@@ -246,6 +246,12 @@ def bucketize(
         ti.bucketize(pl.col("x").add(10), pl.lit(100), coalesce_to=pl.String)
     )
     ```
+    ::: {.callout-warning}
+    ### Be cautious when using `pl.lit()` as the first expression
+
+    Polars will automatically infer the data type of `pl.lit()`. For example, `pl.lit(1)` is inferred as `pl.Int32`.
+    To avoid unexpected type mismatches, it's recommended to explicitly set the desired data type using `coalesce_to=`.
+    :::
     """
     if len(exprs) <= 1:
         raise ValueError(
