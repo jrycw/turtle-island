@@ -213,6 +213,14 @@ def bucketize(
     This enables advanced use cases such as referencing or transforming
     existing column values.
 
+    ::: {.callout-warning}
+    ### Be cautious when using `pl.lit()` as the first expression
+
+    Polars will automatically infer the data type of `pl.lit()`. For example, `pl.lit(1)` is inferred as `pl.Int32`.
+
+    To avoid unexpected type mismatches, it's recommended to explicitly set the desired data type using `coalesce_to=`.
+    :::
+
     Parameters
     ----------
     exprs
@@ -247,13 +255,6 @@ def bucketize(
         ti.bucketize(pl.col("x").add(10), pl.lit(100), coalesce_to=pl.String)
     )
     ```
-    ::: {.callout-warning}
-    ### Be cautious when using `pl.lit()` as the first expression
-
-    Polars will automatically infer the data type of `pl.lit()`. For example, `pl.lit(1)` is inferred as `pl.Int32`.
-
-    To avoid unexpected type mismatches, it's recommended to explicitly set the desired data type using `coalesce_to=`.
-    :::
     """
     if len(exprs) <= 1:
         raise ValueError(
@@ -278,6 +279,14 @@ def is_every_nth_row(
     that can be used with `select()` or `with_columns()` to preserve the original row structure for
     further processing, or with `filter()` to achieve the same result as
     `pl.Expr.gather_every()`.
+
+    ::: {.callout-warning}
+    ### Ensure `offset=` does not exceed the total number of rows
+
+    Since expressions are only evaluated at runtime, their validity cannot be
+    checked until execution. If `offset=` is greater than the number of rows
+    in the DataFrame, it may result in unexpected behavior.
+    :::
 
     Parameters
     ----------
