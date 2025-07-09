@@ -91,10 +91,7 @@ def test__concat_str_raise_col_names_not_all_str():
             name=name,
         )  # 123 is int type
 
-    assert (
-        "All column names must be of type string."
-        in exc_info.value.args[0]
-    )
+    assert "All column names must be of type string." in exc_info.value.args[0]
 
 
 def test__concat_str_raise_params_not_match():

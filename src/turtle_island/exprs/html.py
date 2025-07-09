@@ -54,10 +54,7 @@ def make_hyperlink(
     """
     target = "_blank" if new_tab else "_self"
     return _concat_str(
-        f'<a href="**X**" target="{target}">**X**</a>',
-        url,
-        text,
-        name=name,
+        f'<a href="**X**" target="{target}">**X**</a>', url, text, name=name
     )
 
 

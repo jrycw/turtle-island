@@ -31,16 +31,12 @@ def test_make_hyperlink(df_html, expr1, expr2):
     "new_tab, expected", [(True, "_blank"), (False, "_self")]
 )
 def test_make_hyperlink_newtab(df_html, new_tab, expected):
-    new_df = df_html.select(
-        ti.make_hyperlink("name", "url", new_tab=new_tab)
-    )
+    new_df = df_html.select(ti.make_hyperlink("name", "url", new_tab=new_tab))
 
     assert expected in new_df.item()
 
 
-@pytest.mark.parametrize(
-    "expr1, expr2, name", [("name", "url", "cool_name")]
-)
+@pytest.mark.parametrize("expr1, expr2, name", [("name", "url", "cool_name")])
 def test_make_alias(df_html, expr1, expr2, name):
     new_df = df_html.select(ti.make_hyperlink(expr1, expr2, name=name))
 
@@ -82,9 +78,7 @@ def test_make_tooltip_options(
     assert color in result
 
 
-@pytest.mark.parametrize(
-    "expr1, expr2, name", [("name", "url", "cool_name")]
-)
+@pytest.mark.parametrize("expr1, expr2, name", [("name", "url", "cool_name")])
 def test_make_tooltip_alias(df_html, expr1, expr2, name):
     new_df = df_html.select(ti.make_tooltip(expr1, expr2, name=name))
 

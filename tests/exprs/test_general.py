@@ -175,17 +175,7 @@ def test_bucketize_lit_multicols(df_n):
     expected = pl.DataFrame(
         {
             "binarized": [1, 2, 1, 2, 1, 2, 1, 2, 1],
-            "trinarized": [
-                1.1,
-                2.2,
-                3.3,
-                1.1,
-                2.2,
-                3.3,
-                1.1,
-                2.2,
-                3.3,
-            ],
+            "trinarized": [1.1, 2.2, 3.3, 1.1, 2.2, 3.3, 1.1, 2.2, 3.3],
             "bucketized": [
                 "one",
                 "two",
@@ -218,8 +208,7 @@ def test_bucketize_lit_raise_not_the_same_type():
         assert ti.bucketize_lit(1, "1")
 
     assert (
-        "`items=` must contain only one unique type."
-        in exc_info.value.args[0]
+        "`items=` must contain only one unique type." in exc_info.value.args[0]
     )
 
 
@@ -227,12 +216,7 @@ def test_bucketize_lit_raise_not_the_same_type():
     "exprs, result",
     [
         (
-            (
-                pl.lit("one"),
-                pl.lit("two"),
-                pl.lit("three"),
-                pl.lit("four"),
-            ),
+            (pl.lit("one"), pl.lit("two"), pl.lit("three"), pl.lit("four")),
             [
                 "one",
                 "two",
@@ -246,10 +230,7 @@ def test_bucketize_lit_raise_not_the_same_type():
             ],
         ),
         (
-            (
-                pl.col("n").cast(pl.String),
-                pl.col("n").add(10).cast(pl.String),
-            ),
+            (pl.col("n").cast(pl.String), pl.col("n").add(10).cast(pl.String)),
             ["1", "12", "3", "14", "5", "16", "7", "18", "9"],
         ),
     ],
@@ -311,14 +292,8 @@ def test_bucketize_raise_one_item():
         (6, [True, False, False, False, False, False, True, False, False]),
         (7, [True, False, False, False, False, False, False, True, False]),
         (8, [True, False, False, False, False, False, False, False, True]),
-        (
-            9,
-            [True, False, False, False, False, False, False, False, False],
-        ),
-        (
-            10,
-            [True, False, False, False, False, False, False, False, False],
-        ),
+        (9, [True, False, False, False, False, False, False, False, False]),
+        (10, [True, False, False, False, False, False, False, False, False]),
     ],
 )
 def test_is_every_nth_row(df_n, n, s_bool):
@@ -337,20 +312,7 @@ def test_is_every_nth_row(df_n, n, s_bool):
 @pytest.mark.parametrize(
     "n,  s_bool",
     [
-        (
-            1,
-            [
-                False,
-                False,
-                False,
-                False,
-                False,
-                False,
-                False,
-                False,
-                False,
-            ],
-        ),
+        (1, [False, False, False, False, False, False, False, False, False]),
         (2, [False, True, False, True, False, True, False, True, False]),
         (3, [False, True, True, False, True, True, False, True, True]),
         (4, [False, True, True, True, False, True, True, True, False]),
@@ -381,14 +343,8 @@ def test_is_every_nth_row_ne(df_n, n, s_bool):
         (6, [True, False, False, False, False, False, True, False, False]),
         (7, [True, False, False, False, False, False, False, True, False]),
         (8, [True, False, False, False, False, False, False, False, True]),
-        (
-            9,
-            [True, False, False, False, False, False, False, False, False],
-        ),
-        (
-            10,
-            [True, False, False, False, False, False, False, False, False],
-        ),
+        (9, [True, False, False, False, False, False, False, False, False]),
+        (10, [True, False, False, False, False, False, False, False, False]),
     ],
 )
 def test_is_every_nth_row_ne_twice(df_n, n, s_bool):
@@ -407,31 +363,11 @@ def test_is_every_nth_row_ne_twice(df_n, n, s_bool):
 @pytest.mark.parametrize(
     "n, offset, s_bool",
     [
-        (
-            3,
-            0,
-            [True, False, False, True, False, False, True, False, False],
-        ),
-        (
-            3,
-            1,
-            [False, True, False, False, True, False, False, True, False],
-        ),
-        (
-            3,
-            2,
-            [False, False, True, False, False, True, False, False, True],
-        ),
-        (
-            3,
-            3,
-            [False, False, False, True, False, False, True, False, False],
-        ),
-        (
-            3,
-            4,
-            [False, False, False, False, True, False, False, True, False],
-        ),
+        (3, 0, [True, False, False, True, False, False, True, False, False]),
+        (3, 1, [False, True, False, False, True, False, False, True, False]),
+        (3, 2, [False, False, True, False, False, True, False, False, True]),
+        (3, 3, [False, False, False, True, False, False, True, False, False]),
+        (3, 4, [False, False, False, False, True, False, False, True, False]),
     ],
 )
 def test_is_every_nth_row_offset(df_n, n, offset, s_bool):

@@ -40,4 +40,4 @@ omit = [
 ]
 
 [tool.ruff]
-line-length = 75
+line-length = 79

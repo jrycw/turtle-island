@@ -257,9 +257,7 @@ def bucketize(
     ```
     """
     if len(exprs) <= 1:
-        raise ValueError(
-            "`exprs=` must contain a minimum of two expressions."
-        )
+        raise ValueError("`exprs=` must contain a minimum of two expressions.")
     expr = _make_bucketize_castwhen(exprs, is_litify=False, name=name)
     if coalesce_to is not None:
         return expr.cast(coalesce_to)
