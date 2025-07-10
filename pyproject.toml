@@ -5,6 +5,13 @@ description = "A Utility Kit for Polars Expressions."
 readme = "README.md"
 license.file = "LICENSE"
 requires-python = ">=3.10"
+authors = [{ name = "Jerry Wu", email = "jerry@ycwu.space"}]
+
+classifiers = [
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12"
+]
 dependencies = [
     "polars>=1.31.0",
     "pyarrow>=20.0.0",
@@ -28,16 +35,12 @@ test = [
     "pytest-cov>=6.2.1",
 ]
 
-
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 addopts = "--cov=turtle_island --cov-report=term-missing --cov-branch --cov-report=xml"
 
 [tool.coverage.run]
-omit = [
-    "tests/*",
-    "*/tests/*",
-]
+omit = ["tests/*"]
 
 [tool.ruff]
 line-length = 79
