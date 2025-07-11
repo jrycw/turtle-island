@@ -61,21 +61,19 @@ when_then_expr = pl.when(pl.col("mod").eq(0)).then(col1_col2).otherwise(otherwis
     df
     .with_row_index()
     .with_columns(mod2)
-    .with_columns(when_then_expr)
-    .select(df.columns)
+    .select(when_then_expr, otherwise)
 )
 ```
 
 Using only native Polars, achieving this typically requires multiple steps:
 
 1. Add an `index` column using `pl.DataFrame.with_row_index()`.
-2. Create a `mod` column (renamed from the `index` column) by computing `index % 2` in a `with_columns()` context.
-3. Write conditional logic using `pl.when().then().otherwise()` based on the `mod` column.
-4. Select only the final desired columns or drop the intermediate `mod` column.
+2. Create a `mod` column (renamed from the `index` column) by computing `index % 2` within a `with_columns()` context.
+3. Write conditional logic with `pl.when().then().otherwise()` based on the `mod` column, and place the result in a `select` context—along with selecting the `col3` column.
 
 #### Observations:
 
-* You need at least four context operations.
+* You need at least three context operations.
 * Polars contexts run in parallel and should be minimized when possible.
 * This approach has column dependencies that require step-by-step materialization:
   * You can't write the conditional logic without first computing the `mod` column.
