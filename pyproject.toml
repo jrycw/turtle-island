@@ -26,8 +26,8 @@ dev = [
 ]
 
 docs = [
-    "great-tables>=0.17.0",
     "quartodoc>=0.11.1",
+    "great-tables>=0.18.0",
 ]
 
 test = [
