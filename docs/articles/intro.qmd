@@ -55,13 +55,13 @@ Say we have a DataFrame `df`, and we want to transform the values in `col1` and 
 mod2 = pl.col("index").mod(2).alias("mod")
 col1_col2 = pl.col("col1", "col2")
 otherwise = pl.col("col3")
-when_then_expr = pl.when(pl.col("mod").eq(0)).then(col1_col2).otherwise(otherwise)
+branch_expr = pl.when(pl.col("mod").eq(0)).then(col1_col2).otherwise(otherwise)
 
 (
     df
     .with_row_index()
     .with_columns(mod2)
-    .select(when_then_expr, otherwise)
+    .select(branch_expr, otherwise)
 )
 ```
 
@@ -87,9 +87,9 @@ every_2_row = ti.is_every_nth_row(2)
 col1_col2 = pl.col("col1", "col2")
 caselist = [(every_2_row, col1_col2)]
 otherwise = pl.col("col3")
-case_when_expr = ti.case_when(caselist=caselist, otherwise=otherwise)
+branch_expr = ti.case_when(caselist=caselist, otherwise=otherwise)
 
-df.with_columns(case_when_expr)
+df.with_columns(branch_expr)
 ```
 
 #### Why This Works:
