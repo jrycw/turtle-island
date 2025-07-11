@@ -17,6 +17,13 @@ To keep your code clean and idiomatic, it's recommended to import **Turtle Islan
 import turtle_island as ti
 ```
 
+## ⚙️ Core Spirit
+The core spirit of **Turtle Island** is to embrace **expressions over columns**.
+
+When wrangling data, it's common to create temporary helper columns as part of the transformation process. However, many of these columns are just intermediate artifacts — not part of the final output we actually want. They exist solely to assist with intermediate steps.
+
+Polars offers a powerful distinction between contexts and expressions, allowing us to focus on expression-based transformations without needing to materialize every intermediate result as a column. **Turtle Island** builds on this principle, encouraging users to rely more on expressions — flexible, composable, and context-aware — rather than temporary columns.
+
 ## ✨ Selected Functions
 
 ### case_when()
