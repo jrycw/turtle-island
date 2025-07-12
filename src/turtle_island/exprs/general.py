@@ -6,6 +6,16 @@ from polars._typing import PolarsDataType
 
 from .._utils import _cast_datatype, _litify, _get_unique_name
 
+__all__ = [
+    "bucketize",
+    "bucketize_lit",
+    "case_when",
+    "make_index",
+    "is_every_nth_row",
+    "move_cols_to_end",
+    "move_cols_to_start",
+]
+
 
 def case_when(
     caselist: list[tuple[pl.Expr, pl.Expr]],

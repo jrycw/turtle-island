@@ -3,6 +3,8 @@ from typing import Literal
 import polars as pl
 from .._utils import _concat_str
 
+__all__ = ["make_tooltip", "make_hyperlink"]
+
 
 def make_hyperlink(
     text: str, url: str, new_tab: bool = True, *, name: str = "hyperlink"
