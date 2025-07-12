@@ -310,17 +310,29 @@ def is_every_nth_row(
     df = pl.DataFrame({"x": [1, 2, 3, 4, 5]})
     df.with_columns(ti.is_every_nth_row(2))
     ```
-    To invert the result:
+    To invert the result, use either the `~` operator or `pl.Expr.not_()`:
     ```{python}
-    df.with_columns(~ti.is_every_nth_row(2))
+    df.with_columns(
+        ~ti.is_every_nth_row(2).alias("~2"),
+        ti.is_every_nth_row(2).not_().alias("not_2"),
+    )
     ```
-    You can use offset to adjust the starting index:
+    Use `offset=` to shift the starting index:
     ```{python}
     df.with_columns(ti.is_every_nth_row(3, 1))
     ```
-    Here is the output to serve as a reference for `pl.Expr.gather_every()`:
+    For reference, here’s the output using `pl.Expr.gather_every()`:
     ```{python}
     df.select(pl.col("x").gather_every(3, 1))
+    ```
+    You can also combine multiple `is_every_nth_row()` expressions to construct more complex row selections.
+    For example, to select rows that are part of every second **or** every third row:
+    ```{python}
+    df.select(
+        ti.is_every_nth_row(2).alias("2"),
+        ti.is_every_nth_row(3).alias("3"),
+        ti.is_every_nth_row(2).or_(ti.is_every_nth_row(3)).alias("2_or_3")
+    )
     ```
     """
     if n <= 0:
