@@ -4,7 +4,7 @@ from typing import Any
 import polars as pl
 from polars._typing import PolarsDataType
 
-from .._utils import _cast_datatype, _litify
+from .._utils import _cast_datatype, _litify, _get_unique_name
 
 
 def case_when(
@@ -115,14 +115,14 @@ def make_index(name: str = "index", offset: int = 0) -> pl.Expr:
     return _make_index(offset, pl.len() + offset, name=name)
 
 
-def _make_bucketize_castwhen(
+def _make_bucketize_casewhen(
     exprs: Collection[Any], *, is_litify: bool, name: str
 ) -> pl.Expr:
     if is_litify:
         # turn items into exprs
         exprs: list[pl.Expr] = _litify(exprs)  # type: ignore[no-redef]
     n = len(exprs)
-    mod_expr = make_index().mod(n)
+    mod_expr = make_index(name=_get_unique_name()).mod(n)
     *whenthen_exprs, otherwise_expr = exprs
     caselist: list[tuple[pl.Expr, pl.Expr]] = [
         (mod_expr.eq(i), expr) for i, expr in enumerate(whenthen_exprs)
@@ -193,7 +193,7 @@ def bucketize_lit(
         raise ValueError("`items=` must contain a minimum of two items.")
     if len(set(type(item) for item in items)) != 1:
         raise ValueError("`items=` must contain only one unique type.")
-    expr = _make_bucketize_castwhen(items, is_litify=True, name=name)
+    expr = _make_bucketize_casewhen(items, is_litify=True, name=name)
     if coalesce_to is not None:
         return expr.cast(coalesce_to)
     return _cast_datatype(expr, items[0])
@@ -258,7 +258,7 @@ def bucketize(
     """
     if len(exprs) <= 1:
         raise ValueError("`exprs=` must contain a minimum of two expressions.")
-    expr = _make_bucketize_castwhen(exprs, is_litify=False, name=name)
+    expr = _make_bucketize_casewhen(exprs, is_litify=False, name=name)
     if coalesce_to is not None:
         return expr.cast(coalesce_to)
     return expr
@@ -341,7 +341,9 @@ def is_every_nth_row(
         raise ValueError("`offset=` cannot be negative.")
 
     offset_rows = pl.repeat(False, n=offset, dtype=pl.Boolean)
-    rest_rows = _make_index(0, pl.len() - offset, name=name).mod(n).eq(0)
+    rest_rows = (
+        _make_index(0, pl.len() - offset, name=_get_unique_name()).mod(n).eq(0)
+    )
     return offset_rows.append(rest_rows).alias(name)
 
 

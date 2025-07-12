@@ -1,6 +1,11 @@
 import datetime
 import polars as pl
-from turtle_island._utils import _litify, _cast_datatype, _concat_str
+from turtle_island._utils import (
+    _litify,
+    _cast_datatype,
+    _concat_str,
+    _get_unique_name,
+)
 import pytest
 
 
@@ -8,6 +13,24 @@ import pytest
 def test__litify(items):
     litified = _litify(items)
     assert all(isinstance(lit, pl.Expr) for lit in litified)
+
+
+@pytest.mark.parametrize("n", [10, 11, 12])
+def test__get_unique_name(n):
+    name1 = _get_unique_name(n)
+    name2 = _get_unique_name(n)
+    assert name1 != name2
+    assert len(name1) == len(name2) == n
+
+
+def test__get_unique_name_raise():
+    with pytest.raises(ValueError) as exc_info:
+        assert _get_unique_name(7)
+
+    assert (
+        "`n` must be at least 8 to ensure uniqueness of the name."
+        in exc_info.value.args[0]
+    )
 
 
 @pytest.mark.parametrize(

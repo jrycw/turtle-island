@@ -1,4 +1,5 @@
 import datetime
+import uuid
 from typing import Any, Collection
 
 import polars as pl
@@ -6,6 +7,14 @@ import polars as pl
 
 def _litify(items: Collection[Any]) -> list[pl.Expr]:
     return [pl.lit(item) for item in items]
+
+
+def _get_unique_name(n: int = 10) -> str:
+    if n < 8:
+        raise ValueError(
+            "`n` must be at least 8 to ensure uniqueness of the name."
+        )
+    return uuid.uuid4().hex[:n]
 
 
 def _cast_datatype(expr: pl.Expr, item: Any) -> pl.Expr:
