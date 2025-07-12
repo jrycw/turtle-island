@@ -3,6 +3,9 @@ project:
 
 html-table-processing: none
 
+metadata-files:
+  - _sidebar.yml
+
 website:
   title: "Turtle Island"
   site-url: https://jrycw.github.io/turtle-island/
