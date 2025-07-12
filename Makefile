@@ -1,4 +1,4 @@
-.PHONY: ruf install preview test_pre test testv0 testv1 testv2 testv3
+.PHONY: ruf install preview test_pre test testv0 testv1 testv2 testv3 mypy
 
 ruf:
 	ruff format tests/ src/
@@ -37,3 +37,6 @@ testv2:
 testv3:
 	make test_pre && \
 	uv run pytest -vvv -s
+
+mypy:
+	uv run mypy src/
