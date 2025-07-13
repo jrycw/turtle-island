@@ -85,7 +85,7 @@ def make_tooltip(
 
     text_decoration_style
         A string indicating the style of underline decoration. Options are `"solid"`,
-        `"dotted"`, or "none".
+        `"dotted"`, or `"none"`.
     color
         A string indicating the text color. If "none", no color styling is applied.
     name
