@@ -21,7 +21,7 @@ def test_make_index_offset(df_x, offset):
 
 
 # ===
-# === Test functions that internally use `_make_index()` if an index column exists ===
+# === Test selected functions that internally use `_make_index()` if an index column exists ===
 # ===
 
 
