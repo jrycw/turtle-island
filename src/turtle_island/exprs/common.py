@@ -18,7 +18,8 @@ def case_when(
 
     ::: {.callout-warning}
     ### Keyword shortcut is not supported
-    Passing multiple keyword arguments to `pl.when()` as equality matches—for example, `x=123`—is not supported.
+    Passing multiple keyword arguments as equality conditions—such as `x=123` in
+    `pl.when()`—is not supported in this function.
     :::
 
     Parameters
