@@ -24,11 +24,11 @@ def case_when(
     Parameters
     ----------
     caselist
-        Each tuple defines one `when` and `then` branch. This function supports
-        three input forms (see the examples below). In all cases, the `when`
-        condition is evaluated first; if it is true, the corresponding `then`
-        expression is returned. If no conditions match, the `otherwise` expression
-        is used.
+        A sequence of tuples where each tuple represents a `when` and `then`
+        branch. This function accepts three input styles (see examples below). In
+        every case, the `when` condition is evaluated first; if it evaluates to
+        true, the corresponding `then` expression is returned. If none of the
+        conditions match, the `otherwise` expression is used.
 
     otherwise
         Fallback expression used when no conditions match.
