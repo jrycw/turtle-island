@@ -1,4 +1,4 @@
-from typing import Iterable, Sequence
+from typing import Sequence
 
 import polars as pl
 
@@ -7,7 +7,7 @@ __all__ = ["bulk_append", "case_when"]
 
 
 def case_when(
-    caselist: Sequence[tuple[pl.Expr | Iterable[pl.Expr], pl.Expr]],
+    caselist: Sequence[tuple[pl.Expr | tuple[pl.Expr], pl.Expr]],
     otherwise: pl.Expr | None = None,
 ) -> pl.Expr:
     """
@@ -52,7 +52,7 @@ def case_when(
     `expr2` shows tuples with multiple `when` conditions listed before the final
     `then` expression. These conditions are implicitly combined with `&`.
 
-    `expr3` uses an iterable as the first element of each tuple, containing multiple
+    `expr3` uses a tuple as the first element of each tuple, containing multiple
     `when` conditions which are also combined with `&` before evaluation.
     ```{python}
     import polars as pl
