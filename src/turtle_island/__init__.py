@@ -3,8 +3,9 @@ from .exprs.general import (
     bucketize_lit,
     bulk_append,
     case_when,
-    make_index,
     is_every_nth_row,
+    shift,
+    make_index,
     move_cols_to_end,
     move_cols_to_start,
 )
@@ -16,6 +17,7 @@ __all__ = [
     "bucketize_lit",
     "case_when",
     "is_every_nth_row",
+    "shift",
     "make_index",
     "move_cols_to_end",
     "move_cols_to_start",

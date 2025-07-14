@@ -502,9 +502,39 @@ def test_bulk_append(df_abcd):
 
 def test_bulk_append_raise():
     with pytest.raises(ValueError) as exc_info:
-        ti.bulk_append()
+        ti.bulk_append(pl.lit(1))
 
     assert (
-        "At least one Polars expression must be provided."
+        "At least two Polars expressions must be provided."
         in exc_info.value.args[0]
     )
+
+
+def test_shift_pre_fill(df_x):
+    new_df = df_x.select(
+        ti.shift(pl.col("x"), 2, fill_expr=pl.col("x").add(100))
+    )
+    expected = pl.DataFrame({"x": [101, 102, 1, 2]})
+    assert_frame_equal(new_df, expected)
+
+
+def test_shift_back_fill(df_x):
+    new_df = df_x.select(
+        ti.shift(pl.col("x"), -2, fill_expr=pl.col("x").add(100))
+    )
+    expected = pl.DataFrame({"x": [3, 4, 103, 104]})
+    assert_frame_equal(new_df, expected)
+
+
+def test_shift_raise_n_not_integer():
+    with pytest.raises(ValueError) as exc_info:
+        ti.shift(pl.col("x"), 1.1, fill_expr=pl.col("x").add(100))
+
+    assert "`n=` must be an integer." in exc_info.value.args[0]
+
+
+def test_shift_raise_n_zero():
+    with pytest.raises(ValueError) as exc_info:
+        ti.shift(pl.col("x"), 0, fill_expr=pl.col("x").add(100))
+
+    assert "`n=` cannot be zero." in exc_info.value.args[0]

@@ -12,6 +12,7 @@ __all__ = [
     "bucketize_lit",
     "case_when",
     "is_every_nth_row",
+    "shift",
     "make_index",
     "move_cols_to_end",
     "move_cols_to_start",
@@ -350,12 +351,11 @@ def is_every_nth_row(
         raise ValueError("`n=` should be positive.")
     if offset < 0:
         raise ValueError("`offset=` cannot be negative.")
-
     offset_rows = pl.repeat(False, n=offset, dtype=pl.Boolean)
     rest_rows = (
         _make_index(0, pl.len() - offset, name=_get_unique_name()).mod(n).eq(0)
     )
-    return offset_rows.append(rest_rows).alias(name)
+    return bulk_append(offset_rows, rest_rows).alias(name)
 
 
 def move_cols_to_start(
@@ -442,7 +442,7 @@ def bulk_append(*exprs: pl.Expr) -> pl.Expr:
 
     Parameters
     ----------
-    exprs : pl.Expr
+    exprs
         One or more Polars expressions to be appended in sequence.
 
     Returns
@@ -462,9 +462,75 @@ def bulk_append(*exprs: pl.Expr) -> pl.Expr:
     df.select(ti.bulk_append(pl.all().last(), pl.all().first()))
     ```
     """
-    if not exprs:
-        raise ValueError("At least one Polars expression must be provided.")
+    if len(exprs) <= 1:
+        raise ValueError("At least two Polars expressions must be provided.")
     expr, *rest_exprs = exprs
     for _expr in rest_exprs:
         expr = expr.append(_expr)
     return expr
+
+
+def shift(expr: pl.Expr, n: int, *, fill_expr: pl.Expr) -> pl.Expr:
+    """
+    A variant of [pl.Expr.shift()](https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.Expr.shift.html#polars.Expr.shift) that allows filling shifted values using another Polars expression.
+
+    ::: {.callout-warning}
+    ### Note: When `abs(n)` exceeds the total number of rows
+
+    Since expressions are evaluated lazily at runtime, their validity cannot be
+    verified during construction. If `abs(n)` equals or exceeds the total row count, the result
+    may behave like a full-column replacement using `fill_expr=`.
+    :::
+
+    Parameters
+    ----------
+    expr
+        A single Polars expression to shift.
+
+    n
+        The number of rows to shift. It must be a non-zero integer.
+        A positive value shifts the column downward (forward), while a negative value shifts it upward (backward).
+
+    fill_expr
+        Expression used to fill the shifted positions.
+
+    Returns
+    -------
+    pl.Expr
+        A Polars expression with shifted values and custom fill logic.
+
+    Examples
+    -------
+    Shift values downward by 2:
+    ```{python}
+    import polars as pl
+    import turtle_island as ti
+
+    df = pl.DataFrame({"x": [1, 2, 3, 4], "y": [5, 6, 7, 8]})
+    df.with_columns(
+        ti.shift(pl.col("x"), 2, fill_expr=pl.col("y")).alias("shifted")
+    )
+    ```
+    Shift values upward by 3:
+    ```{python}
+    df.with_columns(
+        ti.shift(pl.col("x"), -3, fill_expr=pl.col("y")).alias("shifted")
+    )
+    ```
+    """
+    if not isinstance(n, int):
+        raise ValueError("`n=` must be an integer.")
+    if n == 0:
+        raise ValueError("`n=` cannot be zero.")
+    name = expr.meta.output_name()
+    shifted_expr = expr.shift(n)
+    index_expr = make_index(name=_get_unique_name())
+    if n > 0:
+        # n is positive => pre_filled
+        expr = case_when([(index_expr.lt(n), fill_expr)], shifted_expr)
+    else:
+        # n is negative => back_filled
+        expr = case_when(
+            [(index_expr.ge(pl.len() + n), fill_expr)], shifted_expr
+        )
+    return expr.alias(name)
