@@ -474,3 +474,37 @@ def test_is_every_nth_row_index_column_exist(df_n, n, s_bool):
     )
 
     assert_frame_equal(new_df, expected)
+
+    return pl.DataFrame(
+        {
+            "a": [1, 2, 3],
+            "b": [1.11, 2.22, 3.33],
+            "c": [4, 5, 6],
+            "d": ["x", "y", "z"],
+        }
+    )
+
+
+def test_bulk_append(df_abcd):
+    exprs = [pl.all().last(), pl.all().first()]
+    new_df = df_abcd.select(ti.bulk_append(*exprs))
+    expected = pl.DataFrame(
+        {
+            "a": [3, 1],
+            "b": [3.33, 1.11],
+            "c": [6, 4],
+            "d": ["z", "x"],
+        }
+    )
+
+    assert_frame_equal(new_df, expected)
+
+
+def test_bulk_append_raise():
+    with pytest.raises(ValueError) as exc_info:
+        ti.bulk_append()
+
+    assert (
+        "At least one Polars expression must be provided."
+        in exc_info.value.args[0]
+    )

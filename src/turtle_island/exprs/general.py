@@ -7,11 +7,12 @@ from polars._typing import PolarsDataType
 from .._utils import _cast_datatype, _litify, _get_unique_name
 
 __all__ = [
+    "bulk_append",
     "bucketize",
     "bucketize_lit",
     "case_when",
-    "make_index",
     "is_every_nth_row",
+    "make_index",
     "move_cols_to_end",
     "move_cols_to_start",
 ]
@@ -433,3 +434,37 @@ def move_cols_to_end(
     ```
     """
     return [pl.all().exclude(columns), pl.col(columns)]
+
+
+def bulk_append(*exprs: pl.Expr) -> pl.Expr:
+    """
+    Combine multiple Polars expressions using [pl.Expr.append()](https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.Expr.append.html#polars-expr-append) internally.
+
+    Parameters
+    ----------
+    exprs : pl.Expr
+        One or more Polars expressions to be appended in sequence.
+
+    Returns
+    -------
+    pl.Expr
+        A single Polars expression resulting from appending all input expressions.
+
+    Examples
+    -------
+    ```{python}
+    import polars as pl
+    import turtle_island as ti
+
+    df = pl.DataFrame(
+        {"a": [1, 2, 3], "b": ["x", "y", "z"], "c": [4.4, 5.5, 6.6]}
+    )
+    df.select(ti.bulk_append(pl.all().last(), pl.all().first()))
+    ```
+    """
+    if not exprs:
+        raise ValueError("At least one Polars expression must be provided.")
+    expr, *rest_exprs = exprs
+    for _expr in rest_exprs:
+        expr = expr.append(_expr)
+    return expr

@@ -40,13 +40,14 @@ quartodoc:
       desc: >
         Expressions for general-purpose data transformation.
       contents:
-        - case_when
-        - make_index
+        - bulk_append
         - bucketize
         - bucketize_lit
+        - case_when
         - is_every_nth_row
-        - move_cols_to_start
+        - make_index
         - move_cols_to_end
+        - move_cols_to_start
     - title: HTML
       desc: >
         Expressions for generating HTML tags.
