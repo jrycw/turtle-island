@@ -235,8 +235,8 @@ def bucketize(
     Parameters
     ----------
     exprs
-        A list of Polars expressions to cycle through. All expressions must resolve
-        to the same data type. At least two expressions must be provided.
+        Two or more Polars expressions to cycle through.
+        All expressions must resolve to the same data type.
     coalesce_to
         An optional Polars data type to cast the resulting expression to.
     name
