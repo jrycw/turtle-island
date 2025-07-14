@@ -42,14 +42,14 @@ def case_when(
     --------
     The example below demonstrates all three supported input forms.
 
-    In the first expression, each tuple consists of a single `when` condition and a
-    corresponding `then` result.
+    `expr1` uses the simplest form, where each tuple contains a single `when`
+    condition followed by its corresponding `then` expression.
 
-    In the second, multiple `when` expressions are listed in the tuple before the final `then` expression; these conditions are
-    implicitly combined using `&`.
+    `expr2` shows tuples with multiple `when` conditions listed before the final
+    `then` expression. These conditions are implicitly combined with `&`.
 
-    In the third, the first element of each tuple is an iterable of `when` expressions, which are also combined
-    with `&` before evaluation.
+    `expr3` uses an iterable as the first element of each tuple, containing multiple
+    `when` conditions which are also combined with `&` before evaluation.
     ```{python}
     import polars as pl
     import turtle_island as ti
