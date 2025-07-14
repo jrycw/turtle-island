@@ -28,7 +28,7 @@ def case_when(
         branch. This function accepts three input forms (see examples below).
         Each tuple is evaluated in order from top to bottom. For each tuple, the
         expressions before the final element are treated as `when` conditions and
-        combined using `&`. If the combined condition evaluates
+        combined with `&`. If the combined condition evaluates
         to `True`, the corresponding `then` expression (the last element) is returned
         and the evaluation stops. If no condition matches any tuple, the
         `otherwise` expression is used as the fallback.
