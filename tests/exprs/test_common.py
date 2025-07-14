@@ -55,6 +55,43 @@ def test_case_when_lit(df_x):
     assert_frame_equal(df_ti, df_pl)
 
 
+def test_case_when_all_forms(df_xy):
+    expr1 = ti.case_when(
+        caselist=[
+            (pl.col("x") < 2, pl.lit("small")),
+            (pl.col("x") < 4, pl.lit("medium")),
+        ],
+        otherwise=pl.lit("large"),
+    ).alias("size1")
+
+    expr2 = ti.case_when(
+        caselist=[
+            (pl.col("x") < 3, pl.col("y") < 6, pl.lit("small")),
+            (pl.col("x") < 4, pl.col("y") < 8, pl.lit("medium")),
+        ],
+        otherwise=pl.lit("large"),
+    ).alias("size2")
+
+    expr3 = ti.case_when(
+        caselist=[
+            ((pl.col("x") < 3, pl.col("y") < 6), pl.lit("small")),
+            ((pl.col("x") < 4, pl.col("y") < 8), pl.lit("medium")),
+        ],
+        otherwise=pl.lit("large"),
+    ).alias("size3")
+
+    new_df = df_xy.select(expr1, expr2, expr3)
+    expected = pl.DataFrame(
+        {
+            "size1": ["small", "medium", "medium", "large"],
+            "size2": ["small", "medium", "medium", "large"],
+            "size3": ["small", "medium", "medium", "large"],
+        }
+    )
+
+    assert_frame_equal(new_df, expected)
+
+
 def test_bulk_append(df_abcd):
     exprs = [pl.all().last(), pl.all().first()]
     new_df = df_abcd.select(ti.bulk_append(*exprs))

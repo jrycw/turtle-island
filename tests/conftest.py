@@ -10,6 +10,11 @@ def df_x():
 
 
 @pytest.fixture(scope="module")
+def df_xy(df_x):
+    return pl.DataFrame({"x": [1, 2, 3, 4], "y": [5, 6, 7, 8]})
+
+
+@pytest.fixture(scope="module")
 def df_n():
     """
     n_row = 9

@@ -1,3 +1,5 @@
+from typing import Iterable, Sequence
+
 import polars as pl
 
 
@@ -5,66 +7,95 @@ __all__ = ["bulk_append", "case_when"]
 
 
 def case_when(
-    caselist: list[tuple[pl.Expr, pl.Expr]],
+    caselist: Sequence[tuple[pl.Expr | Iterable[pl.Expr], pl.Expr]],
     otherwise: pl.Expr | None = None,
 ) -> pl.Expr:
     """
-    Simplifies conditional logic in Polars by chaining multiple `when-then-otherwise` expressions.
+    Simplifies conditional logic in Polars by chaining multiple `when‑then‑otherwise` expressions.
 
-    Inspired by [pd.Series.case_when()](https://pandas.pydata.org/docs/reference/api/pandas.Series.case_when.html),
-    this provides a more ergonomic way to express chained conditional logic in Polars.
+    Inspired by [pd.Series.case_when()](https://pandas.pydata.org/docs/reference/api/pandas.Series.case_when.html), this function offers a more ergonomic way to express chained
+    conditional logic with Polars expressions.
+
+    ::: {.callout-warning}
+    ### Keyword shortcut is not supported
+    Passing multiple keyword arguments to `pl.when()` as equality matches—for example, `x=123`—is not supported.
+    :::
 
     Parameters
     ----------
     caselist
-        A list of (condition, value) expression pairs. Conditions are evaluated in order.
+        Each tuple defines one `when` and `then` branch. This function supports
+        three input forms (see the examples below). In all cases, the `when`
+        condition is evaluated first; if it is true, the corresponding `then`
+        expression is returned. If no conditions match, the `otherwise` expression
+        is used.
+
     otherwise
         Fallback expression used when no conditions match.
 
     Returns
     -------
     pl.Expr
-        A single Polars expression that can be used in transformation contexts.
+        A single Polars expression suitable for use in transformations.
 
     Examples
-    -------
-    `expr_ti` is constructed by `case_when()`, which should be equivalent to `expr_pl`.
+    --------
+    The example below demonstrates all three supported input forms.
 
-    When evaluated in a Polars context (e.g., `with_columns()`), both expressions will produce the same result.
+    In the first expression, each tuple consists of a single `when` condition and a
+    corresponding `then` result.
+
+    In the second, multiple `when` expressions are listed in the tuple before the final `then` expression; these conditions are
+    implicitly combined using `&`.
+
+    In the third, the first element of each tuple is an iterable of `when` expressions, which are also combined
+    with `&` before evaluation.
     ```{python}
     import polars as pl
     import turtle_island as ti
 
-    df = pl.DataFrame({"x": [1, 2, 3, 4]})
+    df = pl.DataFrame({"x": [1, 2, 3, 4], "y": [5, 6, 7, 8]})
 
-    expr_ti = ti.case_when(
-        caselist=[(pl.col("x") < 2, pl.lit("small")),
-                  (pl.col("x") < 4, pl.lit("medium"))],
+    expr1 = ti.case_when(
+        caselist=[
+            (pl.col("x") < 2, pl.lit("small")),
+            (pl.col("x") < 4, pl.lit("medium")),
+        ],
         otherwise=pl.lit("large"),
-    ).alias("size_ti")
+    ).alias("size1")
 
-    expr_pl = (
-        pl.when(pl.col("x") < 2)
-        .then(pl.lit("small"))
-        .when(pl.col("x") < 4)
-        .then(pl.lit("medium"))
-        .otherwise(pl.lit("large"))
-        .alias("size_pl")
-    )
+    expr2 = ti.case_when(
+        caselist=[
+            (pl.col("x") < 3, pl.col("y") < 6, pl.lit("small")),
+            (pl.col("x") < 4, pl.col("y") < 8, pl.lit("medium")),
+        ],
+        otherwise=pl.lit("large"),
+    ).alias("size2")
 
-    df.with_columns(expr_ti, expr_pl)
+    expr3 = ti.case_when(
+        caselist=[
+            ((pl.col("x") < 3, pl.col("y") < 6), pl.lit("small")),
+            ((pl.col("x") < 4, pl.col("y") < 8), pl.lit("medium")),
+        ],
+        otherwise=pl.lit("large"),
+    ).alias("size3")
+
+    df.with_columns(expr1, expr2, expr3)
     ```
     """
+
     from polars.expr.whenthen import Then
 
-    (first_when, first_then), *cases = caselist
+    first_case, *cases = caselist
 
     # first
-    expr: Then = pl.when(first_when).then(first_then)
+    *first_whens, first_then = first_case
+    expr: Then = pl.when(*first_whens).then(first_then)
 
     # middles
-    for when, then in cases:
-        expr: Then = expr.when(when).then(then)  # type: ignore[no-redef]
+    for case in cases:
+        *whens, then = case
+        expr: Then = expr.when(*whens).then(then)  # type: ignore[no-redef]
 
     # last
     expr: pl.Expr = expr.otherwise(otherwise)  # type: ignore[no-redef]
