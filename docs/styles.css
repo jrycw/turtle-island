@@ -12,6 +12,10 @@ p a {
     text-underline-offset: 4px;
 }
 
+li.breadcrumb-item a {
+    color: #75AADB !important;
+}
+
 .table td {
     padding-left: 0px;
 }
