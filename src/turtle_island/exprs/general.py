@@ -261,7 +261,7 @@ def move_cols_to_start(
     Parameters
     ----------
     columns
-        The name or datatype of the column(s) to exclude. Accepts regular expression input.
+        The name or datatype of the column(s) to move. Accepts regular expression input.
         Regular expressions should start with `^` and end with `$`.
 
     Returns
@@ -301,7 +301,7 @@ def move_cols_to_end(
     Parameters
     ----------
     columns
-        The name or datatype of the column(s) to exclude. Accepts regular expression input.
+        The name or datatype of the column(s) to move. Accepts regular expression input.
         Regular expressions should start with `^` and end with `$`.
 
     Returns
