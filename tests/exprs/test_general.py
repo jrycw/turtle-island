@@ -303,6 +303,20 @@ def test_is_every_nth_row_ne_twice(df_n, n, s_bool):
         (3, 2, [False, False, True, False, False, True, False, False, True]),
         (3, 3, [False, False, False, True, False, False, True, False, False]),
         (3, 4, [False, False, False, False, True, False, False, True, False]),
+        (3, 5, [False, False, False, False, False, True, False, False, True]),
+        (3, 6, [False, False, False, False, False, False, True, False, False]),
+        (3, 7, [False, False, False, False, False, False, False, True, False]),
+        (3, 8, [False, False, False, False, False, False, False, False, True]),
+        (
+            3,
+            9,
+            [False, False, False, False, False, False, False, False, False],
+        ),
+        (
+            3,
+            10,
+            [False, False, False, False, False, False, False, False, False],
+        ),
     ],
 )
 def test_is_every_nth_row_offset(df_n, n, offset, s_bool):
@@ -344,15 +358,15 @@ def test_shift_back_fill(df_x):
     assert_frame_equal(new_df, expected)
 
 
-def test_shift_raise_n_not_integer():
+def test_shift_n_zero_return_self():
+    expr = pl.col("x")
+    expected = ti.shift(expr, 0, fill_expr=pl.col("x").add(100))
+
+    assert expr.meta.eq(expected)
+
+
+def test_shift_raise_offset_not_integer():
     with pytest.raises(ValueError) as exc_info:
         ti.shift(pl.col("x"), 1.1, fill_expr=pl.col("x").add(100))
 
-    assert "`n=` must be an integer." in exc_info.value.args[0]
-
-
-def test_shift_raise_n_zero():
-    with pytest.raises(ValueError) as exc_info:
-        ti.shift(pl.col("x"), 0, fill_expr=pl.col("x").add(100))
-
-    assert "`n=` cannot be zero." in exc_info.value.args[0]
+    assert "`offset=` must be an integer." in exc_info.value.args[0]

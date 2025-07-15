@@ -43,4 +43,4 @@ def make_index(name: str = "index", offset: int = 0) -> pl.Expr:
     df.select(ti.make_index(), pl.all())
     ```
     """
-    return _make_index(offset, pl.len() + offset, name=name)
+    return _make_index(0, pl.len(), name=name).add(offset)

@@ -5,8 +5,8 @@ import polars as pl
 from polars._typing import PolarsDataType
 
 from .._utils import _cast_datatype, _get_unique_name, _litify
-from .common import bulk_append, case_when
-from .core import _make_index, make_index
+from .common import case_when
+from .core import make_index
 
 __all__ = [
     "bucketize",
@@ -186,7 +186,7 @@ def is_every_nth_row(
 
     Since expressions are only evaluated at runtime, their validity cannot be
     checked until execution. If `offset=` is greater than the number of rows
-    in the DataFrame, it may result in unexpected behavior.
+    in the DataFrame, the result will be a column filled with `False`.
     :::
 
     Parameters
@@ -242,11 +242,12 @@ def is_every_nth_row(
         raise ValueError("`n=` should be positive.")
     if offset < 0:
         raise ValueError("`offset=` cannot be negative.")
-    offset_rows = pl.repeat(False, n=offset, dtype=pl.Boolean)
-    rest_rows = (
-        _make_index(0, pl.len() - offset, name=_get_unique_name()).mod(n).eq(0)
-    )
-    return bulk_append(offset_rows, rest_rows).alias(name)
+
+    return shift(
+        make_index(name=_get_unique_name()).mod(n).eq(0),
+        offset,
+        fill_expr=pl.lit(False),
+    ).alias(name)
 
 
 def move_cols_to_start(
@@ -344,15 +345,15 @@ def move_cols_to_end(
     return [pl.exclude(columns), pl.col(columns)]
 
 
-def shift(expr: pl.Expr, n: int, *, fill_expr: pl.Expr) -> pl.Expr:
+def shift(expr: pl.Expr, offset: int, *, fill_expr: pl.Expr) -> pl.Expr:
     """
     A variant of [pl.Expr.shift()](https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.Expr.shift.html#polars.Expr.shift) that allows filling shifted values using another Polars expression.
 
     ::: {.callout-warning}
-    ### Note: When `abs(n)` exceeds the total number of rows
+    ### Note: When `abs(offset)` exceeds the total number of rows
 
     Since expressions are evaluated lazily at runtime, their validity cannot be
-    verified during construction. If `abs(n)` equals or exceeds the total row count, the result
+    verified during construction. If `abs(offset)` equals or exceeds the total row count, the result
     may behave like a full-column replacement using `fill_expr=`.
     :::
 
@@ -392,19 +393,19 @@ def shift(expr: pl.Expr, n: int, *, fill_expr: pl.Expr) -> pl.Expr:
     )
     ```
     """
-    if not isinstance(n, int):
-        raise ValueError("`n=` must be an integer.")
-    if n == 0:
-        raise ValueError("`n=` cannot be zero.")
+    if not isinstance(offset, int):
+        raise ValueError("`offset=` must be an integer.")
+    if offset == 0:
+        return expr
     name = expr.meta.output_name()
-    shifted_expr = expr.shift(n)
+    shifted_expr = expr.shift(offset)
     index_expr = make_index(name=_get_unique_name())
-    if n > 0:
+    if offset > 0:
         # n is positive => pre_filled
-        expr = case_when([(index_expr.lt(n), fill_expr)], shifted_expr)
+        expr = case_when([(index_expr.lt(offset), fill_expr)], shifted_expr)
     else:
         # n is negative => back_filled
         expr = case_when(
-            [(index_expr.ge(pl.len() + n), fill_expr)], shifted_expr
+            [(index_expr.ge(pl.len() + offset), fill_expr)], shifted_expr
         )
     return expr.alias(name)
