@@ -258,8 +258,6 @@ def _get_move_cols(
     *more_columns: str | PolarsDataType,
 ) -> list[str] | list[PolarsDataType]:
     if not isinstance(columns, str) and isinstance(columns, Collection):
-        if not columns:
-            raise ValueError("`columns=` cannot be an empty collection.")
         _columns = [*columns, *more_columns]
     else:
         _columns = [columns, *more_columns]

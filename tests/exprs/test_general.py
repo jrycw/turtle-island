@@ -12,14 +12,6 @@ def test__get_move_cols():
     assert _get_move_cols(["col1"], "col2") == ["col1", "col2"]
 
 
-def test__get_move_cols_raise_columns_empty():
-    with pytest.raises(ValueError) as exc_info:
-        _get_move_cols([])
-    assert (
-        "`columns=` cannot be an empty collection." in exc_info.value.args[0]
-    )
-
-
 @pytest.mark.parametrize(
     "columns, result",
     [
