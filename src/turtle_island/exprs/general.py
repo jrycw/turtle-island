@@ -286,7 +286,7 @@ def move_cols_to_start(
     df.select(ti.move_cols_to_start([pl.Float64, pl.String]))
     ```
     """
-    return [pl.col(columns), pl.all().exclude(columns)]
+    return [pl.col(columns), pl.exclude(columns)]
 
 
 def move_cols_to_end(
@@ -324,7 +324,7 @@ def move_cols_to_end(
     df.select(ti.move_cols_to_end([pl.String, pl.Int64]))
     ```
     """
-    return [pl.all().exclude(columns), pl.col(columns)]
+    return [pl.exclude(columns), pl.col(columns)]
 
 
 def shift(expr: pl.Expr, n: int, *, fill_expr: pl.Expr) -> pl.Expr:
