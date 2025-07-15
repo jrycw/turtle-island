@@ -115,7 +115,7 @@ def bulk_append(*exprs: pl.Expr) -> pl.Expr:
     ### Rechunk
 
     You may consider rechunking the result of `bulk_append()` using
-    [polars.Expr.rechunk()](https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.Expr.rechunk.html#polars.Expr.rechunk)
+    [pl.Expr.rechunk()](https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.Expr.rechunk.html#polars.Expr.rechunk)
     for better performance.
     :::
 
