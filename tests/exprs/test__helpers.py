@@ -1,4 +1,4 @@
-from turtle_island.exprs.general import _get_move_cols
+from turtle_island.exprs._helpers import _get_move_cols
 
 
 def test__get_move_cols():
