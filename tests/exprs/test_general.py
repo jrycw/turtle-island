@@ -3,11 +3,30 @@ import pytest
 from polars.testing import assert_frame_equal
 
 import turtle_island as ti
+from turtle_island.exprs.general import _get_move_cols
+
+
+def test__get_move_cols():
+    assert _get_move_cols(["col1"]) == ["col1"]
+    assert _get_move_cols("col1", "col2") == ["col1", "col2"]
+    assert _get_move_cols(["col1"], "col2") == ["col1", "col2"]
+
+
+def test__get_move_cols_raise_columns_empty():
+    with pytest.raises(ValueError) as exc_info:
+        _get_move_cols([])
+    assert (
+        "`columns=` cannot be an empty collection." in exc_info.value.args[0]
+    )
 
 
 @pytest.mark.parametrize(
     "columns, result",
     [
+        ("a", ["a", "b", "c", "d"]),
+        ("b", ["b", "a", "c", "d"]),
+        ("c", ["c", "a", "b", "d"]),
+        ("d", ["d", "a", "b", "c"]),
         (["a"], ["a", "b", "c", "d"]),
         (["b"], ["b", "a", "c", "d"]),
         (["c"], ["c", "a", "b", "d"]),
@@ -28,6 +47,10 @@ def test_move_cols_to_start(df_abcd, columns, result):
 @pytest.mark.parametrize(
     "columns, result",
     [
+        ("a", ["b", "c", "d", "a"]),
+        ("b", ["a", "c", "d", "b"]),
+        ("c", ["a", "b", "d", "c"]),
+        ("d", ["a", "b", "c", "d"]),
         (["a"], ["b", "c", "d", "a"]),
         (["b"], ["a", "c", "d", "b"]),
         (["c"], ["a", "b", "d", "c"]),
@@ -130,7 +153,7 @@ def test_bucketize_lit_multicols(df_n):
 
 def test_bucketize_lit_raise_one_item():
     with pytest.raises(ValueError) as exc_info:
-        assert ti.bucketize_lit(1)
+        ti.bucketize_lit(1)
 
     assert (
         "`items=` must contain a minimum of two items."
@@ -140,7 +163,7 @@ def test_bucketize_lit_raise_one_item():
 
 def test_bucketize_lit_raise_not_the_same_type():
     with pytest.raises(ValueError) as exc_info:
-        assert ti.bucketize_lit(1, "1")
+        ti.bucketize_lit(1, "1")
 
     assert (
         "`items=` must contain only one unique type." in exc_info.value.args[0]
@@ -208,7 +231,7 @@ def test_bucketize_coalesce_to(df_n, exprs, result, coalesce_to):
 
 def test_bucketize_raise_one_item():
     with pytest.raises(ValueError) as exc_info:
-        assert ti.bucketize(pl.lit(1))
+        ti.bucketize(pl.lit(1))
 
     assert (
         "`exprs=` must contain a minimum of two expressions."

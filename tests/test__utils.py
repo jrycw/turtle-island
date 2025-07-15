@@ -25,7 +25,7 @@ def test__get_unique_name(n):
 
 def test__get_unique_name_raise():
     with pytest.raises(ValueError) as exc_info:
-        assert _get_unique_name(7)
+        _get_unique_name(7)
 
     assert (
         "`n` must be at least 8 to ensure uniqueness of the name."
@@ -107,7 +107,7 @@ def test__concat_str_raise_col_names_not_all_str():
     name = "cool_name"
     fox = "fox"
     with pytest.raises(ValueError) as exc_info:
-        assert _concat_str(
+        _concat_str(
             "The quick brown **X** jumps over the lazy **X**.",
             fox,
             123,
@@ -121,7 +121,7 @@ def test__concat_str_raise_params_not_match():
     name = "cool_name"
     fox = "fox"
     with pytest.raises(ValueError) as exc_info:
-        assert _concat_str(
+        _concat_str(
             "The quick brown **X** jumps over the lazy **X**.",
             fox,
             name=name,

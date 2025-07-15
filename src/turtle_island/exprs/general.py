@@ -250,20 +250,42 @@ def is_every_nth_row(
     ).alias(name)
 
 
+def _get_move_cols(
+    columns: str
+    | PolarsDataType
+    | Collection[str]
+    | Collection[PolarsDataType],
+    *more_columns: str | PolarsDataType,
+) -> list[str] | list[PolarsDataType]:
+    if not isinstance(columns, str) and isinstance(columns, Collection):
+        if not columns:
+            raise ValueError("`columns=` cannot be an empty collection.")
+        _columns = [*columns, *more_columns]
+    else:
+        _columns = [columns, *more_columns]
+    return _columns
+
+
 def move_cols_to_start(
     columns: str
     | PolarsDataType
     | Collection[str]
     | Collection[PolarsDataType],
+    *more_columns: str | PolarsDataType,
 ) -> list[pl.Expr]:
     """
-    Returns a list of Polars expressions that reorders columns to place the specified columns first.
+    Returns a list of Polars expressions that reorder columns so the specified
+    columns appear first. You may provide either column names or data types, but
+    not a mix of both.
 
     Parameters
     ----------
     columns
         The name or datatype of the column(s) to move. Accepts regular expression input.
         Regular expressions should start with `^` and end with `$`.
+
+    *more_columns
+        Additional names or datatypes of columns to move, specified as positional arguments.
 
     Returns
     -------
@@ -283,7 +305,7 @@ def move_cols_to_start(
     ```
     Reorder columns so that selected columns appear first:
     ```{python}
-    df.select(ti.move_cols_to_start(["c", "b"]))
+    df.select(ti.move_cols_to_start("c", "b"))
     ```
     Reorder by data type:
     ```{python}
@@ -295,8 +317,8 @@ def move_cols_to_start(
     df.select(ti.move_cols_to_start([pl.String, pl.Float64]))
     ```
     """
-
-    return [pl.col(columns), pl.exclude(columns)]
+    _columns = _get_move_cols(columns, *more_columns)
+    return [pl.col(_columns), pl.exclude(_columns)]
 
 
 def move_cols_to_end(
@@ -304,15 +326,21 @@ def move_cols_to_end(
     | PolarsDataType
     | Collection[str]
     | Collection[PolarsDataType],
+    *more_columns: str | PolarsDataType,
 ) -> list[pl.Expr]:
     """
-    Returns a list of Polars expressions that reorders columns to place the specified columns last.
+    Returns a list of Polars expressions that reorder columns so the specified
+    columns appear last. You may provide either column names or data types, but
+    not a mix of both.
 
     Parameters
     ----------
     columns
         The name or datatype of the column(s) to move. Accepts regular expression input.
         Regular expressions should start with `^` and end with `$`.
+
+    *more_columns
+        Additional names or datatypes of columns to move, specified as positional arguments.
 
     Returns
     -------
@@ -330,7 +358,7 @@ def move_cols_to_end(
     ```
     Reorder columns so that selected columns appear last:
     ```{python}
-    df.select(ti.move_cols_to_end(["b", "a"]))
+    df.select(ti.move_cols_to_end("b", "a"))
     ```
     Reorder by data type:
     ```{python}
@@ -342,7 +370,8 @@ def move_cols_to_end(
     df.select(ti.move_cols_to_end([pl.Int64, pl.String]))
     ```
     """
-    return [pl.exclude(columns), pl.col(columns)]
+    _columns = _get_move_cols(columns, *more_columns)
+    return [pl.exclude(_columns), pl.col(_columns)]
 
 
 def shift(expr: pl.Expr, offset: int, *, fill_expr: pl.Expr) -> pl.Expr:
