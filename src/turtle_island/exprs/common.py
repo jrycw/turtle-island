@@ -111,6 +111,14 @@ def bulk_append(*exprs: pl.Expr) -> pl.Expr:
     """
     Combine multiple Polars expressions using [pl.Expr.append()](https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.Expr.append.html#polars-expr-append) internally.
 
+    ::: {.callout-tip}
+    ### Rechunk
+
+    You may consider rechunking the result of `bulk_append()` using
+    [polars.Expr.rechunk()](https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.Expr.rechunk.html#polars.Expr.rechunk)
+    for better performance.
+    :::
+
     Parameters
     ----------
     exprs
