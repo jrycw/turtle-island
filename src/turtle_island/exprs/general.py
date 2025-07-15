@@ -271,7 +271,6 @@ def move_cols_to_start(
 
     Examples
     -------
-    Reorder columns so that selected columns appear first:
     ```{python}
     import polars as pl
     import turtle_island as ti
@@ -279,13 +278,23 @@ def move_cols_to_start(
     df = pl.DataFrame(
         {"a": [1, 2, 3], "b": ["x", "y", "z"], "c": [4.4, 5.5, 6.6]}
     )
-    df.select(ti.move_cols_to_start(["b", "c"]))
+    df
     ```
-    Or by data type:
+    Reorder columns so that selected columns appear first:
+    ```{python}
+    df.select(ti.move_cols_to_start(["c", "b"]))
+    ```
+    Reorder by data type:
     ```{python}
     df.select(ti.move_cols_to_start([pl.Float64, pl.String]))
     ```
+    Note that when selecting by data type, the moved columns will follow the
+    original order in the DataFrame schema.
+    ```{python}
+    df.select(ti.move_cols_to_start([pl.String, pl.Float64]))
+    ```
     """
+
     return [pl.col(columns), pl.exclude(columns)]
 
 
@@ -311,17 +320,25 @@ def move_cols_to_end(
 
     Examples
     -------
-    Reorder columns so that selected columns appear last:
     ```{python}
     import polars as pl
     import turtle_island as ti
 
     df = pl.DataFrame({"a": [1, 2, 3], "b": ["x", "y", "z"], "c": [4.4, 5.5, 6.6]})
-    df.select(ti.move_cols_to_end(["a", "b"]))
+    df
     ```
-    Or by data type:
+    Reorder columns so that selected columns appear last:
+    ```{python}
+    df.select(ti.move_cols_to_end(["b", "a"]))
+    ```
+    Reorder by data type:
     ```{python}
     df.select(ti.move_cols_to_end([pl.String, pl.Int64]))
+    ```
+    Note that when selecting by data type, the moved columns will follow the
+    original order in the DataFrame schema.
+    ```{python}
+    df.select(ti.move_cols_to_end([pl.Int64, pl.String]))
     ```
     """
     return [pl.exclude(columns), pl.col(columns)]
