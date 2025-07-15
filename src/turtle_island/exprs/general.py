@@ -275,8 +275,13 @@ def move_cols_to_start(
 ) -> list[pl.Expr]:
     """
     Returns a list of Polars expressions that reorder columns so the specified
-    columns appear first. You may provide either column names or data types, but
-    not a mix of both.
+    columns appear first.
+
+    ::: {.callout-warning}
+    ### Column type restriction
+
+    You may specify either column names or data types, but not a combination of both.
+    :::
 
     Parameters
     ----------
@@ -330,8 +335,13 @@ def move_cols_to_end(
 ) -> list[pl.Expr]:
     """
     Returns a list of Polars expressions that reorder columns so the specified
-    columns appear last. You may provide either column names or data types, but
-    not a mix of both.
+    columns appear last.
+
+    ::: {.callout-warning}
+    ### Column type restriction
+
+    You may specify either column names or data types, but not a combination of both.
+    :::
 
     Parameters
     ----------
