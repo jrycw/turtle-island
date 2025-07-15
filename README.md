@@ -9,6 +9,12 @@
 
 > ⚠️ **Disclaimer**: This project is in early development. The API is still evolving and may change without notice. Use with caution in production environments.
 
+## 🚀 Installation
+**Turtle Island** is not yet published on PyPI. The recommended way to install it is using `uv add`:
+
+```bash
+uv add git+https://github.com/jrycw/turtle-island.git
+```
 
 ## 📦 Recommended Import
 To keep your code clean and idiomatic, it's recommended to import **Turtle Island** as a top-level module:
