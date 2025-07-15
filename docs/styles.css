@@ -16,6 +16,10 @@ li.breadcrumb-item a {
     color: #75AADB !important;
 }
 
+.breadcrumb-item + .breadcrumb-item::before {
+    color: #75AADB !important;
+}
+
 .table td {
     padding-left: 0px;
 }
