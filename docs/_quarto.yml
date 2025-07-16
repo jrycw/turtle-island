@@ -60,7 +60,7 @@ format:
   html:
     theme:
       light: spacelab
-      dark: cyborg
+      dark: darkly
     respect-user-color-scheme: true
     css:
       - styles.css
