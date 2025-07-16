@@ -59,16 +59,16 @@ Say we have a DataFrame `df`, and we want to transform the values in `col1` and 
 
 ### Conventional Approach (Column-Oriented)
 ```{python}
-mod2 = pl.col("index").mod(2).alias("mod")
-col1_col2 = pl.col("col1", "col2")
-otherwise = pl.col("col3")
-branch_expr = pl.when(pl.col("mod").eq(0)).then(col1_col2).otherwise(otherwise)
-
 (
     df
     .with_row_index()
-    .with_columns(mod2)
-    .select(branch_expr, otherwise)
+    .with_columns(pl.col("index").mod(2).alias("mod"))
+    .select(
+        pl.when(pl.col("mod").eq(0))
+        .then(pl.col("col1", "col2"))
+        .otherwise(pl.col("col3")),
+        "col3",
+    )
 )
 ```
 
@@ -90,13 +90,12 @@ Using only native Polars, achieving this typically requires multiple steps:
 With **Turtle Island**, you can express the same logic in a single `with_columns()` context, thanks to expression-based helpers:
 
 ```{python}
-every_2_row = ti.is_every_nth_row(2)
-col1_col2 = pl.col("col1", "col2")
-caselist = [(every_2_row, col1_col2)]
-otherwise = pl.col("col3")
-branch_expr = ti.case_when(caselist=caselist, otherwise=otherwise)
-
-df.with_columns(branch_expr)
+df.with_columns(
+    ti.case_when(
+        caselist=[(ti.is_every_nth_row(2), pl.col("col1", "col2"))],
+        otherwise=pl.col("col3"),
+    )
+)
 ```
 
 #### Why This Works:
