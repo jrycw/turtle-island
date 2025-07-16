@@ -74,7 +74,7 @@ Say we have a DataFrame `df`, and we want to transform the values in `col1` and 
 Using only native Polars, achieving this pattern typically requires multiple steps:
 
 1. Add an `index` column using `pl.DataFrame.with_row_index()` to keep track of row positions.
-2. Write a `when-then-otherwise` expression that evaluates whether `(index % 2) == 0`, and use it within a `select()` context along with other columns like `col3`.
+2. Write a `when-then-otherwise` expression that evaluates whether `(index % 2) == 0`, and use it within a `select()` context alongside the `col3` column.
 
 #### Observations:
 
