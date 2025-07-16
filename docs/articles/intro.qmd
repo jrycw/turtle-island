@@ -100,4 +100,4 @@ df.with_columns(
 * It acts like a **virtual column**, usable directly in conditional logic.
 * Since it's an expression, it doesn’t introduce column dependencies or require sequencing through multiple contexts.
 
-Additionally, `ti.case_when()` provides a more ergonomic way to write complex conditional logic. It’s fully optional, but especially helpful when dealing with multiple conditional branches. Personally, I’ve found it much cleaner and easier to maintain than chaining multiple `pl.when().then()` statements.
+Additionally, `ti.case_when()` provides a more ergonomic way to write complex conditional logic. It’s fully optional, but especially helpful when dealing with multiple conditional branches. Personally, I’ve found it much cleaner and easier to maintain than chaining multiple `when-then` statements.
