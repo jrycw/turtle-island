@@ -1,8 +1,8 @@
-.quarto-light * code {
+.quarto-light :not(pre) > code {
   color: #7d12ba;
 }
 
-.quarto-dark * code {
+.quarto-dark :not(pre) > code {
   color: #333333;
 }
 
