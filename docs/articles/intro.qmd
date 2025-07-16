@@ -62,9 +62,8 @@ Say we have a DataFrame `df`, and we want to transform the values in `col1` and 
 (
     df
     .with_row_index()
-    .with_columns(pl.col("index").mod(2).alias("mod"))
     .select(
-        pl.when(pl.col("mod").eq(0))
+        pl.when(pl.col("index").mod(2).eq(0))
         .then(pl.col("col1", "col2"))
         .otherwise("col3"),
         "col3",
@@ -72,19 +71,16 @@ Say we have a DataFrame `df`, and we want to transform the values in `col1` and 
 )
 ```
 
-Using only native Polars, achieving this typically requires multiple steps:
+Using only native Polars, achieving this pattern typically requires multiple steps:
 
-1. Add an `index` column using `pl.DataFrame.with_row_index()`.
-2. Create a `mod` column (renamed from the `index` column) by computing `index % 2` within a `with_columns()` context.
-3. Write conditional logic with `pl.when().then().otherwise()` based on the `mod` column, and place the result in a `select` context—along with selecting the `col3` column.
+1. Add an `index` column using `pl.DataFrame.with_row_index()` to keep track of row positions.
+2. Write a `when-then-otherwise` expression that evaluates whether `(index % 2) == 0`, and use it within a `select()` context along with other columns like `col3`.
 
 #### Observations:
 
-* You need at least three context operations.
+* At least two context operations are involved.
 * Polars contexts run in parallel and should be minimized when possible.
-* This approach has column dependencies that require step-by-step materialization:
-  * You can't write the conditional logic without first computing the `mod` column.
-  * You can't compute the `mod` column without first creating the `index` column.
+* This approach introduces column dependencies that must be materialized step by step, meaning the conditional logic can't be written until the `index` column is created.
 
 ### Expression-Oriented Approach (Turtle Island Style)
 With **Turtle Island**, you can express the same logic in a single `with_columns()` context, thanks to expression-based helpers:
