@@ -245,8 +245,7 @@ def move_cols_to_start(
     *more_columns: str | PolarsDataType,
 ) -> list[pl.Expr]:
     """
-    Returns a list of Polars expressions that reorder columns so the specified
-    columns appear first.
+    Returns a list of Polars expressions that reorder columns so the specified columns appear first.
 
     ::: {.callout-warning}
     ### Column type restriction
@@ -305,8 +304,7 @@ def move_cols_to_end(
     *more_columns: str | PolarsDataType,
 ) -> list[pl.Expr]:
     """
-    Returns a list of Polars expressions that reorder columns so the specified
-    columns appear last.
+    Returns a list of Polars expressions that reorder columns so the specified columns appear last.
 
     ::: {.callout-warning}
     ### Column type restriction

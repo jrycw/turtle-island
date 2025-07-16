@@ -109,7 +109,7 @@ def case_when(
 
 def bulk_append(*exprs: pl.Expr) -> pl.Expr:
     """
-    Combine multiple Polars expressions using [pl.Expr.append()](https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.Expr.append.html#polars-expr-append) internally.
+    Combines multiple Polars expressions using [pl.Expr.append()](https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.Expr.append.html#polars-expr-append) internally.
 
     ::: {.callout-tip}
     ### Rechunk
