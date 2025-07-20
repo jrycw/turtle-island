@@ -366,6 +366,12 @@ def test_shift_back_fill(df_x):
     assert_frame_equal(new_df, expected)
 
 
+def test_shift_default(df_x):
+    new_df = df_x.select(ti.shift(pl.col("x"), fill_expr=pl.col("x").add(100)))
+    expected = pl.DataFrame({"x": [101, 1, 2, 3]})
+    assert_frame_equal(new_df, expected)
+
+
 def test_shift_n_zero_return_self():
     expr = pl.col("x")
     expected = ti.shift(expr, 0, fill_expr=pl.col("x").add(100))
@@ -401,3 +407,17 @@ def test_cycle(df_x, offset, result):
     expected = pl.DataFrame({"x": result})
 
     assert_frame_equal(new_df, expected)
+
+
+def test_cycle_default(df_x):
+    new_df = df_x.select(ti.cycle(pl.col("x")))
+    expected = pl.DataFrame({"x": [4, 1, 2, 3]})
+
+    assert_frame_equal(new_df, expected)
+
+
+def test_cycle_raise_offset_not_integer():
+    with pytest.raises(ValueError) as exc_info:
+        ti.cycle(pl.col("x"), 1.1)
+
+    assert "`offset=` must be an integer." in exc_info.value.args[0]

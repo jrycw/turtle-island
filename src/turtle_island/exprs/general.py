@@ -356,7 +356,7 @@ def move_cols_to_end(
     return [pl.exclude(_columns), pl.col(_columns)]
 
 
-def shift(expr: pl.Expr, offset: int, *, fill_expr: pl.Expr) -> pl.Expr:
+def shift(expr: pl.Expr, offset: int = 1, *, fill_expr: pl.Expr) -> pl.Expr:
     """
     A variant of [pl.Expr.shift()](https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.Expr.shift.html#polars.Expr.shift) that allows filling shifted values using another Polars expression.
 
@@ -373,9 +373,10 @@ def shift(expr: pl.Expr, offset: int, *, fill_expr: pl.Expr) -> pl.Expr:
     expr
         A single Polars expression to shift.
 
-    n
+    offset
         The number of rows to shift. It must be a non-zero integer.
         A positive value shifts the column downward (forward), while a negative value shifts it upward (backward).
+        Defaults to 1.
 
     fill_expr
         Expression used to fill the shifted positions.
@@ -455,5 +456,9 @@ def cycle(expr, offset: int = 1) -> pl.Expr:
     df.with_columns(ti.cycle(pl.col("x").alias("cycle"), -4))
     ```
     """
+    if not isinstance(offset, int):
+        raise ValueError("`offset=` must be an integer.")
+    if offset == 0:
+        return expr
     n = pl.len() - (offset % pl.len())
     return expr.slice(n).append(expr.slice(0, n))
