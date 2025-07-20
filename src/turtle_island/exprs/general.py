@@ -422,7 +422,7 @@ def shift(expr: pl.Expr, offset: int, *, fill_expr: pl.Expr) -> pl.Expr:
     return expr.alias(name)
 
 
-def cycle(expr, offset: int = 1):
+def cycle(expr, offset: int = 1) -> pl.Expr:
     """
     Return a Polars expression that cycles the rows by a given offset.
 
