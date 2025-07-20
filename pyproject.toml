@@ -1,6 +1,6 @@
 [project]
 name = "turtle-island"
-version = "0.0.1"
+version = "0.0.3"
 description = "A Utility Kit for Polars Expressions."
 readme = "README.md"
 license.file = "LICENSE"
