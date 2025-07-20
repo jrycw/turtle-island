@@ -372,6 +372,14 @@ def test_shift_default(df_x):
     assert_frame_equal(new_df, expected)
 
 
+def test_shift_pl_all(df_xy):
+    new_df = df_xy.with_columns(
+        ti.shift(pl.all(), fill_expr=pl.col("y").alias("z").add(100))
+    )
+    expected = pl.DataFrame({"x": [105, 1, 2, 3], "y": [105, 5, 6, 7]})
+    assert_frame_equal(new_df, expected)
+
+
 def test_shift_n_zero_return_self():
     expr = pl.col("x")
     expected = ti.shift(expr, 0, fill_expr=pl.col("x").add(100))
