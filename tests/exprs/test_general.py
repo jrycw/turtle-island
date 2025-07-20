@@ -429,3 +429,9 @@ def test_cycle_raise_offset_not_integer():
         ti.cycle(pl.col("x"), 1.1)
 
     assert "`offset=` must be an integer." in exc_info.value.args[0]
+
+
+def test_cycle_pl_all(df_xy):
+    new_df = df_xy.with_columns(ti.cycle(pl.all()))
+    expected = pl.DataFrame({"x": [4, 1, 2, 3], "y": [8, 5, 6, 7]})
+    assert_frame_equal(new_df, expected)
