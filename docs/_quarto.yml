@@ -46,6 +46,7 @@ quartodoc:
         - bucketize
         - bucketize_lit
         - case_when
+        - cycle
         - is_every_nth_row
         - shift
         - make_index

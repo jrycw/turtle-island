@@ -10,7 +10,7 @@ def df_x():
 
 
 @pytest.fixture(scope="module")
-def df_xy(df_x):
+def df_xy():
     return pl.DataFrame({"x": [1, 2, 3, 4], "y": [5, 6, 7, 8]})
 
 

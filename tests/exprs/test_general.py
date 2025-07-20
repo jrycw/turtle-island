@@ -378,3 +378,26 @@ def test_shift_raise_offset_not_integer():
         ti.shift(pl.col("x"), 1.1, fill_expr=pl.col("x").add(100))
 
     assert "`offset=` must be an integer." in exc_info.value.args[0]
+
+
+@pytest.mark.parametrize(
+    "offset, result",
+    [
+        (-5, [2, 3, 4, 1]),
+        (-4, [1, 2, 3, 4]),
+        (-3, [4, 1, 2, 3]),
+        (-2, [3, 4, 1, 2]),
+        (-1, [2, 3, 4, 1]),
+        (0, [1, 2, 3, 4]),
+        (1, [4, 1, 2, 3]),
+        (2, [3, 4, 1, 2]),
+        (3, [2, 3, 4, 1]),
+        (4, [1, 2, 3, 4]),
+        (5, [4, 1, 2, 3]),
+    ],
+)
+def test_cycle(df_x, offset, result):
+    new_df = df_x.select(ti.cycle(pl.col("x"), offset=offset))
+    expected = pl.DataFrame({"x": result})
+
+    assert_frame_equal(new_df, expected)

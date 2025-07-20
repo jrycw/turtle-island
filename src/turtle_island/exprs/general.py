@@ -13,6 +13,7 @@ from .core import make_index
 __all__ = [
     "bucketize",
     "bucketize_lit",
+    "cycle",
     "is_every_nth_row",
     "shift",
     "move_cols_to_end",
@@ -180,8 +181,10 @@ def is_every_nth_row(
     ----------
     n
         The interval to use for row selection. Should be positive.
+
     offset
         Start the index at this offset. Cannot be negative.
+
     name
         The alias name for the resulting column.
 
@@ -417,3 +420,40 @@ def shift(expr: pl.Expr, offset: int, *, fill_expr: pl.Expr) -> pl.Expr:
             [(index_expr.ge(pl.len() + offset), fill_expr)], shifted_expr
         )
     return expr.alias(name)
+
+
+def cycle(expr, offset: int = 1):
+    """
+    Return a Polars expression that cycles the rows by a given offset.
+
+    Parameters
+    ----------
+    expr
+        A single Polars expression to apply the cycling operation on.
+
+    offset
+        The number of rows to cycle by. Positive values shift rows downward,
+        and negative values shift rows upward. Defaults to 1.
+
+    Returns
+    -------
+    pl.Expr
+        A Polars expression with values cyclically shifted.
+
+    Examples
+    -------
+    Cycle downward by 2 rows:
+    ```{python}
+    import polars as pl
+    import turtle_island as ti
+
+    df = pl.DataFrame({"x": [1, 2, 3, 4]})
+    df.with_columns(ti.cycle(pl.col("x").alias("cycle"), 2))
+    ```
+    Cycle upward by 4 rows (no visible change due to full cycle):
+    ```{python}
+    df.with_columns(ti.cycle(pl.col("x").alias("cycle"), -4))
+    ```
+    """
+    n = pl.len() - (offset % pl.len())
+    return expr.slice(n).append(expr.slice(0, n))

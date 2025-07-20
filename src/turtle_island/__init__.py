@@ -3,6 +3,7 @@ from .exprs.core import make_index
 from .exprs.general import (
     bucketize,
     bucketize_lit,
+    cycle,
     is_every_nth_row,
     move_cols_to_end,
     move_cols_to_start,
@@ -15,6 +16,7 @@ __all__ = [
     "bucketize",
     "bucketize_lit",
     "case_when",
+    "cycle",
     "is_every_nth_row",
     "shift",
     "make_index",
