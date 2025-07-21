@@ -57,14 +57,12 @@ def test__cast_datatype(df_abcd, item, expected):
 
 
 def test__concat_str():
-    name = "cool_name"
     quick, lazy = "quick", "lazy"
     fox, dog = "fox", "dog"
     concat_str_expr = _concat_str(
         f"The {quick} brown **X** jumps over the {lazy} **X**.",
         fox,
         dog,
-        name=name,
     )
     expected = pl.concat_str(
         [
@@ -74,13 +72,12 @@ def test__concat_str():
             dog,
             pl.lit("."),
         ]
-    ).alias(name)
+    )
 
     assert concat_str_expr.meta.eq(expected)
 
 
 def test__concat_str_sep():
-    name = "cool_name"
     quick, lazy = "quick", "lazy"
     fox, dog = "fox", "dog"
     concat_str_expr = _concat_str(
@@ -88,7 +85,6 @@ def test__concat_str_sep():
         fox,
         dog,
         sep="##<X>##",
-        name=name,
     )
     expected = pl.concat_str(
         [
@@ -98,33 +94,27 @@ def test__concat_str_sep():
             dog,
             pl.lit("."),
         ]
-    ).alias(name)
+    )
 
     assert concat_str_expr.meta.eq(expected)
 
 
 def test__concat_str_raise_col_names_not_all_str():
-    name = "cool_name"
     fox = "fox"
     with pytest.raises(ValueError) as exc_info:
         _concat_str(
-            "The quick brown **X** jumps over the lazy **X**.",
-            fox,
-            123,
-            name=name,
+            "The quick brown **X** jumps over the lazy **X**.", fox, 123
         )  # 123 is int type
 
     assert "All column names must be of type string." in exc_info.value.args[0]
 
 
 def test__concat_str_raise_params_not_match():
-    name = "cool_name"
     fox = "fox"
     with pytest.raises(ValueError) as exc_info:
         _concat_str(
             "The quick brown **X** jumps over the lazy **X**.",
             fox,
-            name=name,
         )  # `dog` is missed
 
     assert (

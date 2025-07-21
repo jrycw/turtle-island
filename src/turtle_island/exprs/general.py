@@ -22,9 +22,7 @@ __all__ = [
 
 
 def bucketize_lit(
-    *items: Any,
-    coalesce_to: pl.DataType | None = None,
-    name: str = "bucketized",
+    *items: Any, coalesce_to: pl.DataType | None = None
 ) -> pl.Expr:
     """
     Returns a Polars expression that assigns a label to each row based on its index, cycling through the provided items in a round-robin fashion.
@@ -40,10 +38,9 @@ def bucketize_lit(
         Literal values to cycle through. All items must be of the same type,
         and at least two must be provided. See the table below for supported
         types and their conversions.
+
     coalesce_to
         An optional Polars data type to cast the resulting expression to.
-    name
-        The name of the resulting column. Defaults to "bucketized".
 
     Returns
     -------
@@ -73,27 +70,27 @@ def bucketize_lit(
     import turtle_island as ti
 
     df = pl.DataFrame({"x": [1, 2, 3, 4, 5]})
-    df.with_columns(ti.bucketize_lit(True, False))
+    df.with_columns(ti.bucketize_lit(True, False).alias("bucketized"))
     ```
     Cast the result to a specific data type using `coalesce_to=`:
     ```{python}
-    df.with_columns(ti.bucketize_lit(True, False, coalesce_to=pl.Int64))
+    df.with_columns(
+        ti.bucketize_lit(True, False, coalesce_to=pl.Int64).alias("bucketized")
+    )
     ```
     """
     if len(items) <= 1:
         raise ValueError("`items=` must contain a minimum of two items.")
     if len(set(type(item) for item in items)) != 1:
         raise ValueError("`items=` must contain only one unique type.")
-    expr = _make_bucketize_casewhen(items, is_litify=True, name=name)
+    expr = _make_bucketize_casewhen(items, is_litify=True)
     if coalesce_to is not None:
         return expr.cast(coalesce_to)
     return _cast_datatype(expr, items[0])
 
 
 def bucketize(
-    *exprs: pl.Expr,
-    coalesce_to: pl.DataType | None = None,
-    name: str = "bucketized",
+    *exprs: pl.Expr, coalesce_to: pl.DataType | None = None
 ) -> pl.Expr:
     """
     Returns a Polars expression that assigns a label to each row based on its index, cycling through the provided expressions in a round-robin fashion.
@@ -117,10 +114,9 @@ def bucketize(
     exprs
         Two or more Polars expressions to cycle through.
         All expressions must resolve to the same data type.
+
     coalesce_to
         An optional Polars data type to cast the resulting expression to.
-    name
-        The name of the resulting column. Defaults to "bucketized".
 
     Returns
     -------
@@ -135,7 +131,9 @@ def bucketize(
     import turtle_island as ti
 
     df = pl.DataFrame({"x": [1, 2, 3, 4, 5]})
-    df.with_columns(ti.bucketize(pl.col("x").add(10), pl.lit(100)))
+    df.with_columns(
+        ti.bucketize(pl.col("x").add(10), pl.lit(100)).alias("bucketized")
+    )
     ```
     This alternates between the values of `x + 10` and the literal `100`.
     Make sure all expressions resolve to the same type—in this case, integers.
@@ -143,13 +141,15 @@ def bucketize(
     You can also cast the result to a specific type using `coalesce_to=`:
     ```{python}
     df.with_columns(
-        ti.bucketize(pl.col("x").add(10), pl.lit(100), coalesce_to=pl.String)
+        ti.bucketize(
+            pl.col("x").add(10), pl.lit(100), coalesce_to=pl.String
+        ).alias("bucketized")
     )
     ```
     """
     if len(exprs) <= 1:
         raise ValueError("`exprs=` must contain a minimum of two expressions.")
-    expr = _make_bucketize_casewhen(exprs, is_litify=False, name=name)
+    expr = _make_bucketize_casewhen(exprs, is_litify=False)
     if coalesce_to is not None:
         return expr.cast(coalesce_to)
     return expr

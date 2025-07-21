@@ -21,11 +21,14 @@ def make_hyperlink(
     ----------
     text
         Column name containing the display text for the hyperlink.
+
     url
         Column name containing the destination URL.
+
     new_tab
         Whether the link opens in a new browser tab (`target="_blank"`) or the current tab.
         Defaults to `True`.
+
     name
         The name of the resulting column. Defaults to "hyperlink".
 
@@ -56,8 +59,8 @@ def make_hyperlink(
     """
     target = "_blank" if new_tab else "_self"
     return _concat_str(
-        f'<a href="**X**" target="{target}">**X**</a>', url, text, name=name
-    )
+        f'<a href="**X**" target="{target}">**X**</a>', url, text
+    ).alias(name)
 
 
 def make_tooltip(
@@ -80,14 +83,17 @@ def make_tooltip(
     ----------
     label
         Column name containing the main text to display.
+
     tooltip
         Column name containing containing the text shown when hovering over the label.
 
     text_decoration_style
         A string indicating the style of underline decoration. Options are `"solid"`,
         `"dotted"`, or `"none"`.
+
     color
         A string indicating the text color. If "none", no color styling is applied.
+
     name
         The name of the resulting column. Defaults to "tooltip".
 
@@ -137,8 +143,5 @@ def make_tooltip(
         style += f"color: {color}; "
 
     return _concat_str(
-        f'<abbr style="{style}" title="**X**">**X**</abbr>',
-        tooltip,
-        label,
-        name=name,
-    )
+        f'<abbr style="{style}" title="**X**">**X**</abbr>', tooltip, label
+    ).alias(name)

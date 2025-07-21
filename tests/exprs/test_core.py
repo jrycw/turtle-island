@@ -67,12 +67,11 @@ def test_make_index_index_column_exist(df_x, offset):
     ],
 )
 def test_bucketize_index_column_exist(df_n, exprs, result):
+    name = "bucketized"
     _df = df_n.with_row_index()
     # intentionally use `with_columns()`
-    new_df = _df.with_columns(ti.bucketize(*exprs))
-    expected = pl.concat(
-        [_df, pl.DataFrame({"bucketized": result})], how="horizontal"
-    )
+    new_df = _df.with_columns(ti.bucketize(*exprs).alias(name))
+    expected = pl.concat([_df, pl.DataFrame({name: result})], how="horizontal")
     assert_frame_equal(new_df, expected)
 
 
