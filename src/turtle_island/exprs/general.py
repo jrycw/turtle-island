@@ -186,12 +186,12 @@ def is_every_nth_row(
         Start the index at this offset. Cannot be negative.
 
     name
-        The alias name for the resulting column.
+        The name of the resulting column. Defaults to "bool_nth_row".
 
     Returns
     -------
     pl.Expr
-        A boolean Polars expression. Defaults to "bool_nth_row".
+        A boolean Polars expression.
 
     Examples
     -------
@@ -423,6 +423,14 @@ def shift(expr: pl.Expr, offset: int = 1, *, fill_expr: pl.Expr) -> pl.Expr:
 def cycle(expr, offset: int = 1) -> pl.Expr:
     """
     Return a Polars expression that cycles the rows by a given offset.
+
+    ::: {.callout-tip}
+    ### Rechunk
+    Since `cycle()` uses [pl.Expr.append()](https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.Expr.append.html#polars-expr-append) internally,
+    you may consider rechunking its result using
+    [pl.Expr.rechunk()](https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.Expr.rechunk.html#polars.Expr.rechunk)
+    for improved performance.
+    :::
 
     Parameters
     ----------
