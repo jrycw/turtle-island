@@ -22,11 +22,12 @@ def make_index(offset: int = 0, *, name: str = "index") -> pl.Expr:
 
     Parameters
     ----------
-    name
-        The name to assign to the generated index column.
-
     offset
         Start the index at this offset. Cannot be negative.
+
+    name
+        The name of the resulting column. Defaults to "index".
+
 
     Returns
     -------
