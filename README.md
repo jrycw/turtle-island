@@ -90,7 +90,9 @@ shape: (3, 3)
 Assign values to rows in a round-robin pattern using Polars expressions:
 ```python
 df = pl.DataFrame({"x": [1, 2, 3, 4, 5]})
-df.with_columns(ti.bucketize(pl.col("x"), pl.col("x").add(100)))
+df.with_columns(
+    ti.bucketize(pl.col("x"), pl.col("x").add(100)).alias("bucketized")
+)
 ```
 ```
 shape: (5, 2)
@@ -111,7 +113,7 @@ shape: (5, 2)
 Assign values to rows in a round-robin pattern using literal values:
 ```python
 df = pl.DataFrame({"x": [1, 2, 3, 4, 5]})
-df.with_columns(ti.bucketize_lit(True, False))
+df.with_columns(ti.bucketize_lit(True, False).alias("bucketized"))
 ```
 ```
 shape: (5, 2)

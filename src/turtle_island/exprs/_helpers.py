@@ -10,7 +10,7 @@ from .core import make_index
 
 
 def _make_bucketize_casewhen(
-    exprs: Collection[Any], *, is_litify: bool, name: str
+    exprs: Collection[Any], *, is_litify: bool
 ) -> pl.Expr:
     if is_litify:
         # turn items into exprs
@@ -21,7 +21,7 @@ def _make_bucketize_casewhen(
     caselist: list[tuple[pl.Expr, pl.Expr]] = [
         (mod_expr.eq(i), expr) for i, expr in enumerate(whenthen_exprs)
     ]
-    return case_when(caselist, otherwise_expr).alias(name)
+    return case_when(caselist, otherwise_expr)
 
 
 def _get_move_cols(

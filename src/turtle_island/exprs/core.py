@@ -6,11 +6,11 @@ __all__ = [
 ]
 
 
-def _make_index(start: int, end: int | pl.Expr, *, name: str) -> pl.Expr:
-    return pl.int_range(start, end, dtype=pl.UInt32).alias(name)
+def _make_index(start: int, end: int | pl.Expr) -> pl.Expr:
+    return pl.int_range(start, end, dtype=pl.UInt32)
 
 
-def make_index(name: str = "index", offset: int = 0) -> pl.Expr:
+def make_index(offset: int = 0, *, name: str = "index") -> pl.Expr:
     """
     Returns a Polars expression that creates a virtual row index.
 
@@ -24,6 +24,7 @@ def make_index(name: str = "index", offset: int = 0) -> pl.Expr:
     ----------
     name
         The name to assign to the generated index column.
+
     offset
         Start the index at this offset. Cannot be negative.
 
@@ -43,4 +44,4 @@ def make_index(name: str = "index", offset: int = 0) -> pl.Expr:
     df.select(ti.make_index(), pl.all())
     ```
     """
-    return _make_index(0, pl.len(), name=name).add(offset)
+    return _make_index(0, pl.len()).add(offset).alias(name)

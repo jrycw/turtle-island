@@ -76,16 +76,9 @@ def test_move_cols_to_end(df_abcd, columns, result):
     ],
 )
 def test_bucketize_lit(df_n, items, result):
-    new_df = df_n.select(ti.bucketize_lit(*items))
-    expected = pl.DataFrame({"bucketized": result})
-
-    assert_frame_equal(new_df, expected)
-
-
-@pytest.mark.parametrize("name", ["cool_name"])
-def test_bucketize_lit_alias(df_n, name):
-    new_df = df_n.select(ti.bucketize_lit(1, 2, name=name))
-    expected = pl.DataFrame({name: [1, 2, 1, 2, 1, 2, 1, 2, 1]})
+    name = "bucketized"
+    new_df = df_n.select(ti.bucketize_lit(*items).alias(name))
+    expected = pl.DataFrame({name: result})
 
     assert_frame_equal(new_df, expected)
 
@@ -103,23 +96,27 @@ def test_bucketize_lit_alias(df_n, name):
     ],
 )
 def test_bucketize_lit_coalesce_to(df_n, items, result, coalesce_to):
-    new_df = df_n.select(ti.bucketize_lit(*items, coalesce_to=coalesce_to))
-    expected = pl.DataFrame({"bucketized": result})
+    name = "bucketized"
+    new_df = df_n.select(
+        ti.bucketize_lit(*items, coalesce_to=coalesce_to).alias(name)
+    )
+    expected = pl.DataFrame({name: result})
 
     assert_frame_equal(new_df, expected)
 
 
 def test_bucketize_lit_multicols(df_n):
+    binarized, trinarized, bucketized = "binarized", "trinarized", "bucketized"
     new_df = df_n.select(
-        ti.bucketize_lit(1, 2, name="binarized"),
-        ti.bucketize_lit(1.1, 2.2, 3.3, name="trinarized"),
-        ti.bucketize_lit("one", "two", "three", "four", name="bucketized"),
+        ti.bucketize_lit(1, 2).alias(binarized),
+        ti.bucketize_lit(1.1, 2.2, 3.3).alias(trinarized),
+        ti.bucketize_lit("one", "two", "three", "four").alias(bucketized),
     )
     expected = pl.DataFrame(
         {
-            "binarized": [1, 2, 1, 2, 1, 2, 1, 2, 1],
-            "trinarized": [1.1, 2.2, 3.3, 1.1, 2.2, 3.3, 1.1, 2.2, 3.3],
-            "bucketized": [
+            binarized: [1, 2, 1, 2, 1, 2, 1, 2, 1],
+            trinarized: [1.1, 2.2, 3.3, 1.1, 2.2, 3.3, 1.1, 2.2, 3.3],
+            bucketized: [
                 "one",
                 "two",
                 "three",
@@ -179,16 +176,9 @@ def test_bucketize_lit_raise_not_the_same_type():
     ],
 )
 def test_bucketize(df_n, exprs, result):
-    new_df = df_n.select(ti.bucketize(*exprs))
-    expected = pl.DataFrame({"bucketized": result})
-    assert_frame_equal(new_df, expected)
-
-
-@pytest.mark.parametrize("name", ["cool_name"])
-def test_bucketize_alias(df_n, name):
-    new_df = df_n.select(ti.bucketize(pl.col("n"), pl.col("n"), name=name))
-    expected = pl.DataFrame({name: [1, 2, 3, 4, 5, 6, 7, 8, 9]})
-
+    name = "bucketized"
+    new_df = df_n.select(ti.bucketize(*exprs).alias(name))
+    expected = pl.DataFrame({name: result})
     assert_frame_equal(new_df, expected)
 
 
@@ -208,8 +198,11 @@ def test_bucketize_alias(df_n, name):
     ],
 )
 def test_bucketize_coalesce_to(df_n, exprs, result, coalesce_to):
-    new_df = df_n.select(ti.bucketize(*exprs, coalesce_to=coalesce_to))
-    expected = pl.DataFrame({"bucketized": result})
+    name = "bucketized"
+    new_df = df_n.select(
+        ti.bucketize(*exprs, coalesce_to=coalesce_to).alias(name)
+    )
+    expected = pl.DataFrame({name: result})
 
     assert_frame_equal(new_df, expected)
 
