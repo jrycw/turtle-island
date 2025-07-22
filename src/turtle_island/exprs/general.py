@@ -454,11 +454,11 @@ def cycle(expr, offset: int = 1) -> pl.Expr:
     import turtle_island as ti
 
     df = pl.DataFrame({"x": [1, 2, 3, 4]})
-    df.with_columns(ti.cycle(pl.col("x").alias("cycle"), 2))
+    df.with_columns(ti.cycle(pl.col("x"), 2).alias("cycle"))
     ```
     Cycle upward by 4 rows (no visible change due to full cycle):
     ```{python}
-    df.with_columns(ti.cycle(pl.col("x").alias("cycle"), -4))
+    df.with_columns(ti.cycle(pl.col("x"), -4).alias("cycle"))
     ```
     """
     if not isinstance(offset, int):
