@@ -1,4 +1,6 @@
-.PHONY: isort ruf install preview test_pre test testv0 testv1 testv2 testv3 mypy
+.PHONY: isort ruf fmt install preview test_pre test testv0 testv1 testv2 testv3 mypy version tag
+
+VERSION := $(shell python -c "import turtle_island as ti; print(ti.__version__)")
 
 isort:
 	isort tests/ src/
@@ -47,3 +49,11 @@ testv3:
 
 mypy:
 	uv run mypy src/
+
+version:
+	@echo "Current version is $(VERSION)"
+
+tag:
+	@echo "Tagging version v$(VERSION)"
+	git tag -a v$(VERSION) -m "Creating version v$(VERSION)"
+	git push origin v$(VERSION)
