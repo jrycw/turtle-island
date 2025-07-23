@@ -7,7 +7,7 @@ fmt:
 
 install:
 	make fmt && \
-	uv pip install -e .[dev,docs,test]
+	uv pip install -e ".[dev,docs,test]"
 
 upgrade:
 	uv sync --upgrade && \
