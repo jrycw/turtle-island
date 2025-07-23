@@ -186,7 +186,7 @@ def is_every_nth_row(
         Start the index at this offset. Cannot be negative.
 
     name
-        The name of the resulting column. Defaults to "bool_nth_row".
+        The name of the resulting column.
 
     Returns
     -------
@@ -376,7 +376,6 @@ def shift(expr: pl.Expr, offset: int = 1, *, fill_expr: pl.Expr) -> pl.Expr:
     offset
         The number of rows to shift. It must be a non-zero integer.
         A positive value shifts the column downward (forward), while a negative value shifts it upward (backward).
-        Defaults to 1.
 
     fill_expr
         Expression used to fill the shifted positions.
@@ -439,7 +438,7 @@ def cycle(expr, offset: int = 1) -> pl.Expr:
 
     offset
         The number of rows to cycle by. Positive values shift rows downward,
-        and negative values shift rows upward. Defaults to 1.
+        and negative values shift rows upward.
 
     Returns
     -------
@@ -498,10 +497,10 @@ def make_concat_str(
         One or more column names to inject into the template string. These will be inserted at positions marked by `sep=`.
 
     sep
-        The placeholder used to indicate where column names should be inserted within the template. Defaults to "[$X]".
+        The placeholder used to indicate where column names should be inserted within the template.
 
     name
-        The name of the resulting column. Defaults to "literal".
+        The name of the resulting column.
 
     Returns
     -------
