@@ -22,7 +22,7 @@ __all__ = [
 
 
 def bucketize_lit(
-    *items: Any, coalesce_to: pl.DataType | None = None
+    *items: Any, return_dtype: pl.DataType | pl.DataTypeExpr | None = None
 ) -> pl.Expr:
     """
     Returns a Polars expression that assigns a label to each row based on its index, cycling through the provided items in a round-robin fashion.
@@ -39,7 +39,7 @@ def bucketize_lit(
         and at least two must be provided. See the table below for supported
         types and their conversions.
 
-    coalesce_to
+    return_dtype
         An optional Polars data type to cast the resulting expression to.
 
     Returns
@@ -72,10 +72,10 @@ def bucketize_lit(
     df = pl.DataFrame({"x": [1, 2, 3, 4, 5]})
     df.with_columns(ti.bucketize_lit(True, False).alias("bucketized"))
     ```
-    Cast the result to a specific data type using `coalesce_to=`:
+    Cast the result to a specific data type using `return_dtype=`:
     ```{python}
     df.with_columns(
-        ti.bucketize_lit(True, False, coalesce_to=pl.Int64).alias("bucketized")
+        ti.bucketize_lit(True, False, return_dtype=pl.Int64).alias("bucketized")
     )
     ```
     """
@@ -84,13 +84,13 @@ def bucketize_lit(
     if len(set(type(item) for item in items)) != 1:
         raise ValueError("`items=` must contain only one unique type.")
     expr = _make_bucketize_casewhen(items, is_litify=True)
-    if coalesce_to is not None:
-        return expr.cast(coalesce_to)
+    if return_dtype is not None:
+        return expr.cast(return_dtype)
     return _cast_datatype(expr, items[0])
 
 
 def bucketize(
-    *exprs: pl.Expr, coalesce_to: pl.DataType | None = None
+    *exprs: pl.Expr, return_dtype: pl.DataType | pl.DataTypeExpr | None = None
 ) -> pl.Expr:
     """
     Returns a Polars expression that assigns a label to each row based on its index, cycling through the provided expressions in a round-robin fashion.
@@ -106,7 +106,7 @@ def bucketize(
 
     Polars will automatically infer the data type of `pl.lit()`. For example, `pl.lit(1)` is inferred as `pl.Int32`.
 
-    To avoid unexpected type mismatches, it's recommended to explicitly set the desired data type using `coalesce_to=`.
+    To avoid unexpected type mismatches, it's recommended to explicitly set the desired data type using `return_dtype=`.
     :::
 
     Parameters
@@ -115,7 +115,7 @@ def bucketize(
         Two or more Polars expressions to cycle through.
         All expressions must resolve to the same data type.
 
-    coalesce_to
+    return_dtype
         An optional Polars data type to cast the resulting expression to.
 
     Returns
@@ -138,11 +138,11 @@ def bucketize(
     This alternates between the values of `x + 10` and the literal `100`.
     Make sure all expressions resolve to the same type—in this case, integers.
 
-    You can also cast the result to a specific type using `coalesce_to=`:
+    You can also cast the result to a specific type using `return_dtype=`:
     ```{python}
     df.with_columns(
         ti.bucketize(
-            pl.col("x").add(10), pl.lit(100), coalesce_to=pl.String
+            pl.col("x").add(10), pl.lit(100), return_dtype=pl.String
         ).alias("bucketized")
     )
     ```
@@ -150,8 +150,8 @@ def bucketize(
     if len(exprs) <= 1:
         raise ValueError("`exprs=` must contain a minimum of two expressions.")
     expr = _make_bucketize_casewhen(exprs, is_litify=False)
-    if coalesce_to is not None:
-        return expr.cast(coalesce_to)
+    if return_dtype is not None:
+        return expr.cast(return_dtype)
     return expr
 
 
