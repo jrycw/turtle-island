@@ -2,7 +2,6 @@ from typing import Sequence
 
 import polars as pl
 
-
 __all__ = ["bulk_append", "case_when"]
 
 

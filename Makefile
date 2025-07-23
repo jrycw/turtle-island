@@ -1,10 +1,17 @@
-.PHONY: ruf install preview test_pre test testv0 testv1 testv2 testv3 mypy
+.PHONY: isort ruf install preview test_pre test testv0 testv1 testv2 testv3 mypy
+
+isort:
+	isort tests/ src/
 
 ruf:
 	ruff format tests/ src/
 
+fmt:
+	make isort && \
+	make ruf
+
 install:
-	make ruf && \
+	make fmt \
 	uv pip install .[]
 
 preview:

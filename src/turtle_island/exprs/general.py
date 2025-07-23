@@ -4,11 +4,10 @@ from typing import Any
 import polars as pl
 from polars._typing import PolarsDataType
 
-from .._utils import _cast_datatype, _get_unique_name
+from .._utils import _cast_datatype, _get_unique_name, _litify
 from ._helpers import _get_move_cols, _make_bucketize_casewhen
 from .common import case_when
 from .core import make_index
-
 
 __all__ = [
     "bucketize",
@@ -16,6 +15,7 @@ __all__ = [
     "cycle",
     "is_every_nth_row",
     "shift",
+    "make_concat_str",
     "move_cols_to_end",
     "move_cols_to_start",
 ]
@@ -467,3 +467,82 @@ def cycle(expr, offset: int = 1) -> pl.Expr:
         return expr
     n = pl.len() - (offset % pl.len())
     return expr.slice(n).append(expr.slice(0, n))
+
+
+def make_concat_str(
+    template: str, *col_names: str, sep: str = "[$X]", name: str = "literal"
+) -> pl.Expr:
+    """
+    Construct a concatenated string expression by treating column names as placeholders within a template string.
+
+    This function simplifies string concatenation by allowing users to insert column values into a string template using
+    a custom separator (`sep=`). It’s particularly useful when constructing long strings like HTML content.
+
+    Internally, `make_concat_str()` splits the `template=` string based on the `sep=` value, then interleaves the literals
+    with the specified column names using [pl.concat_str()](https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.concat_str.html).
+
+    ::: {.callout-caution}
+    ### Unstable
+    This function was originally intended for internal use and is now promoted to a public API. However, it is still
+    experimental and may change in future versions.
+    :::
+
+    Parameters
+    ----------
+    template
+        A string template where column placeholders are defined using the `sep=` string.
+        Users are responsible for choosing a **safe** separator that won’t conflict with existing text.
+        Common separators like "," or ";" may cause issues if they appear elsewhere in the template.
+
+    col_names
+        One or more column names to inject into the template string. These will be inserted at positions marked by `sep=`.
+
+    sep
+        The placeholder used to indicate where column names should be inserted within the template. Defaults to "[$X]".
+
+    name
+        The name of the resulting column. Defaults to "literal".
+
+    Returns
+    -------
+    pl.Expr
+        A Polars expression representing the final concatenated string.
+
+    Examples
+    --------
+    Here’s an example that builds an HTML `<p>` tag from a DataFrame:
+    ```{python}
+    import polars as pl
+    import turtle_island as ti
+
+    pl.Config.set_fmt_str_lengths(200)
+    df = pl.DataFrame({"text": ["This is a simple paragraph of text."]})
+    style = 'style="color: steelblue;"'
+    new_df = df.with_columns(
+        ti.make_concat_str(f"<p {style}>[$X]</p>", "text", name="p_tag")
+    )
+    new_df
+    ```
+    ```{python}
+    new_df.style
+    ```
+    Did you notice that `style` is just a regular Python variable?
+
+    We’re dynamically injecting it with an f-string before passing it to `make_concat_str()`.
+    """
+    if not all(isinstance(col_name, str) for col_name in col_names):
+        raise ValueError("All column names must be of type string.")
+    splitted = template.split(sep)
+    len_splitted, len_col_names = len(splitted), len(col_names)
+    if len_splitted != (len_col_names + 1):
+        raise ValueError(
+            f"The number of placeholders in the template is {len_splitted}, "
+            f"which does not match the number of column names ({len_col_names})."
+        )
+    col_names_iter = iter(col_names)
+    concat_str_list: list[pl.Expr | str] = []
+    for lit in _litify(splitted):
+        concat_str_list.append(lit)
+        if col_name := next(col_names_iter, None):
+            concat_str_list.append(col_name)
+    return pl.concat_str(concat_str_list).alias(name)

@@ -6,7 +6,12 @@ import turtle_island as ti
 
 
 def test_make_index(df_x):
-    df_ti = df_x.select(ti.make_index(), pl.all())
+    name = "index"
+    expr = ti.make_index()
+
+    assert expr.meta.output_name() == name
+
+    df_ti = df_x.select(expr, pl.all())
     df_pl = df_x.with_row_index()
 
     assert_frame_equal(df_ti, df_pl)
@@ -18,6 +23,13 @@ def test_make_index_offset(df_x, offset):
     df_pl = df_x.with_row_index(offset=offset)
 
     assert_frame_equal(df_ti, df_pl)
+
+
+@pytest.mark.parametrize("name", [("name")])
+def test_make_index_alias(name):
+    expr = ti.make_index(name=name)
+
+    assert expr.meta.output_name() == name
 
 
 # ===
@@ -100,12 +112,3 @@ def test_is_every_nth_row_index_column_exist(df_n, n, s_bool):
     )
 
     assert_frame_equal(new_df, expected)
-
-    return pl.DataFrame(
-        {
-            "a": [1, 2, 3],
-            "b": [1.11, 2.22, 3.33],
-            "c": [4, 5, 6],
-            "d": ["x", "y", "z"],
-        }
-    )
