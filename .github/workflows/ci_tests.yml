@@ -29,7 +29,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install the project
-        run: uv sync --group test
+        run: uv pip install -e .[test]
       # pytest
       - name: Test
         run: |

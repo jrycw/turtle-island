@@ -29,7 +29,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install the project
-        run: uv sync --group docs && uv pip install .[]
+        run: uv pip install -e .[docs]
 
       # quarto ----
       - name: Set up Quarto
