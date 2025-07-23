@@ -28,10 +28,9 @@ def make_hyperlink(
 
     new_tab
         Whether the link opens in a new browser tab (`target="_blank"`) or the current tab.
-        Defaults to "True".
 
     name
-        The name of the resulting column. Defaults to "hyperlink".
+        The name of the resulting column.
 
     Returns
     -------
@@ -97,7 +96,7 @@ def make_tooltip(
         A string indicating the text color. If "none", no color styling is applied.
 
     name
-        The name of the resulting column. Defaults to "tooltip".
+        The name of the resulting column.
 
     Returns
     -------

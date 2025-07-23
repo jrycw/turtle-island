@@ -25,7 +25,7 @@ def make_index(offset: int = 0, *, name: str = "index") -> pl.Expr:
         Start the index at this offset. Cannot be negative.
 
     name
-        The name of the resulting column. Defaults to "index".
+        The name of the resulting column.
 
 
     Returns
