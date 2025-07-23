@@ -84,7 +84,7 @@ def test_bucketize_lit(df_n, items, result):
 
 
 @pytest.mark.parametrize(
-    "items, result, coalesce_to",
+    "items, result, return_dtype",
     [
         ((1, 2), ["1", "2", "1", "2", "1", "2", "1", "2", "1"], pl.String),
         ((True, False), [1, 0, 1, 0, 1, 0, 1, 0, 1], pl.Int64),
@@ -95,10 +95,10 @@ def test_bucketize_lit(df_n, items, result):
         ),
     ],
 )
-def test_bucketize_lit_coalesce_to(df_n, items, result, coalesce_to):
+def test_bucketize_lit_return_dtype(df_n, items, result, return_dtype):
     name = "bucketized"
     new_df = df_n.select(
-        ti.bucketize_lit(*items, coalesce_to=coalesce_to).alias(name)
+        ti.bucketize_lit(*items, return_dtype=return_dtype).alias(name)
     )
     expected = pl.DataFrame({name: result})
 
@@ -183,7 +183,7 @@ def test_bucketize(df_n, exprs, result):
 
 
 @pytest.mark.parametrize(
-    "exprs, result, coalesce_to",
+    "exprs, result, return_dtype",
     [
         (
             (pl.col("n"), pl.col("n").add(10)),
@@ -197,10 +197,10 @@ def test_bucketize(df_n, exprs, result):
         ),
     ],
 )
-def test_bucketize_coalesce_to(df_n, exprs, result, coalesce_to):
+def test_bucketize_return_dtype(df_n, exprs, result, return_dtype):
     name = "bucketized"
     new_df = df_n.select(
-        ti.bucketize(*exprs, coalesce_to=coalesce_to).alias(name)
+        ti.bucketize(*exprs, return_dtype=return_dtype).alias(name)
     )
     expected = pl.DataFrame({name: result})
 
