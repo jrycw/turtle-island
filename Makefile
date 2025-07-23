@@ -11,7 +11,7 @@ fmt:
 	make ruf
 
 install:
-	make fmt \
+	make fmt && \
 	uv pip install .[]
 
 preview:
