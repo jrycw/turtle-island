@@ -38,7 +38,7 @@ jobs:
       # pytest
       - name: Test
         run: |
-          uv run pytest --cov --cov-branch --cov-report=xml
+          uv run pytest --cov=turtle_island --cov-report=term-missing --cov-branch --cov-report=xml
 
       # codedev
       - name: Upload coverage reports to Codecov
