@@ -28,8 +28,11 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install the project
+      - name: Sync dependencies
         run: uv sync --locked --extra docs
+
+      - name: Install project editable
+        run: uv pip install -e ".[docs]"
 
       # quarto ----
       - name: Set up Quarto
