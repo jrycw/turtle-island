@@ -48,7 +48,7 @@ def _cast_datatype(expr: pl.Expr, item: Any) -> pl.Expr:
     return expr
 
 
-def _concat_str(template: str, *col_names: str, sep: str = "**X**") -> pl.Expr:
+def _concat_str(template: str, *col_names: str, sep: str = "[$X]") -> pl.Expr:
     if not all(isinstance(col_name, str) for col_name in col_names):
         raise ValueError("All column names must be of type string.")
     splitted = template.split(sep)
