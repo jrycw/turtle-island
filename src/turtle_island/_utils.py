@@ -46,22 +46,3 @@ def _cast_datatype(expr: pl.Expr, item: Any) -> pl.Expr:
     elif isinstance(item, (list, tuple)):
         return expr.cast(pl.List)
     return expr
-
-
-def _concat_str(template: str, *col_names: str, sep: str = "[$X]") -> pl.Expr:
-    if not all(isinstance(col_name, str) for col_name in col_names):
-        raise ValueError("All column names must be of type string.")
-    splitted = template.split(sep)
-    len_splitted, len_col_names = len(splitted), len(col_names)
-    if len_splitted != (len_col_names + 1):
-        raise ValueError(
-            f"The number of placeholders in the template is {len_splitted}, "
-            f"which does not match the number of column names ({len_col_names})."
-        )
-    col_names_iter = iter(col_names)
-    concat_str_list: list[pl.Expr | str] = []
-    for lit in _litify(splitted):
-        concat_str_list.append(lit)
-        if col_name := next(col_names_iter, None):
-            concat_str_list.append(col_name)
-    return pl.concat_str(concat_str_list)

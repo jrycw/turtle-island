@@ -5,6 +5,7 @@ from .exprs.general import (
     bucketize_lit,
     cycle,
     is_every_nth_row,
+    make_concat_str,
     move_cols_to_end,
     move_cols_to_start,
     shift,
@@ -22,6 +23,7 @@ __all__ = [
     "make_index",
     "move_cols_to_end",
     "move_cols_to_start",
+    "make_concat_str",
     "make_tooltip",
     "make_hyperlink",
 ]

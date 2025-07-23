@@ -233,9 +233,12 @@ def test_bucketize_raise_one_item():
     ],
 )
 def test_is_every_nth_row(df_n, n, s_bool):
+    name = "bool_nth_row"
     expr = ti.is_every_nth_row(n)
+    assert expr.meta.output_name() == name
+
     new_df = df_n.select(expr)
-    expected = pl.DataFrame({"bool_nth_row": s_bool})
+    expected = pl.DataFrame({name: s_bool})
 
     assert_frame_equal(new_df, expected)
 
@@ -428,3 +431,122 @@ def test_cycle_pl_all(df_xy):
     new_df = df_xy.with_columns(ti.cycle(pl.all()))
     expected = pl.DataFrame({"x": [4, 1, 2, 3], "y": [8, 5, 6, 7]})
     assert_frame_equal(new_df, expected)
+
+
+def test_make_concat_str():
+    """
+    The quick brown fox jumps over the lazy dog.
+    """
+    fox, dog = "fox", "dog"
+    df = pl.DataFrame({"fox": [fox], "dog": [dog]})
+    quick, lazy = "quick", "lazy"
+    concat_str_expr = ti.make_concat_str(
+        f"The {quick} brown [$X] jumps over the {lazy} [$X].",
+        fox,
+        dog,
+    )
+    expected = pl.concat_str(
+        [
+            pl.lit(f"The {quick} brown "),
+            fox,
+            pl.lit(f" jumps over the {lazy} "),
+            dog,
+            pl.lit("."),
+        ]
+    )
+
+    assert_frame_equal(df.select(concat_str_expr), df.select(expected))
+
+
+def test_make_concat_str_sep():
+    """
+    The quick brown fox jumps over the lazy dog.
+    """
+    name = "literal"
+    fox, dog = "fox", "dog"
+    df = pl.DataFrame({"fox": [fox], "dog": [dog]})
+    quick, lazy = "quick", "lazy"
+    concat_str_expr = ti.make_concat_str(
+        f"The {quick} brown ##<X>## jumps over the {lazy} ##<X>##.",
+        fox,
+        dog,
+        sep="##<X>##",
+    )
+    assert concat_str_expr.meta.output_name() == name
+
+    expected = pl.concat_str(
+        [
+            pl.lit(f"The {quick} brown "),
+            fox,
+            pl.lit(f" jumps over the {lazy} "),
+            dog,
+            pl.lit("."),
+        ]
+    )
+
+    assert_frame_equal(df.select(concat_str_expr), df.select(expected))
+
+
+@pytest.mark.parametrize("name", [("name")])
+def test_make_concat_alias(name):
+    """
+    The quick brown fox jumps over the lazy dog.
+    """
+    fox, dog = "fox", "dog"
+    quick, lazy = "quick", "lazy"
+    concat_str_expr = ti.make_concat_str(
+        f"The {quick} brown [$X] jumps over the {lazy} [$X].",
+        fox,
+        dog,
+        name=name,
+    )
+
+    assert concat_str_expr.meta.output_name() == name
+
+
+def test_make_concat_str_complex():
+    """
+    Turtle floats gently across the sunlit bay.
+    1. Test for column names located at the beginning and end.
+    2. Test two consecutive column names.
+    """
+    name = "turtle"
+    df = pl.DataFrame(
+        {"animal": ["turtle"], "location": ["sunlit bay"], "period": ["."]}
+    )
+    concat_str_expr = ti.make_concat_str(
+        "[$X] floats gently across the [$X][$X]",
+        "animal",
+        "location",
+        "period",
+        name=name,
+    )
+    expected = pl.concat_str(
+        "animal", pl.lit(" floats gently across the "), "location", "period"
+    ).alias(name)
+
+    assert_frame_equal(df.select(concat_str_expr), df.select(expected))
+
+
+def test_make_concat_str_raise_col_names_not_all_str():
+    fox = "fox"
+    with pytest.raises(ValueError) as exc_info:
+        ti.make_concat_str(
+            "The quick brown [$X] jumps over the lazy [$X].", fox, 123
+        )  # 123 is int type
+
+    assert "All column names must be of type string." in exc_info.value.args[0]
+
+
+def test_make_concat_str_raise_params_not_match():
+    fox = "fox"
+    with pytest.raises(ValueError) as exc_info:
+        ti.make_concat_str(
+            "The quick brown [$X] jumps over the lazy [$X].",
+            fox,
+        )  # `dog` is missed
+
+    assert (
+        "which does not match the number of column names"
+        in exc_info.value.args[0]
+    )

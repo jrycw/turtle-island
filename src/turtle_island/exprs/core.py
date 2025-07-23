@@ -1,6 +1,5 @@
 import polars as pl
 
-
 __all__ = [
     "make_index",
 ]

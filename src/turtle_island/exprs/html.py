@@ -1,7 +1,8 @@
 from typing import Literal
 
 import polars as pl
-from .._utils import _concat_str
+
+from .general import make_concat_str
 
 __all__ = ["make_tooltip", "make_hyperlink"]
 
@@ -27,7 +28,7 @@ def make_hyperlink(
 
     new_tab
         Whether the link opens in a new browser tab (`target="_blank"`) or the current tab.
-        Defaults to `True`.
+        Defaults to "True".
 
     name
         The name of the resulting column. Defaults to "hyperlink".
@@ -51,16 +52,17 @@ def make_hyperlink(
             "url": ["https://github.com/jrycw/turtle-island"],
         }
     )
-    df.with_columns(ti.make_hyperlink("name", "url"))
+    new_df = df.with_columns(ti.make_hyperlink("name", "url"))
+    new_df
     ```
     ```{python}
-    df.with_columns(ti.make_hyperlink("name", "url")).style
+    new_df.style
     ```
     """
     target = "_blank" if new_tab else "_self"
-    return _concat_str(
-        f'<a href="[$X]" target="{target}">[$X]</a>', url, text
-    ).alias(name)
+    return make_concat_str(
+        f'<a href="[$X]" target="{target}">[$X]</a>', url, text, name=name
+    )
 
 
 def make_tooltip(
@@ -115,10 +117,11 @@ def make_tooltip(
             "description": ["A Utility Kit for Polars Expressions"],
         }
     )
-    df.with_columns(ti.make_tooltip("name", "description"))
+    new_df = df.with_columns(ti.make_tooltip("name", "description"))
+    new_df
     ```
     ```{python}
-    df.with_columns(ti.make_tooltip("name", "description")).style
+    new_df.style
     ```
     """
 
@@ -142,6 +145,9 @@ def make_tooltip(
     if color != "none":
         style += f"color: {color}; "
 
-    return _concat_str(
-        f'<abbr style="{style}" title="[$X]">[$X]</abbr>', tooltip, label
-    ).alias(name)
+    return make_concat_str(
+        f'<abbr style="{style}" title="[$X]">[$X]</abbr>',
+        tooltip,
+        label,
+        name=name,
+    )

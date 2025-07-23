@@ -8,18 +8,23 @@ import turtle_island as ti
 def df_html():
     return pl.DataFrame(
         {
-            "name": ["Turtle Island"],
+            "text": ["Turtle Island"],
             "url": ["https://github.com/jrycw/turtle-island"],
             "description": ["A Utility Kit for Polars Expressions"],
         }
     )
 
 
-@pytest.mark.parametrize("expr1, expr2", [("name", "url")])
+@pytest.mark.parametrize("expr1, expr2", [("text", "url")])
 def test_make_hyperlink(df_html, expr1, expr2):
-    new_df = df_html.select(ti.make_hyperlink(expr1, expr2))
+    name = "hyperlink"
+    expr = ti.make_hyperlink(expr1, expr2)
 
-    assert "hyperlink" in new_df.columns
+    assert expr.meta.output_name() == name
+
+    new_df = df_html.select(expr)
+
+    assert name in new_df.columns
 
     result = new_df.item()
     expected = '<a href="https://github.com/jrycw/turtle-island" target="_blank">Turtle Island</a>'
@@ -31,22 +36,27 @@ def test_make_hyperlink(df_html, expr1, expr2):
     "new_tab, expected", [(True, "_blank"), (False, "_self")]
 )
 def test_make_hyperlink_newtab(df_html, new_tab, expected):
-    new_df = df_html.select(ti.make_hyperlink("name", "url", new_tab=new_tab))
+    new_df = df_html.select(ti.make_hyperlink("text", "url", new_tab=new_tab))
 
     assert expected in new_df.item()
 
 
-@pytest.mark.parametrize("expr1, expr2, name", [("name", "url", "cool_name")])
-def test_make_alias(df_html, expr1, expr2, name):
-    new_df = df_html.select(ti.make_hyperlink(expr1, expr2, name=name))
+@pytest.mark.parametrize("name", [("name")])
+def test_make_hyperlink_alias(name):
+    expr = ti.make_hyperlink("text", "url", name=name)
 
-    assert name in new_df.columns
+    assert expr.meta.output_name() == name
 
 
-@pytest.mark.parametrize("expr1, expr2", [("name", "description")])
+@pytest.mark.parametrize("expr1, expr2", [("text", "description")])
 def test_make_tooltip(df_html, expr1, expr2):
-    new_df = df_html.select(ti.make_tooltip(expr1, expr2))
-    assert "tooltip" in new_df.columns
+    name = "tooltip"
+    expr = ti.make_tooltip(expr1, expr2)
+
+    assert expr.meta.output_name() == name
+
+    new_df = df_html.select(expr)
+    assert name in new_df.columns
 
     result = new_df.item()
     expected = '<abbr style="cursor: help; text-decoration: underline; text-decoration-style: dotted; color: blue; " title="A Utility Kit for Polars Expressions">Turtle Island</abbr>'
@@ -57,8 +67,8 @@ def test_make_tooltip(df_html, expr1, expr2):
 @pytest.mark.parametrize(
     "expr1, expr2, text_decoration_style, color",
     [
-        ("name", "description", "dotted", "blue"),
-        ("name", "description", "none", "none"),
+        ("text", "description", "dotted", "blue"),
+        ("text", "description", "none", "none"),
     ],
 )
 def test_make_tooltip_options(
@@ -78,11 +88,11 @@ def test_make_tooltip_options(
     assert color in result
 
 
-@pytest.mark.parametrize("expr1, expr2, name", [("name", "url", "cool_name")])
-def test_make_tooltip_alias(df_html, expr1, expr2, name):
-    new_df = df_html.select(ti.make_tooltip(expr1, expr2, name=name))
+@pytest.mark.parametrize("name", [("name")])
+def test_make_tooltip_alias(name):
+    expr = ti.make_tooltip("label", "tooltip", name=name)
 
-    assert name in new_df.columns
+    assert expr.meta.output_name() == name
 
 
 @pytest.mark.parametrize(
