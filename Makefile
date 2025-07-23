@@ -1,30 +1,25 @@
-.PHONY: isort ruf fmt install preview test_pre test testv0 testv1 testv2 testv3 mypy version tag
-
-VERSION := $(shell python -c "import turtle_island as ti; print(ti.__version__)")
-
-isort:
-	isort tests/ src/
-
-ruf:
-	ruff format tests/ src/
+.PHONY: fmt install preview test_pre test testv0 testv1 testv2 testv3 mypy version tag
 
 fmt:
-	make isort && \
-	make ruf
+	ruff format tests/ src/ && \
+	ruff check tests/ src/ --fix && \
+	ruff check --select I --fix tests/ src/
 
 install:
 	make fmt && \
-	uv pip install .[]
+	uv pip install -e .[dev,docs,test]
+
+upgrade:
+	uv sync --upgrade && \
+	make install
 
 preview:
-	uv sync --group docs && \
 	make install && \
 	cd docs && \
 	quartodoc build --verbose && \
 	quarto preview --port 8001
 
 test_pre:
-	uv sync --group test && \
 	make install
 
 test:
@@ -51,9 +46,10 @@ mypy:
 	uv run mypy src/
 
 version:
-	@echo "Current version is $(VERSION)"
+	@echo "Current version is $$(python -c 'import turtle_island as ti; print(ti.__version__)')"
 
 tag:
-	@echo "Tagging version v$(VERSION)"
-	git tag -a v$(VERSION) -m "Creating version v$(VERSION)"
-	git push origin v$(VERSION)
+	@VERSION=$$(python -c 'import turtle_island as ti; print(ti.__version__)') && \
+	echo "Tagging version v$$VERSION" && \
+	git tag -a v$$VERSION -m "Creating version v$$VERSION" && \
+	git push origin v$$VERSION

@@ -17,9 +17,8 @@ dependencies = [
     "pyarrow>=20.0.0",
 ]
 
-[dependency-groups]
+[project.optional-dependencies]
 dev = [
-    "isort>=6.0.1",
     "jupyterlab>=4.4.4",
     "mypy>=1.16.1",
     "pre-commit>=4.2.0",
