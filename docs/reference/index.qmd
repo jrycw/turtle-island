@@ -1,0 +1,30 @@
+# API Reference {.doc .doc-index}
+
+## General
+
+Expressions for general-purpose data transformation.
+
+
+| | |
+| --- | --- |
+| [bulk_append](bulk_append.qmd#turtle_island.bulk_append) | Combines multiple Polars expressions using [pl.Expr.append()](https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.Expr.append.html#polars-expr-append) internally. |
+| [bucketize](bucketize.qmd#turtle_island.bucketize) | Returns a Polars expression that assigns a label to each row based on its index, cycling through the provided expressions in a round-robin fashion. |
+| [bucketize_lit](bucketize_lit.qmd#turtle_island.bucketize_lit) | Returns a Polars expression that assigns a label to each row based on its index, cycling through the provided items in a round-robin fashion. |
+| [case_when](case_when.qmd#turtle_island.case_when) | Simplifies conditional logic in Polars by chaining multiple `when‑then‑otherwise` expressions. |
+| [cycle](cycle.qmd#turtle_island.cycle) | Return a Polars expression that cycles the rows by a given offset. |
+| [is_every_nth_row](is_every_nth_row.qmd#turtle_island.is_every_nth_row) | Returns a Polars expression that is `True` for every `n`-th row (index modulo `n` equals 0). |
+| [shift](shift.qmd#turtle_island.shift) | A variant of [pl.Expr.shift()](https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.Expr.shift.html#polars.Expr.shift) that allows filling shifted values using another Polars expression. |
+| [make_concat_str](make_concat_str.qmd#turtle_island.make_concat_str) | Construct a concatenated string expression by treating column names as placeholders within a template string. |
+| [make_index](make_index.qmd#turtle_island.make_index) | Returns a Polars expression that creates a virtual row index. |
+| [move_cols_to_end](move_cols_to_end.qmd#turtle_island.move_cols_to_end) | Returns a list of Polars expressions that reorder columns so the specified columns appear last. |
+| [move_cols_to_start](move_cols_to_start.qmd#turtle_island.move_cols_to_start) | Returns a list of Polars expressions that reorder columns so the specified columns appear first. |
+
+## HTML
+
+Expressions for generating HTML tags.
+
+
+| | |
+| --- | --- |
+| [make_hyperlink](make_hyperlink.qmd#turtle_island.make_hyperlink) | Returns a Polars expression that generates an HTML hyperlink (`<a>` tag) for each row. |
+| [make_tooltip](make_tooltip.qmd#turtle_island.make_tooltip) | Returns a Polars expression that generates an HTML tooltip for each row. |

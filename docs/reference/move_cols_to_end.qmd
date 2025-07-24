@@ -1,0 +1,52 @@
+# move_cols_to_end { #turtle_island.move_cols_to_end }
+
+```python
+move_cols_to_end(columns, *more_columns)
+```
+
+Returns a list of Polars expressions that reorder columns so the specified columns appear last.
+
+::: {.callout-warning}
+### Column type restriction
+
+You may specify either column names or data types, but not a combination of both.
+:::
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**columns**]{.parameter-name} [:]{.parameter-annotation-sep} [str \| PolarsDataType \| Collection\[str\] \| Collection\[PolarsDataType\]]{.parameter-annotation}</code>
+
+:   The name or datatype of the column(s) to move. Accepts regular expression input. Regular expressions should start with `^` and end with `$`.
+
+<code>[***more_columns**]{.parameter-name} [:]{.parameter-annotation-sep} [str \| PolarsDataType]{.parameter-annotation} [ = ]{.parameter-default-sep} [()]{.parameter-default}</code>
+
+:   Additional names or datatypes of columns to move, specified as positional arguments.
+
+## Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [list\[pl.Expr\]]{.parameter-annotation}</code>
+
+:   A list of expressions to reorder columns.
+
+## Examples {.doc-section .doc-section-examples}
+
+```{python}
+import polars as pl
+import turtle_island as ti
+
+df = pl.DataFrame({"a": [1, 2, 3], "b": ["x", "y", "z"], "c": [4.4, 5.5, 6.6]})
+df
+```
+Reorder columns so that selected columns appear last:
+```{python}
+df.select(ti.move_cols_to_end("b", "a"))
+```
+Reorder by data type:
+```{python}
+df.select(ti.move_cols_to_end([pl.String, pl.Int64]))
+```
+Note that when selecting by data type, the moved columns will follow the
+original order in the DataFrame schema.
+```{python}
+df.select(ti.move_cols_to_end([pl.Int64, pl.String]))
+```

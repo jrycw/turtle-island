@@ -1,0 +1,65 @@
+# make_concat_str { #turtle_island.make_concat_str }
+
+```python
+make_concat_str(template, *col_names, sep='[$X]', name='literal')
+```
+
+Construct a concatenated string expression by treating column names as placeholders within a template string.
+
+This function simplifies string concatenation by allowing users to insert column values into a string template using
+a custom separator (`sep=`). It’s particularly useful when constructing long strings like HTML content.
+
+Internally, `make_concat_str()` splits the `template=` string based on the `sep=` value, then interleaves the literals
+with the specified column names using [pl.concat_str()](https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.concat_str.html).
+
+::: {.callout-caution}
+### Unstable
+This function was originally intended for internal use and is now promoted to a public API. However, it is still
+experimental and may change in future versions.
+:::
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**template**]{.parameter-name} [:]{.parameter-annotation-sep} [str]{.parameter-annotation}</code>
+
+:   A string template where column placeholders are defined using the `sep=` string. Users are responsible for choosing a **safe** separator that won’t conflict with existing text. Common separators like "," or ";" may cause issues if they appear elsewhere in the template.
+
+<code>[**col_names**]{.parameter-name} [:]{.parameter-annotation-sep} [str]{.parameter-annotation} [ = ]{.parameter-default-sep} [()]{.parameter-default}</code>
+
+:   One or more column names to inject into the template string. These will be inserted at positions marked by `sep=`.
+
+<code>[**sep**]{.parameter-name} [:]{.parameter-annotation-sep} [str]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'\[$X\]\']{.parameter-default}</code>
+
+:   The placeholder used to indicate where column names should be inserted within the template. Defaults to "[$X]".
+
+<code>[**name**]{.parameter-name} [:]{.parameter-annotation-sep} [str]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'literal\']{.parameter-default}</code>
+
+:   The name of the resulting column. Defaults to "literal".
+
+## Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [pl.Expr]{.parameter-annotation}</code>
+
+:   A Polars expression representing the final concatenated string.
+
+## Examples {.doc-section .doc-section-examples}
+
+Here’s an example that builds an HTML `<p>` tag from a DataFrame:
+```{python}
+import polars as pl
+import turtle_island as ti
+
+pl.Config.set_fmt_str_lengths(200)
+df = pl.DataFrame({"text": ["This is a simple paragraph of text."]})
+style = 'style="color: steelblue;"'
+new_df = df.with_columns(
+    ti.make_concat_str(f"<p {style}>[$X]</p>", "text", name="p_tag")
+)
+new_df
+```
+```{python}
+new_df.style
+```
+Did you notice that `style` is just a regular Python variable?
+
+We’re dynamically injecting it with an f-string before passing it to `make_concat_str()`.

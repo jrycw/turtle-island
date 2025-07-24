@@ -1,0 +1,24 @@
+website:
+  sidebar:
+  - collapse-level: 1
+    contents:
+    - reference/index.qmd
+    - contents:
+      - reference/bulk_append.qmd
+      - reference/bucketize.qmd
+      - reference/bucketize_lit.qmd
+      - reference/case_when.qmd
+      - reference/cycle.qmd
+      - reference/is_every_nth_row.qmd
+      - reference/shift.qmd
+      - reference/make_concat_str.qmd
+      - reference/make_index.qmd
+      - reference/move_cols_to_end.qmd
+      - reference/move_cols_to_start.qmd
+      section: General
+    - contents:
+      - reference/make_hyperlink.qmd
+      - reference/make_tooltip.qmd
+      section: HTML
+    id: reference
+  - id: dummy-sidebar

@@ -1,0 +1,78 @@
+# is_every_nth_row { #turtle_island.is_every_nth_row }
+
+```python
+is_every_nth_row(n, offset=0, *, name='bool_nth_row')
+```
+
+Returns a Polars expression that is `True` for every `n`-th row (index modulo `n` equals 0).
+
+`is_every_nth_row()` can be seen as the complement of [pl.Expr.gather_every()](https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.Expr.gather_every.html).
+
+While `pl.Expr.gather_every()` is typically used in a `select()` context and may return a
+DataFrame with fewer rows, `is_every_nth_row()` produces a predicate expression
+that can be used with `select()` or `with_columns()` to preserve the original row structure for
+further processing, or with `filter()` to achieve the same result as
+`pl.Expr.gather_every()`.
+
+::: {.callout-warning}
+### Ensure `offset=` does not exceed the total number of rows
+
+Since expressions are only evaluated at runtime, their validity cannot be
+checked until execution. If `offset=` is greater than the number of rows
+in the DataFrame, the result will be a column filled with `False`.
+:::
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**n**]{.parameter-name} [:]{.parameter-annotation-sep} [int]{.parameter-annotation}</code>
+
+:   The interval to use for row selection. Should be positive.
+
+<code>[**offset**]{.parameter-name} [:]{.parameter-annotation-sep} [int]{.parameter-annotation} [ = ]{.parameter-default-sep} [0]{.parameter-default}</code>
+
+:   Start the index at this offset. Cannot be negative.
+
+<code>[**name**]{.parameter-name} [:]{.parameter-annotation-sep} [str]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'bool_nth_row\']{.parameter-default}</code>
+
+:   The name of the resulting column. Defaults to "bool_nth_row".
+
+## Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [pl.Expr]{.parameter-annotation}</code>
+
+:   A boolean Polars expression.
+
+## Examples {.doc-section .doc-section-examples}
+
+Mark every second row:
+```{python}
+import polars as pl
+import turtle_island as ti
+
+df = pl.DataFrame({"x": [1, 2, 3, 4, 5]})
+df.with_columns(ti.is_every_nth_row(2))
+```
+To invert the result, use either the `~` operator or `pl.Expr.not_()`:
+```{python}
+df.with_columns(
+    ~ti.is_every_nth_row(2).alias("~2"),
+    ti.is_every_nth_row(2).not_().alias("not_2"),
+)
+```
+Use `offset=` to shift the starting index:
+```{python}
+df.with_columns(ti.is_every_nth_row(3, 1))
+```
+For reference, here’s the output using `pl.Expr.gather_every()`:
+```{python}
+df.select(pl.col("x").gather_every(3, 1))
+```
+You can also combine multiple `is_every_nth_row()` expressions to construct more complex row selections.
+For example, to select rows that are part of every second **or** every third row:
+```{python}
+df.select(
+    ti.is_every_nth_row(2).alias("2"),
+    ti.is_every_nth_row(3).alias("3"),
+    ti.is_every_nth_row(2).or_(ti.is_every_nth_row(3)).alias("2_or_3")
+)
+```

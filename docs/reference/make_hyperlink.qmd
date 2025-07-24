@@ -1,0 +1,57 @@
+# make_hyperlink { #turtle_island.make_hyperlink }
+
+```python
+make_hyperlink(text, url, new_tab=True, *, name='hyperlink')
+```
+
+Returns a Polars expression that generates an HTML hyperlink (`<a>` tag) for each row.
+
+::: {.callout-tip}
+# Credit: gt-extras
+This function is heavily inspired by the [gt-extras](https://github.com/posit-dev/gt-extras) package.
+:::
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**text**]{.parameter-name} [:]{.parameter-annotation-sep} [str]{.parameter-annotation}</code>
+
+:   Column name containing the display text for the hyperlink.
+
+<code>[**url**]{.parameter-name} [:]{.parameter-annotation-sep} [str]{.parameter-annotation}</code>
+
+:   Column name containing the destination URL.
+
+<code>[**new_tab**]{.parameter-name} [:]{.parameter-annotation-sep} [bool]{.parameter-annotation} [ = ]{.parameter-default-sep} [True]{.parameter-default}</code>
+
+:   Whether the link opens in a new browser tab (`target="_blank"`) or the current tab. Defaults to `True`.
+
+<code>[**name**]{.parameter-name} [:]{.parameter-annotation-sep} [str]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'hyperlink\']{.parameter-default}</code>
+
+:   The name of the resulting column. Defaults to "hyperlink".
+
+## Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [pl.Expr]{.parameter-annotation}</code>
+
+:   A Polars expression generating the HTML anchor tag.
+
+## Examples {.doc-section .doc-section-examples}
+
+Create an HTML anchor tag (`<a>`) combining link text and URL from two columns:
+```{python}
+import polars as pl
+import turtle_island as ti
+
+pl.Config.set_fmt_str_lengths(200)
+df = pl.DataFrame(
+    {
+        "name": ["Turtle Island"],
+        "url": ["https://github.com/jrycw/turtle-island"],
+    }
+)
+new_df = df.with_columns(ti.make_hyperlink("name", "url"))
+new_df
+```
+```{python}
+new_df.style
+```

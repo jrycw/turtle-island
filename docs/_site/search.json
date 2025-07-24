@@ -1,0 +1,703 @@
+[
+  {
+    "objectID": "reference/move_cols_to_end.html",
+    "href": "reference/move_cols_to_end.html",
+    "title": "move_cols_to_end",
+    "section": "",
+    "text": "move_cols_to_end(columns, *more_columns)\nReturns a list of Polars expressions that reorder columns so the specified columns appear last.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "move_cols_to_end"
+    ]
+  },
+  {
+    "objectID": "reference/move_cols_to_end.html#parameters",
+    "href": "reference/move_cols_to_end.html#parameters",
+    "title": "move_cols_to_end",
+    "section": "Parameters",
+    "text": "Parameters\n\ncolumns : str | PolarsDataType | Collection[str] | Collection[PolarsDataType]\n\nThe name or datatype of the column(s) to move. Accepts regular expression input. Regular expressions should start with ^ and end with $.\n\n*more_columns : str | PolarsDataType = ()\n\nAdditional names or datatypes of columns to move, specified as positional arguments.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "move_cols_to_end"
+    ]
+  },
+  {
+    "objectID": "reference/move_cols_to_end.html#returns",
+    "href": "reference/move_cols_to_end.html#returns",
+    "title": "move_cols_to_end",
+    "section": "Returns",
+    "text": "Returns\n\n : list[pl.Expr]\n\nA list of expressions to reorder columns.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "move_cols_to_end"
+    ]
+  },
+  {
+    "objectID": "reference/move_cols_to_end.html#examples",
+    "href": "reference/move_cols_to_end.html#examples",
+    "title": "move_cols_to_end",
+    "section": "Examples",
+    "text": "Examples\n\nimport polars as pl\nimport turtle_island as ti\n\ndf = pl.DataFrame({\"a\": [1, 2, 3], \"b\": [\"x\", \"y\", \"z\"], \"c\": [4.4, 5.5, 6.6]})\ndf\n\n\nshape: (3, 3)abci64strf641\"x\"4.42\"y\"5.53\"z\"6.6\n\n\nReorder columns so that selected columns appear last:\n\ndf.select(ti.move_cols_to_end(\"b\", \"a\"))\n\n\nshape: (3, 3)cbaf64stri644.4\"x\"15.5\"y\"26.6\"z\"3\n\n\nReorder by data type:\n\ndf.select(ti.move_cols_to_end([pl.String, pl.Int64]))\n\n\nshape: (3, 3)cabf64i64str4.41\"x\"5.52\"y\"6.63\"z\"\n\n\nNote that when selecting by data type, the moved columns will follow the original order in the DataFrame schema.\n\ndf.select(ti.move_cols_to_end([pl.Int64, pl.String]))\n\n\nshape: (3, 3)cabf64i64str4.41\"x\"5.52\"y\"6.63\"z\"",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "move_cols_to_end"
+    ]
+  },
+  {
+    "objectID": "reference/make_tooltip.html",
+    "href": "reference/make_tooltip.html",
+    "title": "make_tooltip",
+    "section": "",
+    "text": "make_tooltip(\n    label,\n    tooltip,\n    text_decoration_style='dotted',\n    color='blue',\n    *,\n    name='tooltip',\n)\nReturns a Polars expression that generates an HTML tooltip for each row.",
+    "crumbs": [
+      "API Reference",
+      "HTML",
+      "make_tooltip"
+    ]
+  },
+  {
+    "objectID": "reference/make_tooltip.html#parameters",
+    "href": "reference/make_tooltip.html#parameters",
+    "title": "make_tooltip",
+    "section": "Parameters",
+    "text": "Parameters\n\nlabel : str\n\nColumn name containing the main text to display.\n\ntooltip : str\n\nColumn name containing containing the text shown when hovering over the label.\n\ntext_decoration_style : Literal['solid', 'dotted', 'none'] = 'dotted'\n\nA string indicating the style of underline decoration. Options are \"solid\", \"dotted\", or \"none\".\n\ncolor : str | Literal['none'] = 'blue'\n\nA string indicating the text color. If “none”, no color styling is applied.\n\nname : str = 'tooltip'\n\nThe name of the resulting column. Defaults to “tooltip”.",
+    "crumbs": [
+      "API Reference",
+      "HTML",
+      "make_tooltip"
+    ]
+  },
+  {
+    "objectID": "reference/make_tooltip.html#returns",
+    "href": "reference/make_tooltip.html#returns",
+    "title": "make_tooltip",
+    "section": "Returns",
+    "text": "Returns\n\n : pl.Expr\n\nA Polars expression that creates an HTML string with tooltip functionality.",
+    "crumbs": [
+      "API Reference",
+      "HTML",
+      "make_tooltip"
+    ]
+  },
+  {
+    "objectID": "reference/make_tooltip.html#examples",
+    "href": "reference/make_tooltip.html#examples",
+    "title": "make_tooltip",
+    "section": "Examples",
+    "text": "Examples\n\nimport polars as pl\nimport turtle_island as ti\n\npl.Config.set_fmt_str_lengths(200)\ndf = pl.DataFrame(\n    {\n        \"name\": [\"Turtle Island\"],\n        \"description\": [\"A Utility Kit for Polars Expressions\"],\n    }\n)\nnew_df = df.with_columns(ti.make_tooltip(\"name\", \"description\"))\nnew_df\n\n\nshape: (1, 3)namedescriptiontooltipstrstrstr\"Turtle Island\"\"A Utility Kit for Polars Expressions\"\"&lt;abbr style=\"cursor: help; text-decoration: underline; text-decoration-style: dotted; color: blue; \" title=\"A Utility Kit for Polars Expressions\"&gt;Turtle Island&lt;/abbr&gt;\"\n\n\n\nnew_df.style\n\n\n\n\n\n\n\n  name\n  description\n  tooltip\n\n\n\n  \n    Turtle Island\n    A Utility Kit for Polars Expressions\n    Turtle Island",
+    "crumbs": [
+      "API Reference",
+      "HTML",
+      "make_tooltip"
+    ]
+  },
+  {
+    "objectID": "reference/bucketize.html",
+    "href": "reference/bucketize.html",
+    "title": "bucketize",
+    "section": "",
+    "text": "bucketize(*exprs, coalesce_to=None)\nReturns a Polars expression that assigns a label to each row based on its index, cycling through the provided expressions in a round-robin fashion.\nbucketize() is the more general form of bucketize_lit(), allowing you to pass Polars expressions instead of just literal values. This enables advanced use cases such as referencing or transforming existing column values.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "bucketize"
+    ]
+  },
+  {
+    "objectID": "reference/bucketize.html#parameters",
+    "href": "reference/bucketize.html#parameters",
+    "title": "bucketize",
+    "section": "Parameters",
+    "text": "Parameters\n\nexprs : pl.Expr = ()\n\nTwo or more Polars expressions to cycle through. All expressions must resolve to the same data type.\n\ncoalesce_to : pl.DataType | None = None\n\nAn optional Polars data type to cast the resulting expression to.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "bucketize"
+    ]
+  },
+  {
+    "objectID": "reference/bucketize.html#returns",
+    "href": "reference/bucketize.html#returns",
+    "title": "bucketize",
+    "section": "Returns",
+    "text": "Returns\n\n : pl.Expr\n\nA Polars expression that cycles through the input expressions based on the row index modulo.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "bucketize"
+    ]
+  },
+  {
+    "objectID": "reference/bucketize.html#examples",
+    "href": "reference/bucketize.html#examples",
+    "title": "bucketize",
+    "section": "Examples",
+    "text": "Examples\nAlternate between a column expression and a literal value:\n\nimport polars as pl\nimport turtle_island as ti\n\ndf = pl.DataFrame({\"x\": [1, 2, 3, 4, 5]})\ndf.with_columns(\n    ti.bucketize(pl.col(\"x\").add(10), pl.lit(100)).alias(\"bucketized\")\n)\n\n\nshape: (5, 2)xbucketizedi64i6411121003134100515\n\n\nThis alternates between the values of x + 10 and the literal 100. Make sure all expressions resolve to the same type—in this case, integers.\nYou can also cast the result to a specific type using coalesce_to=:\n\ndf.with_columns(\n    ti.bucketize(\n        pl.col(\"x\").add(10), pl.lit(100), coalesce_to=pl.String\n    ).alias(\"bucketized\")\n)\n\n\nshape: (5, 2)xbucketizedi64str1\"11\"2\"100\"3\"13\"4\"100\"5\"15\"",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "bucketize"
+    ]
+  },
+  {
+    "objectID": "reference/make_index.html",
+    "href": "reference/make_index.html",
+    "title": "make_index",
+    "section": "",
+    "text": "make_index(offset=0, *, name='index')\nReturns a Polars expression that creates a virtual row index.\nBorrowed from the Polars documentation and adapted for expression-level use.\nUnlike pl.DataFrame.with_row_index(), which works at the DataFrame level, this expression can be composed inline and reused without materializing an actual column.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "make_index"
+    ]
+  },
+  {
+    "objectID": "reference/make_index.html#parameters",
+    "href": "reference/make_index.html#parameters",
+    "title": "make_index",
+    "section": "Parameters",
+    "text": "Parameters\n\noffset : int = 0\n\nStart the index at this offset. Cannot be negative.\n\nname : str = 'index'\n\nThe name of the resulting column. Defaults to “index”.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "make_index"
+    ]
+  },
+  {
+    "objectID": "reference/make_index.html#returns",
+    "href": "reference/make_index.html#returns",
+    "title": "make_index",
+    "section": "Returns",
+    "text": "Returns\n\n : pl.Expr\n\nA Polars expression that yields a sequential integer index starting from 0.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "make_index"
+    ]
+  },
+  {
+    "objectID": "reference/make_index.html#examples",
+    "href": "reference/make_index.html#examples",
+    "title": "make_index",
+    "section": "Examples",
+    "text": "Examples\nAdds a sequential index column to the DataFrame:\n\nimport polars as pl\nimport turtle_island as ti\n\ndf = pl.DataFrame({\"a\": [1, 3, 5], \"b\": [2, 4, 6]})\ndf.select(ti.make_index(), pl.all())\n\n\nshape: (3, 3)indexabu32i64i64012134256",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "make_index"
+    ]
+  },
+  {
+    "objectID": "reference/make_hyperlink.html",
+    "href": "reference/make_hyperlink.html",
+    "title": "make_hyperlink",
+    "section": "",
+    "text": "make_hyperlink(text, url, new_tab=True, *, name='hyperlink')\nReturns a Polars expression that generates an HTML hyperlink (&lt;a&gt; tag) for each row.",
+    "crumbs": [
+      "API Reference",
+      "HTML",
+      "make_hyperlink"
+    ]
+  },
+  {
+    "objectID": "reference/make_hyperlink.html#parameters",
+    "href": "reference/make_hyperlink.html#parameters",
+    "title": "make_hyperlink",
+    "section": "Parameters",
+    "text": "Parameters\n\ntext : str\n\nColumn name containing the display text for the hyperlink.\n\nurl : str\n\nColumn name containing the destination URL.\n\nnew_tab : bool = True\n\nWhether the link opens in a new browser tab (target=\"_blank\") or the current tab. Defaults to True.\n\nname : str = 'hyperlink'\n\nThe name of the resulting column. Defaults to “hyperlink”.",
+    "crumbs": [
+      "API Reference",
+      "HTML",
+      "make_hyperlink"
+    ]
+  },
+  {
+    "objectID": "reference/make_hyperlink.html#returns",
+    "href": "reference/make_hyperlink.html#returns",
+    "title": "make_hyperlink",
+    "section": "Returns",
+    "text": "Returns\n\n : pl.Expr\n\nA Polars expression generating the HTML anchor tag.",
+    "crumbs": [
+      "API Reference",
+      "HTML",
+      "make_hyperlink"
+    ]
+  },
+  {
+    "objectID": "reference/make_hyperlink.html#examples",
+    "href": "reference/make_hyperlink.html#examples",
+    "title": "make_hyperlink",
+    "section": "Examples",
+    "text": "Examples\nCreate an HTML anchor tag (&lt;a&gt;) combining link text and URL from two columns:\n\nimport polars as pl\nimport turtle_island as ti\n\npl.Config.set_fmt_str_lengths(200)\ndf = pl.DataFrame(\n    {\n        \"name\": [\"Turtle Island\"],\n        \"url\": [\"https://github.com/jrycw/turtle-island\"],\n    }\n)\nnew_df = df.with_columns(ti.make_hyperlink(\"name\", \"url\"))\nnew_df\n\n\nshape: (1, 3)nameurlhyperlinkstrstrstr\"Turtle Island\"\"https://github.com/jrycw/turtle-island\"\"&lt;a href=\"https://github.com/jrycw/turtle-island\" target=\"_blank\"&gt;Turtle Island&lt;/a&gt;\"\n\n\n\nnew_df.style\n\n\n\n\n\n\n\n  name\n  url\n  hyperlink\n\n\n\n  \n    Turtle Island\n    https://github.com/jrycw/turtle-island\n    Turtle Island",
+    "crumbs": [
+      "API Reference",
+      "HTML",
+      "make_hyperlink"
+    ]
+  },
+  {
+    "objectID": "reference/move_cols_to_start.html",
+    "href": "reference/move_cols_to_start.html",
+    "title": "move_cols_to_start",
+    "section": "",
+    "text": "move_cols_to_start(columns, *more_columns)\nReturns a list of Polars expressions that reorder columns so the specified columns appear first.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "move_cols_to_start"
+    ]
+  },
+  {
+    "objectID": "reference/move_cols_to_start.html#parameters",
+    "href": "reference/move_cols_to_start.html#parameters",
+    "title": "move_cols_to_start",
+    "section": "Parameters",
+    "text": "Parameters\n\ncolumns : str | PolarsDataType | Collection[str] | Collection[PolarsDataType]\n\nThe name or datatype of the column(s) to move. Accepts regular expression input. Regular expressions should start with ^ and end with $.\n\n*more_columns : str | PolarsDataType = ()\n\nAdditional names or datatypes of columns to move, specified as positional arguments.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "move_cols_to_start"
+    ]
+  },
+  {
+    "objectID": "reference/move_cols_to_start.html#returns",
+    "href": "reference/move_cols_to_start.html#returns",
+    "title": "move_cols_to_start",
+    "section": "Returns",
+    "text": "Returns\n\n : list[pl.Expr]\n\nA list of expressions to reorder columns.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "move_cols_to_start"
+    ]
+  },
+  {
+    "objectID": "reference/move_cols_to_start.html#examples",
+    "href": "reference/move_cols_to_start.html#examples",
+    "title": "move_cols_to_start",
+    "section": "Examples",
+    "text": "Examples\n\nimport polars as pl\nimport turtle_island as ti\n\ndf = pl.DataFrame(\n    {\"a\": [1, 2, 3], \"b\": [\"x\", \"y\", \"z\"], \"c\": [4.4, 5.5, 6.6]}\n)\ndf\n\n\nshape: (3, 3)abci64strf641\"x\"4.42\"y\"5.53\"z\"6.6\n\n\nReorder columns so that selected columns appear first:\n\ndf.select(ti.move_cols_to_start(\"c\", \"b\"))\n\n\nshape: (3, 3)cbaf64stri644.4\"x\"15.5\"y\"26.6\"z\"3\n\n\nReorder by data type:\n\ndf.select(ti.move_cols_to_start([pl.Float64, pl.String]))\n\n\nshape: (3, 3)bcastrf64i64\"x\"4.41\"y\"5.52\"z\"6.63\n\n\nNote that when selecting by data type, the moved columns will follow the original order in the DataFrame schema.\n\ndf.select(ti.move_cols_to_start([pl.String, pl.Float64]))\n\n\nshape: (3, 3)bcastrf64i64\"x\"4.41\"y\"5.52\"z\"6.63",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "move_cols_to_start"
+    ]
+  },
+  {
+    "objectID": "reference/is_every_nth_row.html",
+    "href": "reference/is_every_nth_row.html",
+    "title": "is_every_nth_row",
+    "section": "",
+    "text": "is_every_nth_row(n, offset=0, *, name='bool_nth_row')\nReturns a Polars expression that is True for every n-th row (index modulo n equals 0).\nis_every_nth_row() can be seen as the complement of pl.Expr.gather_every().\nWhile pl.Expr.gather_every() is typically used in a select() context and may return a DataFrame with fewer rows, is_every_nth_row() produces a predicate expression that can be used with select() or with_columns() to preserve the original row structure for further processing, or with filter() to achieve the same result as pl.Expr.gather_every().",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "is_every_nth_row"
+    ]
+  },
+  {
+    "objectID": "reference/is_every_nth_row.html#parameters",
+    "href": "reference/is_every_nth_row.html#parameters",
+    "title": "is_every_nth_row",
+    "section": "Parameters",
+    "text": "Parameters\n\nn : int\n\nThe interval to use for row selection. Should be positive.\n\noffset : int = 0\n\nStart the index at this offset. Cannot be negative.\n\nname : str = 'bool_nth_row'\n\nThe name of the resulting column. Defaults to “bool_nth_row”.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "is_every_nth_row"
+    ]
+  },
+  {
+    "objectID": "reference/is_every_nth_row.html#returns",
+    "href": "reference/is_every_nth_row.html#returns",
+    "title": "is_every_nth_row",
+    "section": "Returns",
+    "text": "Returns\n\n : pl.Expr\n\nA boolean Polars expression.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "is_every_nth_row"
+    ]
+  },
+  {
+    "objectID": "reference/is_every_nth_row.html#examples",
+    "href": "reference/is_every_nth_row.html#examples",
+    "title": "is_every_nth_row",
+    "section": "Examples",
+    "text": "Examples\nMark every second row:\n\nimport polars as pl\nimport turtle_island as ti\n\ndf = pl.DataFrame({\"x\": [1, 2, 3, 4, 5]})\ndf.with_columns(ti.is_every_nth_row(2))\n\n\nshape: (5, 2)xbool_nth_rowi64bool1true2false3true4false5true\n\n\nTo invert the result, use either the ~ operator or pl.Expr.not_():\n\ndf.with_columns(\n    ~ti.is_every_nth_row(2).alias(\"~2\"),\n    ti.is_every_nth_row(2).not_().alias(\"not_2\"),\n)\n\n\nshape: (5, 3)x~2not_2i64boolbool1falsefalse2truetrue3falsefalse4truetrue5falsefalse\n\n\nUse offset= to shift the starting index:\n\ndf.with_columns(ti.is_every_nth_row(3, 1))\n\n\nshape: (5, 2)xbool_nth_rowi64bool1false2true3false4false5true\n\n\nFor reference, here’s the output using pl.Expr.gather_every():\n\ndf.select(pl.col(\"x\").gather_every(3, 1))\n\n\nshape: (2, 1)xi6425\n\n\nYou can also combine multiple is_every_nth_row() expressions to construct more complex row selections. For example, to select rows that are part of every second or every third row:\n\ndf.select(\n    ti.is_every_nth_row(2).alias(\"2\"),\n    ti.is_every_nth_row(3).alias(\"3\"),\n    ti.is_every_nth_row(2).or_(ti.is_every_nth_row(3)).alias(\"2_or_3\")\n)\n\n\nshape: (5, 3)232_or_3boolboolbooltruetruetruefalsefalsefalsetruefalsetruefalsetruetruetruefalsetrue",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "is_every_nth_row"
+    ]
+  },
+  {
+    "objectID": "reference/index.html",
+    "href": "reference/index.html",
+    "title": "API Reference",
+    "section": "",
+    "text": "Expressions for general-purpose data transformation.\n\n\n\nbulk_append\nCombines multiple Polars expressions using pl.Expr.append() internally.\n\n\nbucketize\nReturns a Polars expression that assigns a label to each row based on its index, cycling through the provided expressions in a round-robin fashion.\n\n\nbucketize_lit\nReturns a Polars expression that assigns a label to each row based on its index, cycling through the provided items in a round-robin fashion.\n\n\ncase_when\nSimplifies conditional logic in Polars by chaining multiple when‑then‑otherwise expressions.\n\n\ncycle\nReturn a Polars expression that cycles the rows by a given offset.\n\n\nis_every_nth_row\nReturns a Polars expression that is True for every n-th row (index modulo n equals 0).\n\n\nshift\nA variant of pl.Expr.shift() that allows filling shifted values using another Polars expression.\n\n\nmake_concat_str\nConstruct a concatenated string expression by treating column names as placeholders within a template string.\n\n\nmake_index\nReturns a Polars expression that creates a virtual row index.\n\n\nmove_cols_to_end\nReturns a list of Polars expressions that reorder columns so the specified columns appear last.\n\n\nmove_cols_to_start\nReturns a list of Polars expressions that reorder columns so the specified columns appear first.\n\n\n\n\n\n\nExpressions for generating HTML tags.\n\n\n\nmake_hyperlink\nReturns a Polars expression that generates an HTML hyperlink (&lt;a&gt; tag) for each row.\n\n\nmake_tooltip\nReturns a Polars expression that generates an HTML tooltip for each row.",
+    "crumbs": [
+      "API Reference"
+    ]
+  },
+  {
+    "objectID": "reference/index.html#general",
+    "href": "reference/index.html#general",
+    "title": "API Reference",
+    "section": "",
+    "text": "Expressions for general-purpose data transformation.\n\n\n\nbulk_append\nCombines multiple Polars expressions using pl.Expr.append() internally.\n\n\nbucketize\nReturns a Polars expression that assigns a label to each row based on its index, cycling through the provided expressions in a round-robin fashion.\n\n\nbucketize_lit\nReturns a Polars expression that assigns a label to each row based on its index, cycling through the provided items in a round-robin fashion.\n\n\ncase_when\nSimplifies conditional logic in Polars by chaining multiple when‑then‑otherwise expressions.\n\n\ncycle\nReturn a Polars expression that cycles the rows by a given offset.\n\n\nis_every_nth_row\nReturns a Polars expression that is True for every n-th row (index modulo n equals 0).\n\n\nshift\nA variant of pl.Expr.shift() that allows filling shifted values using another Polars expression.\n\n\nmake_concat_str\nConstruct a concatenated string expression by treating column names as placeholders within a template string.\n\n\nmake_index\nReturns a Polars expression that creates a virtual row index.\n\n\nmove_cols_to_end\nReturns a list of Polars expressions that reorder columns so the specified columns appear last.\n\n\nmove_cols_to_start\nReturns a list of Polars expressions that reorder columns so the specified columns appear first.",
+    "crumbs": [
+      "API Reference"
+    ]
+  },
+  {
+    "objectID": "reference/index.html#html",
+    "href": "reference/index.html#html",
+    "title": "API Reference",
+    "section": "",
+    "text": "Expressions for generating HTML tags.\n\n\n\nmake_hyperlink\nReturns a Polars expression that generates an HTML hyperlink (&lt;a&gt; tag) for each row.\n\n\nmake_tooltip\nReturns a Polars expression that generates an HTML tooltip for each row.",
+    "crumbs": [
+      "API Reference"
+    ]
+  },
+  {
+    "objectID": "reference/case_when.html",
+    "href": "reference/case_when.html",
+    "title": "case_when",
+    "section": "",
+    "text": "case_when(caselist, otherwise=None)\nSimplifies conditional logic in Polars by chaining multiple when‑then‑otherwise expressions.\nInspired by pd.Series.case_when(), this function offers a more ergonomic way to express chained conditional logic with Polars expressions.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "case_when"
+    ]
+  },
+  {
+    "objectID": "reference/case_when.html#parameters",
+    "href": "reference/case_when.html#parameters",
+    "title": "case_when",
+    "section": "Parameters",
+    "text": "Parameters\n\ncaselist : Sequence[tuple[pl.Expr | tuple[pl.Expr], pl.Expr]]\n\nA sequence of tuples where each tuple represents a when and then branch. This function accepts three input forms (see examples below). Each tuple is evaluated in order from top to bottom. For each tuple, the expressions before the final element are treated as when conditions and combined with &. If the combined condition evaluates to True, the corresponding then expression (the last element) is returned and the evaluation stops. If no condition matches any tuple, the otherwise expression is used as the fallback.\n\notherwise : pl.Expr | None = None\n\nFallback expression used when no conditions match.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "case_when"
+    ]
+  },
+  {
+    "objectID": "reference/case_when.html#returns",
+    "href": "reference/case_when.html#returns",
+    "title": "case_when",
+    "section": "Returns",
+    "text": "Returns\n\n : pl.Expr\n\nA single Polars expression suitable for use in transformations.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "case_when"
+    ]
+  },
+  {
+    "objectID": "reference/case_when.html#examples",
+    "href": "reference/case_when.html#examples",
+    "title": "case_when",
+    "section": "Examples",
+    "text": "Examples\nThe example below demonstrates all three supported input forms.\nexpr1 uses the simplest form, where each tuple contains a single when condition followed by its corresponding then expression.\nexpr2 shows tuples with multiple when conditions listed before the final then expression. These conditions are implicitly combined with &.\nexpr3 uses a tuple as the first element of each tuple, containing multiple when conditions which are also combined with & before evaluation.\n\nimport polars as pl\nimport turtle_island as ti\n\ndf = pl.DataFrame({\"x\": [1, 2, 3, 4], \"y\": [5, 6, 7, 8]})\n\nexpr1 = ti.case_when(\n    caselist=[\n        (pl.col(\"x\") &lt; 2, pl.lit(\"small\")),\n        (pl.col(\"x\") &lt; 4, pl.lit(\"medium\")),\n    ],\n    otherwise=pl.lit(\"large\"),\n).alias(\"size1\")\n\nexpr2 = ti.case_when(\n    caselist=[\n        (pl.col(\"x\") &lt; 3, pl.col(\"y\") &lt; 6, pl.lit(\"small\")),\n        (pl.col(\"x\") &lt; 4, pl.col(\"y\") &lt; 8, pl.lit(\"medium\")),\n    ],\n    otherwise=pl.lit(\"large\"),\n).alias(\"size2\")\n\nexpr3 = ti.case_when(\n    caselist=[\n        ((pl.col(\"x\") &lt; 3, pl.col(\"y\") &lt; 6), pl.lit(\"small\")),\n        ((pl.col(\"x\") &lt; 4, pl.col(\"y\") &lt; 8), pl.lit(\"medium\")),\n    ],\n    otherwise=pl.lit(\"large\"),\n).alias(\"size3\")\n\ndf.with_columns(expr1, expr2, expr3)\n\n\nshape: (4, 5)xysize1size2size3i64i64strstrstr15\"small\"\"small\"\"small\"26\"medium\"\"medium\"\"medium\"37\"medium\"\"medium\"\"medium\"48\"large\"\"large\"\"large\"",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "case_when"
+    ]
+  },
+  {
+    "objectID": "reference/bucketize_lit.html",
+    "href": "reference/bucketize_lit.html",
+    "title": "bucketize_lit",
+    "section": "",
+    "text": "bucketize_lit(*items, coalesce_to=None)\nReturns a Polars expression that assigns a label to each row based on its index, cycling through the provided items in a round-robin fashion.\nbucketize_lit() is a simplified version of bucketize(), designed for common use cases involving literal values. For more advanced scenarios, consider using bucketize() directly.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "bucketize_lit"
+    ]
+  },
+  {
+    "objectID": "reference/bucketize_lit.html#parameters",
+    "href": "reference/bucketize_lit.html#parameters",
+    "title": "bucketize_lit",
+    "section": "Parameters",
+    "text": "Parameters\n\nitems : Any = ()\n\nLiteral values to cycle through. All items must be of the same type, and at least two must be provided. See the table below for supported types and their conversions.\n\ncoalesce_to : pl.DataType | None = None\n\nAn optional Polars data type to cast the resulting expression to.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "bucketize_lit"
+    ]
+  },
+  {
+    "objectID": "reference/bucketize_lit.html#returns",
+    "href": "reference/bucketize_lit.html#returns",
+    "title": "bucketize_lit",
+    "section": "Returns",
+    "text": "Returns\n\n : pl.Expr\n\nA Polars expression that cycles through the provided values based on the row index modulo.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "bucketize_lit"
+    ]
+  },
+  {
+    "objectID": "reference/bucketize_lit.html#supported-type-conversions",
+    "href": "reference/bucketize_lit.html#supported-type-conversions",
+    "title": "bucketize_lit",
+    "section": "Supported Type Conversions",
+    "text": "Supported Type Conversions\n\n\n\nPython Type\nConverted To\n\n\n\n\nbool\npl.Boolean\n\n\ndatetime.datetime\npl.Datetime\n\n\ndatetime.date\npl.Date\n\n\ndatetime.time\npl.Time\n\n\ndatetime.timedelta\npl.Duration\n\n\nint\npl.Int64\n\n\nfloat\npl.Float64\n\n\nstr\npl.String\n\n\nlist, tuple\npl.List\n\n\nOthers\nno cast involved",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "bucketize_lit"
+    ]
+  },
+  {
+    "objectID": "reference/bucketize_lit.html#examples",
+    "href": "reference/bucketize_lit.html#examples",
+    "title": "bucketize_lit",
+    "section": "Examples",
+    "text": "Examples\nCycle through boolean values to mark alternating rows:\n\nimport polars as pl\nimport turtle_island as ti\n\ndf = pl.DataFrame({\"x\": [1, 2, 3, 4, 5]})\ndf.with_columns(ti.bucketize_lit(True, False).alias(\"bucketized\"))\n\n\nshape: (5, 2)xbucketizedi64bool1true2false3true4false5true\n\n\nCast the result to a specific data type using coalesce_to=:\n\ndf.with_columns(\n    ti.bucketize_lit(True, False, coalesce_to=pl.Int64).alias(\"bucketized\")\n)\n\n\nshape: (5, 2)xbucketizedi64i641120314051",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "bucketize_lit"
+    ]
+  },
+  {
+    "objectID": "articles/intro.html",
+    "href": "articles/intro.html",
+    "title": "🐢Turtle Island",
+    "section": "",
+    "text": "Turtle Island is a lightweight utility library that provides helper functions to reduce boilerplate when writing Polars expressions. It aims to simplify common expression patterns and improve developer productivity when working with the Polars API.\n\n\n\n\n\n\nDisclaimer\n\n\n\nTurtle Island is in early development. The API is still evolving and may change without notice. Use with caution in production environments.\n\n\n\n\nTurtle Island is not yet published on PyPI. The recommended way to install it is using uv add:\nuv add git+https://github.com/jrycw/turtle-island.git\n\n\n\nTo keep your code clean and idiomatic, it’s recommended to import Turtle Island as a top-level module:\nimport turtle_island as ti\n\n\n\nThe core spirit of Turtle Island is to embrace expressions over columns.\nWhen wrangling data, it’s common to create temporary helper columns as part of the transformation process. However, many of these columns are just intermediate artifacts — not part of the final output we actually want. They exist solely to assist with intermediate steps.\nPolars offers a powerful distinction between contexts and expressions, allowing us to focus on expression-based transformations without needing to materialize every intermediate result as a column. Turtle Island builds on this principle, encouraging users to rely more on expressions — flexible, composable, and context-aware — rather than temporary columns.\nLet’s walk through an example to clarify this approach.\n\n\n\nimport turtle_island as ti\nimport polars as pl\n\n\ndf = pl.DataFrame(\n    {\n        \"col1\": [1, 2, 3, 4, 5],\n        \"col2\": [6, 7, 8, 9, 10],\n        \"col3\": [11, 12, 13, 14, 15],\n    }\n)\n\nSay we have a DataFrame df, and we want to transform the values in col1 and col2 such that:\n\nIf the row index is odd (1st, 3rd, …), the values remain unchanged.\nIf the row index is even (2nd, 4th, …), the values should be taken from col3.\n\n\n\n\n\n(\n    df\n    .with_row_index()\n    .select(\n        pl.when(pl.col(\"index\").mod(2).eq(0))\n        .then(pl.col(\"col1\", \"col2\"))\n        .otherwise(\"col3\"),\n        \"col3\",\n    )\n)\n\n\nshape: (5, 3)col1col2col3i64i64i641611121212381314141451015\n\n\nUsing only native Polars, achieving this pattern typically requires multiple steps:\n\nAdd an index column using pl.DataFrame.with_row_index() to keep track of row positions.\nWrite a when-then-otherwise expression that evaluates whether (index % 2) == 0, and use it within a select() context alongside the col3 column.\n\n\n\n\nAt least two context operations are involved.\nPolars contexts run in parallel and should be minimized when possible.\nThis approach introduces column dependencies that must be materialized step by step, meaning the conditional logic can’t be written until the index column is created.\n\n\n\n\n\nWith Turtle Island, you can express the same logic in a single with_columns() context, thanks to expression-based helpers:\n\ndf.with_columns(\n    ti.case_when(\n        caselist=[(ti.is_every_nth_row(2), pl.col(\"col1\", \"col2\"))],\n        otherwise=\"col3\",\n    )\n)\n\n\nshape: (5, 3)col1col2col3i64i64i641611121212381314141451015\n\n\n\n\n\nti.is_every_nth_row() returns a Polars expression, not a materialized column.\nIt acts like a virtual column, usable directly in conditional logic.\nSince it’s an expression, it doesn’t introduce column dependencies or require sequencing through multiple contexts.\n\nAdditionally, ti.case_when() provides a more ergonomic way to write complex conditional logic. It’s fully optional, but especially helpful when dealing with multiple conditional branches. Personally, I’ve found it much cleaner and easier to maintain than chaining multiple when-then statements."
+  },
+  {
+    "objectID": "articles/intro.html#recommended-import",
+    "href": "articles/intro.html#recommended-import",
+    "title": "🐢Turtle Island",
+    "section": "",
+    "text": "To keep your code clean and idiomatic, it’s recommended to import Turtle Island as a top-level module:\nimport turtle_island as ti"
+  },
+  {
+    "objectID": "articles/intro.html#core-spirit",
+    "href": "articles/intro.html#core-spirit",
+    "title": "🐢Turtle Island",
+    "section": "",
+    "text": "The core spirit of Turtle Island is to embrace expressions over columns.\nWhen wrangling data, it’s common to create temporary helper columns as part of the transformation process. However, many of these columns are just intermediate artifacts — not part of the final output we actually want. They exist solely to assist with intermediate steps.\nPolars offers a powerful distinction between contexts and expressions, allowing us to focus on expression-based transformations without needing to materialize every intermediate result as a column. Turtle Island builds on this principle, encouraging users to rely more on expressions — flexible, composable, and context-aware — rather than temporary columns.\nLet’s walk through an example to clarify this approach.\n\n\n\nimport turtle_island as ti\nimport polars as pl\n\n\ndf = pl.DataFrame(\n    {\n        \"col1\": [1, 2, 3, 4, 5],\n        \"col2\": [6, 7, 8, 9, 10],\n        \"col3\": [11, 12, 13, 14, 15],\n    }\n)\n\nSay we have a DataFrame df, and we want to transform the values in col1 and col2 such that:\n\nIf the row index is odd (1st, 3rd, …), the values remain unchanged.\nIf the row index is even (2nd, 4th, …), the values should be taken from col3.\n\n\n\n\n\n(\n    df\n    .with_row_index()\n    .select(\n        pl.when(pl.col(\"index\").mod(2).eq(0))\n        .then(pl.col(\"col1\", \"col2\"))\n        .otherwise(\"col3\"),\n        \"col3\",\n    )\n)\n\n\nshape: (5, 3)col1col2col3i64i64i641611121212381314141451015\n\n\nUsing only native Polars, achieving this pattern typically requires multiple steps:\n\nAdd an index column using pl.DataFrame.with_row_index() to keep track of row positions.\nWrite a when-then-otherwise expression that evaluates whether (index % 2) == 0, and use it within a select() context alongside the col3 column.\n\n\n\n\nAt least two context operations are involved.\nPolars contexts run in parallel and should be minimized when possible.\nThis approach introduces column dependencies that must be materialized step by step, meaning the conditional logic can’t be written until the index column is created.\n\n\n\n\n\nWith Turtle Island, you can express the same logic in a single with_columns() context, thanks to expression-based helpers:\n\ndf.with_columns(\n    ti.case_when(\n        caselist=[(ti.is_every_nth_row(2), pl.col(\"col1\", \"col2\"))],\n        otherwise=\"col3\",\n    )\n)\n\n\nshape: (5, 3)col1col2col3i64i64i641611121212381314141451015\n\n\n\n\n\nti.is_every_nth_row() returns a Polars expression, not a materialized column.\nIt acts like a virtual column, usable directly in conditional logic.\nSince it’s an expression, it doesn’t introduce column dependencies or require sequencing through multiple contexts.\n\nAdditionally, ti.case_when() provides a more ergonomic way to write complex conditional logic. It’s fully optional, but especially helpful when dealing with multiple conditional branches. Personally, I’ve found it much cleaner and easier to maintain than chaining multiple when-then statements."
+  },
+  {
+    "objectID": "reference/bulk_append.html",
+    "href": "reference/bulk_append.html",
+    "title": "bulk_append",
+    "section": "",
+    "text": "bulk_append(*exprs)\nCombines multiple Polars expressions using pl.Expr.append() internally.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "bulk_append"
+    ]
+  },
+  {
+    "objectID": "reference/bulk_append.html#parameters",
+    "href": "reference/bulk_append.html#parameters",
+    "title": "bulk_append",
+    "section": "Parameters",
+    "text": "Parameters\n\nexprs : pl.Expr = ()\n\nOne or more Polars expressions to be appended in sequence.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "bulk_append"
+    ]
+  },
+  {
+    "objectID": "reference/bulk_append.html#returns",
+    "href": "reference/bulk_append.html#returns",
+    "title": "bulk_append",
+    "section": "Returns",
+    "text": "Returns\n\n : pl.Expr\n\nA single Polars expression resulting from appending all input expressions.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "bulk_append"
+    ]
+  },
+  {
+    "objectID": "reference/bulk_append.html#examples",
+    "href": "reference/bulk_append.html#examples",
+    "title": "bulk_append",
+    "section": "Examples",
+    "text": "Examples\n\nimport polars as pl\nimport turtle_island as ti\n\ndf = pl.DataFrame(\n    {\"a\": [1, 2, 3], \"b\": [\"x\", \"y\", \"z\"], \"c\": [4.4, 5.5, 6.6]}\n)\ndf.select(ti.bulk_append(pl.all().last(), pl.all().first()))\n\n\nshape: (2, 3)abci64strf643\"z\"6.61\"x\"4.4",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "bulk_append"
+    ]
+  },
+  {
+    "objectID": "reference/shift.html",
+    "href": "reference/shift.html",
+    "title": "shift",
+    "section": "",
+    "text": "shift(expr, offset=1, *, fill_expr)\nA variant of pl.Expr.shift() that allows filling shifted values using another Polars expression.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "shift"
+    ]
+  },
+  {
+    "objectID": "reference/shift.html#parameters",
+    "href": "reference/shift.html#parameters",
+    "title": "shift",
+    "section": "Parameters",
+    "text": "Parameters\n\nexpr : pl.Expr\n\nA single Polars expression to shift.\n\noffset : int = 1\n\nThe number of rows to shift. It must be a non-zero integer. A positive value shifts the column downward (forward), while a negative value shifts it upward (backward). Defaults to 1.\n\nfill_expr : pl.Expr\n\nExpression used to fill the shifted positions.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "shift"
+    ]
+  },
+  {
+    "objectID": "reference/shift.html#returns",
+    "href": "reference/shift.html#returns",
+    "title": "shift",
+    "section": "Returns",
+    "text": "Returns\n\n : pl.Expr\n\nA Polars expression with shifted values and custom fill logic.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "shift"
+    ]
+  },
+  {
+    "objectID": "reference/shift.html#examples",
+    "href": "reference/shift.html#examples",
+    "title": "shift",
+    "section": "Examples",
+    "text": "Examples\nShift values downward by 2:\n\nimport polars as pl\nimport turtle_island as ti\n\ndf = pl.DataFrame({\"x\": [1, 2, 3, 4], \"y\": [5, 6, 7, 8]})\ndf.with_columns(\n    ti.shift(pl.col(\"x\"), 2, fill_expr=pl.col(\"y\")).alias(\"shifted\")\n)\n\n\nshape: (4, 3)xyshiftedi64i64i64155266371482\n\n\nShift values upward by 3:\n\ndf.with_columns(\n    ti.shift(pl.col(\"x\"), -3, fill_expr=pl.col(\"y\")).alias(\"shifted\")\n)\n\n\nshape: (4, 3)xyshiftedi64i64i64154266377488",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "shift"
+    ]
+  },
+  {
+    "objectID": "articles/intro.html#installation",
+    "href": "articles/intro.html#installation",
+    "title": "🐢Turtle Island",
+    "section": "",
+    "text": "Turtle Island is not yet published on PyPI. The recommended way to install it is using uv add:\nuv add git+https://github.com/jrycw/turtle-island.git"
+  },
+  {
+    "objectID": "articles/howtos.html",
+    "href": "articles/howtos.html",
+    "title": "HOWTOs",
+    "section": "",
+    "text": "HOWTOs\n\nbulk_append()\n\nHow to prefix a row?"
+  },
+  {
+    "objectID": "reference/cycle.html",
+    "href": "reference/cycle.html",
+    "title": "cycle",
+    "section": "",
+    "text": "cycle(expr, offset=1)\nReturn a Polars expression that cycles the rows by a given offset.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "cycle"
+    ]
+  },
+  {
+    "objectID": "reference/cycle.html#parameters",
+    "href": "reference/cycle.html#parameters",
+    "title": "cycle",
+    "section": "Parameters",
+    "text": "Parameters\n\nexpr : \n\nA single Polars expression to apply the cycling operation on.\n\noffset : int = 1\n\nThe number of rows to cycle by. Positive values shift rows downward, and negative values shift rows upward. Defaults to 1.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "cycle"
+    ]
+  },
+  {
+    "objectID": "reference/cycle.html#returns",
+    "href": "reference/cycle.html#returns",
+    "title": "cycle",
+    "section": "Returns",
+    "text": "Returns\n\n : pl.Expr\n\nA Polars expression with values cyclically shifted.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "cycle"
+    ]
+  },
+  {
+    "objectID": "reference/cycle.html#examples",
+    "href": "reference/cycle.html#examples",
+    "title": "cycle",
+    "section": "Examples",
+    "text": "Examples\nCycle downward by 2 rows:\n\nimport polars as pl\nimport turtle_island as ti\n\ndf = pl.DataFrame({\"x\": [1, 2, 3, 4]})\ndf.with_columns(ti.cycle(pl.col(\"x\"), 2).alias(\"cycle\"))\n\n\nshape: (4, 2)xcyclei64i6413243142\n\n\nCycle upward by 4 rows (no visible change due to full cycle):\n\ndf.with_columns(ti.cycle(pl.col(\"x\"), -4).alias(\"cycle\"))\n\n\nshape: (4, 2)xcyclei64i6411223344",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "cycle"
+    ]
+  },
+  {
+    "objectID": "reference/make_concat_str.html",
+    "href": "reference/make_concat_str.html",
+    "title": "make_concat_str",
+    "section": "",
+    "text": "make_concat_str(template, *col_names, sep='[$X]', name='literal')\nConstruct a concatenated string expression by treating column names as placeholders within a template string.\nThis function simplifies string concatenation by allowing users to insert column values into a string template using a custom separator (sep=). It’s particularly useful when constructing long strings like HTML content.\nInternally, make_concat_str() splits the template= string based on the sep= value, then interleaves the literals with the specified column names using pl.concat_str().",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "make_concat_str"
+    ]
+  },
+  {
+    "objectID": "reference/make_concat_str.html#parameters",
+    "href": "reference/make_concat_str.html#parameters",
+    "title": "make_concat_str",
+    "section": "Parameters",
+    "text": "Parameters\n\ntemplate : str\n\nA string template where column placeholders are defined using the sep= string. Users are responsible for choosing a safe separator that won’t conflict with existing text. Common separators like “,” or “;” may cause issues if they appear elsewhere in the template.\n\ncol_names : str = ()\n\nOne or more column names to inject into the template string. These will be inserted at positions marked by sep=.\n\nsep : str = '[$X]'\n\nThe placeholder used to indicate where column names should be inserted within the template. Defaults to “[$X]”.\n\nname : str = 'literal'\n\nThe name of the resulting column. Defaults to “literal”.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "make_concat_str"
+    ]
+  },
+  {
+    "objectID": "reference/make_concat_str.html#returns",
+    "href": "reference/make_concat_str.html#returns",
+    "title": "make_concat_str",
+    "section": "Returns",
+    "text": "Returns\n\n : pl.Expr\n\nA Polars expression representing the final concatenated string.",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "make_concat_str"
+    ]
+  },
+  {
+    "objectID": "reference/make_concat_str.html#examples",
+    "href": "reference/make_concat_str.html#examples",
+    "title": "make_concat_str",
+    "section": "Examples",
+    "text": "Examples\nHere’s an example that builds an HTML &lt;p&gt; tag from a DataFrame:\n\nimport polars as pl\nimport turtle_island as ti\n\npl.Config.set_fmt_str_lengths(200)\ndf = pl.DataFrame({\"text\": [\"This is a simple paragraph of text.\"]})\nstyle = 'style=\"color: steelblue;\"'\nnew_df = df.with_columns(\n    ti.make_concat_str(f\"&lt;p {style}&gt;[$X]&lt;/p&gt;\", \"text\", name=\"p_tag\")\n)\nnew_df\n\n\nshape: (1, 2)textp_tagstrstr\"This is a simple paragraph of text.\"\"&lt;p style=\"color: steelblue;\"&gt;This is a simple paragraph of text.&lt;/p&gt;\"\n\n\n\nnew_df.style\n\n\n\n\n\n\n\n  text\n  p_tag\n\n\n\n  \n    This is a simple paragraph of text.\n    This is a simple paragraph of text.\n  \n\n\n\n\n\n\n        \n\n\nDid you notice that style is just a regular Python variable?\nWe’re dynamically injecting it with an f-string before passing it to make_concat_str().",
+    "crumbs": [
+      "API Reference",
+      "General",
+      "make_concat_str"
+    ]
+  }
+]

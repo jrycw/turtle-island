@@ -1,0 +1,67 @@
+# make_tooltip { #turtle_island.make_tooltip }
+
+```python
+make_tooltip(
+    label,
+    tooltip,
+    text_decoration_style='dotted',
+    color='blue',
+    *,
+    name='tooltip',
+)
+```
+
+Returns a Polars expression that generates an HTML tooltip for each row.
+
+::: {.callout-tip}
+# Credit: gt-extras
+This function is heavily inspired by the [gt-extras](https://github.com/posit-dev/gt-extras) package.
+:::
+
+## Parameters {.doc-section .doc-section-parameters}
+
+<code>[**label**]{.parameter-name} [:]{.parameter-annotation-sep} [str]{.parameter-annotation}</code>
+
+:   Column name containing the main text to display.
+
+<code>[**tooltip**]{.parameter-name} [:]{.parameter-annotation-sep} [str]{.parameter-annotation}</code>
+
+:   Column name containing containing the text shown when hovering over the label.
+
+<code>[**text_decoration_style**]{.parameter-name} [:]{.parameter-annotation-sep} [Literal\[\'solid\', \'dotted\', \'none\'\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'dotted\']{.parameter-default}</code>
+
+:   A string indicating the style of underline decoration. Options are `"solid"`, `"dotted"`, or `"none"`.
+
+<code>[**color**]{.parameter-name} [:]{.parameter-annotation-sep} [str \| Literal\[\'none\'\]]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'blue\']{.parameter-default}</code>
+
+:   A string indicating the text color. If "none", no color styling is applied.
+
+<code>[**name**]{.parameter-name} [:]{.parameter-annotation-sep} [str]{.parameter-annotation} [ = ]{.parameter-default-sep} [\'tooltip\']{.parameter-default}</code>
+
+:   The name of the resulting column. Defaults to "tooltip".
+
+## Returns {.doc-section .doc-section-returns}
+
+<code>[]{.parameter-name} [:]{.parameter-annotation-sep} [pl.Expr]{.parameter-annotation}</code>
+
+:   A Polars expression that creates an HTML string with tooltip functionality.
+
+## Examples {.doc-section .doc-section-examples}
+
+```{python}
+import polars as pl
+import turtle_island as ti
+
+pl.Config.set_fmt_str_lengths(200)
+df = pl.DataFrame(
+    {
+        "name": ["Turtle Island"],
+        "description": ["A Utility Kit for Polars Expressions"],
+    }
+)
+new_df = df.with_columns(ti.make_tooltip("name", "description"))
+new_df
+```
+```{python}
+new_df.style
+```

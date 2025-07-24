@@ -1,0 +1,22 @@
+# Sphinx inventory version 2
+# Project: turtle_island
+# Version: 0.0.9999
+# The remainder of this file is compressed using zlib.
+turtle_island.case_when py:function 1 reference/case_when.html#turtle_island.case_when -
+turtle_island.exprs.general.case_when py:function 1 reference/case_when.html#turtle_island.case_when turtle_island.case_when
+turtle_island.make_index py:function 1 reference/make_index.html#turtle_island.make_index -
+turtle_island.exprs.general.make_index py:function 1 reference/make_index.html#turtle_island.make_index turtle_island.make_index
+turtle_island.bucketize py:function 1 reference/bucketize.html#turtle_island.bucketize -
+turtle_island.exprs.general.bucketize py:function 1 reference/bucketize.html#turtle_island.bucketize turtle_island.bucketize
+turtle_island.bucketize_lit py:function 1 reference/bucketize_lit.html#turtle_island.bucketize_lit -
+turtle_island.exprs.general.bucketize_lit py:function 1 reference/bucketize_lit.html#turtle_island.bucketize_lit turtle_island.bucketize_lit
+turtle_island.is_every_nth_row py:function 1 reference/is_every_nth_row.html#turtle_island.is_every_nth_row -
+turtle_island.exprs.general.is_every_nth_row py:function 1 reference/is_every_nth_row.html#turtle_island.is_every_nth_row turtle_island.is_every_nth_row
+turtle_island.move_cols_to_start py:function 1 reference/move_cols_to_start.html#turtle_island.move_cols_to_start -
+turtle_island.exprs.general.move_cols_to_start py:function 1 reference/move_cols_to_start.html#turtle_island.move_cols_to_start turtle_island.move_cols_to_start
+turtle_island.move_cols_to_end py:function 1 reference/move_cols_to_end.html#turtle_island.move_cols_to_end -
+turtle_island.exprs.general.move_cols_to_end py:function 1 reference/move_cols_to_end.html#turtle_island.move_cols_to_end turtle_island.move_cols_to_end
+turtle_island.make_hyperlink py:function 1 reference/make_hyperlink.html#turtle_island.make_hyperlink -
+turtle_island.exprs.html.make_hyperlink py:function 1 reference/make_hyperlink.html#turtle_island.make_hyperlink turtle_island.make_hyperlink
+turtle_island.make_tooltip py:function 1 reference/make_tooltip.html#turtle_island.make_tooltip -
+turtle_island.exprs.html.make_tooltip py:function 1 reference/make_tooltip.html#turtle_island.make_tooltip turtle_island.make_tooltip
