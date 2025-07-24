@@ -6,7 +6,7 @@ __all__ = ["bulk_append", "case_when"]
 
 
 def case_when(
-    caselist: Sequence[tuple[pl.Expr | tuple[pl.Expr], pl.Expr]],
+    case_list: Sequence[tuple[pl.Expr | tuple[pl.Expr], pl.Expr]],
     otherwise: pl.Expr | None = None,
 ) -> pl.Expr:
     """
@@ -23,7 +23,7 @@ def case_when(
 
     Parameters
     ----------
-    caselist
+    case_list
         A sequence of tuples where each tuple represents a `when` and `then`
         branch. This function accepts three input forms (see examples below).
         Each tuple is evaluated in order from top to bottom. For each tuple, the
@@ -60,7 +60,7 @@ def case_when(
     df = pl.DataFrame({"x": [1, 2, 3, 4], "y": [5, 6, 7, 8]})
 
     expr1 = ti.case_when(
-        caselist=[
+        case_list=[
             (pl.col("x") < 2, pl.lit("small")),
             (pl.col("x") < 4, pl.lit("medium")),
         ],
@@ -68,7 +68,7 @@ def case_when(
     ).alias("size1")
 
     expr2 = ti.case_when(
-        caselist=[
+        case_list=[
             (pl.col("x") < 3, pl.col("y") < 6, pl.lit("small")),
             (pl.col("x") < 4, pl.col("y") < 8, pl.lit("medium")),
         ],
@@ -76,7 +76,7 @@ def case_when(
     ).alias("size2")
 
     expr3 = ti.case_when(
-        caselist=[
+        case_list=[
             ((pl.col("x") < 3, pl.col("y") < 6), pl.lit("small")),
             ((pl.col("x") < 4, pl.col("y") < 8), pl.lit("medium")),
         ],
@@ -89,7 +89,7 @@ def case_when(
 
     from polars.expr.whenthen import Then
 
-    first_case, *cases = caselist
+    first_case, *cases = case_list
 
     # first
     *first_whens, first_then = first_case

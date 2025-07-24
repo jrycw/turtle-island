@@ -7,7 +7,7 @@ import turtle_island as ti
 
 def test_case_when(df_abcd):
     expr_ti = ti.case_when(
-        caselist=[
+        case_list=[
             (pl.col("a") < 2, pl.col("a")),
             (pl.col("a") < 3, pl.col("a") * 2),
         ],
@@ -32,7 +32,7 @@ def test_case_when(df_abcd):
 def test_case_when_lit(df_x):
     # test the expression itself
     expr_ti = ti.case_when(
-        caselist=[
+        case_list=[
             (pl.col("x") < 2, pl.lit("small")),
             (pl.col("x") < 4, pl.lit("medium")),
         ],
@@ -57,7 +57,7 @@ def test_case_when_lit(df_x):
 
 def test_case_when_all_forms(df_xy):
     expr1 = ti.case_when(
-        caselist=[
+        case_list=[
             (pl.col("x") < 2, pl.lit("small")),
             (pl.col("x") < 4, pl.lit("medium")),
         ],
@@ -65,7 +65,7 @@ def test_case_when_all_forms(df_xy):
     ).alias("size1")
 
     expr2 = ti.case_when(
-        caselist=[
+        case_list=[
             (pl.col("x") < 3, pl.col("y") < 6, pl.lit("small")),
             (pl.col("x") < 4, pl.col("y") < 8, pl.lit("medium")),
         ],
@@ -73,7 +73,7 @@ def test_case_when_all_forms(df_xy):
     ).alias("size2")
 
     expr3 = ti.case_when(
-        caselist=[
+        case_list=[
             ((pl.col("x") < 3, pl.col("y") < 6), pl.lit("small")),
             ((pl.col("x") < 4, pl.col("y") < 8), pl.lit("medium")),
         ],
