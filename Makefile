@@ -1,4 +1,7 @@
-.PHONY: fmt install preview test_pre test testv0 testv1 testv2 testv3 mypy version tag
+.PHONY: init fmt install preview test_pre test testv0 testv1 testv2 testv3 mypy version tag
+
+init:
+	uv sync --locked --all-extras --dev
 
 fmt:
 	ruff format tests/ src/ && \
