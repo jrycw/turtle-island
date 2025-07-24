@@ -18,10 +18,10 @@ def _make_bucketize_casewhen(
     n = len(exprs)
     mod_expr = make_index(name=_get_unique_name()).mod(n)
     *whenthen_exprs, otherwise_expr = exprs
-    caselist: list[tuple[pl.Expr, pl.Expr]] = [
+    case_list: list[tuple[pl.Expr, pl.Expr]] = [
         (mod_expr.eq(i), expr) for i, expr in enumerate(whenthen_exprs)
     ]
-    return case_when(caselist, otherwise_expr)
+    return case_when(case_list, otherwise_expr)
 
 
 def _get_move_cols(

@@ -38,8 +38,8 @@ A more ergonomic way to write chained `when-then-otherwise` logic in Polars:
 df = pl.DataFrame({"x": [1, 2, 3, 4]})
 
 expr_ti = ti.case_when(
-    caselist=[(pl.col("x") < 2, pl.lit("small")),
-              (pl.col("x") < 4, pl.lit("medium"))],
+    case_list=[(pl.col("x") < 2, pl.lit("small")),
+               (pl.col("x") < 4, pl.lit("medium"))],
     otherwise=pl.lit("large"),
 ).alias("size_ti")
 

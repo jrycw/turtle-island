@@ -412,11 +412,11 @@ def shift(expr: pl.Expr, offset: int = 1, *, fill_expr: pl.Expr) -> pl.Expr:
     index_expr = make_index(name=_get_unique_name())
     if offset > 0:
         # n is positive => pre_filled
-        caselist = [(index_expr.ge(offset), shifted_expr)]
+        case_list = [(index_expr.ge(offset), shifted_expr)]
     else:
         # n is negative => back_filled
-        caselist = [(index_expr.lt(pl.len() + offset), shifted_expr)]
-    return case_when(caselist, fill_expr)
+        case_list = [(index_expr.lt(pl.len() + offset), shifted_expr)]
+    return case_when(case_list, fill_expr)
 
 
 def cycle(expr, offset: int = 1) -> pl.Expr:
