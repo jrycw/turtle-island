@@ -455,6 +455,11 @@ def test_make_concat_str():
         ]
     )
 
+    # Since `.alias()` is now added at the end of `make_concat_str()`,
+    # the following assertion will no longer hold:
+    # assert concat_str_expr.meta.eq(expected)
+
+    # Instead, verify the actual result
     assert_frame_equal(df.select(concat_str_expr), df.select(expected))
 
 
