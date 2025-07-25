@@ -6,7 +6,7 @@ from polars._typing import PolarsDataType
 
 from .._utils import _cast_datatype, _get_unique_name, _litify
 from ._helpers import _get_move_cols, _make_bucketize_casewhen
-from .common import case_when
+from .common import shift
 from .core import make_index
 
 __all__ = [
@@ -14,7 +14,6 @@ __all__ = [
     "bucketize_lit",
     "cycle",
     "is_every_nth_row",
-    "shift",
     "make_concat_str",
     "move_cols_to_end",
     "move_cols_to_start",
@@ -354,69 +353,6 @@ def move_cols_to_end(
     """
     _columns = _get_move_cols(columns, *more_columns)
     return [pl.exclude(_columns), pl.col(_columns)]
-
-
-def shift(expr: pl.Expr, offset: int = 1, *, fill_expr: pl.Expr) -> pl.Expr:
-    """
-    A variant of [pl.Expr.shift()](https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.Expr.shift.html#polars.Expr.shift) that allows filling shifted values using another Polars expression.
-
-    ::: {.callout-warning}
-    ### Note: When `abs(offset)` exceeds the total number of rows
-
-    Since expressions are evaluated lazily at runtime, their validity cannot be
-    verified during construction. If `abs(offset)` equals or exceeds the total row count, the result
-    may behave like a full-column replacement using `fill_expr=`.
-    :::
-
-    Parameters
-    ----------
-    expr
-        A single Polars expression to shift.
-
-    offset
-        The number of rows to shift. It must be a non-zero integer.
-        A positive value shifts the column downward (forward), while a negative value shifts it upward (backward).
-
-    fill_expr
-        Expression used to fill the shifted positions.
-
-    Returns
-    -------
-    pl.Expr
-        A Polars expression with shifted values and custom fill logic.
-
-    Examples
-    -------
-    Shift values downward by 2:
-    ```{python}
-    import polars as pl
-    import turtle_island as ti
-
-    df = pl.DataFrame({"x": [1, 2, 3, 4], "y": [5, 6, 7, 8]})
-    df.with_columns(
-        ti.shift(pl.col("x"), 2, fill_expr=pl.col("y")).alias("shifted")
-    )
-    ```
-    Shift values upward by 3:
-    ```{python}
-    df.with_columns(
-        ti.shift(pl.col("x"), -3, fill_expr=pl.col("y")).alias("shifted")
-    )
-    ```
-    """
-    if not isinstance(offset, int):
-        raise ValueError("`offset=` must be an integer.")
-    if offset == 0:
-        return expr
-    shifted_expr = expr.shift(offset)
-    index_expr = make_index(name=_get_unique_name())
-    if offset > 0:
-        # n is positive => pre_filled
-        case_list = [(index_expr.ge(offset), shifted_expr)]
-    else:
-        # n is negative => back_filled
-        case_list = [(index_expr.lt(pl.len() + offset), shifted_expr)]
-    return case_when(case_list, fill_expr)
 
 
 def cycle(expr, offset: int = 1) -> pl.Expr:

@@ -48,6 +48,7 @@ quartodoc:
         - case_when
         - cycle
         - is_every_nth_row
+        - prepend
         - shift
         - make_concat_str
         - make_index

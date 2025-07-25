@@ -346,50 +346,6 @@ def test_is_every_nth_row_raise_neg_offset(offset):
     assert "`offset=` cannot be negative." in exc_info.value.args[0]
 
 
-def test_shift_pre_fill(df_x):
-    new_df = df_x.select(
-        ti.shift(pl.col("x"), 2, fill_expr=pl.col("x").add(100))
-    )
-    expected = pl.DataFrame({"x": [101, 102, 1, 2]})
-    assert_frame_equal(new_df, expected)
-
-
-def test_shift_back_fill(df_x):
-    new_df = df_x.select(
-        ti.shift(pl.col("x"), -2, fill_expr=pl.col("x").add(100))
-    )
-    expected = pl.DataFrame({"x": [3, 4, 103, 104]})
-    assert_frame_equal(new_df, expected)
-
-
-def test_shift_default(df_x):
-    new_df = df_x.select(ti.shift(pl.col("x"), fill_expr=pl.col("x").add(100)))
-    expected = pl.DataFrame({"x": [101, 1, 2, 3]})
-    assert_frame_equal(new_df, expected)
-
-
-def test_shift_pl_all(df_xy):
-    new_df = df_xy.with_columns(
-        ti.shift(pl.all(), fill_expr=pl.col("y").alias("z").add(100))
-    )
-    expected = pl.DataFrame({"x": [105, 1, 2, 3], "y": [105, 5, 6, 7]})
-    assert_frame_equal(new_df, expected)
-
-
-def test_shift_n_zero_return_self():
-    expr = pl.col("x")
-    expected = ti.shift(expr, 0, fill_expr=pl.col("x").add(100))
-
-    assert expr.meta.eq(expected)
-
-
-def test_shift_raise_offset_not_integer():
-    with pytest.raises(ValueError) as exc_info:
-        ti.shift(pl.col("x"), 1.1, fill_expr=pl.col("x").add(100))
-
-    assert "`offset=` must be an integer." in exc_info.value.args[0]
-
-
 @pytest.mark.parametrize(
     "offset, result",
     [

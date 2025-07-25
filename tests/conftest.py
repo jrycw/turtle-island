@@ -15,6 +15,16 @@ def df_xy():
 
 
 @pytest.fixture(scope="module")
+def df_xy_list():
+    return pl.DataFrame(
+        {
+            "x": [[1, 2, 3, 4], [5, 6, 7, 8]],
+            "y": [[9, 10, 11, 12], [13, 14, 15, 16]],
+        }
+    )
+
+
+@pytest.fixture(scope="module")
 def df_n():
     """
     n_row = 9
