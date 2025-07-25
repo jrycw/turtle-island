@@ -1,4 +1,4 @@
-from .exprs.common import bulk_append, case_when
+from .exprs.common import bulk_append, case_when, prepend, shift
 from .exprs.core import make_index
 from .exprs.general import (
     bucketize,
@@ -8,7 +8,6 @@ from .exprs.general import (
     make_concat_str,
     move_cols_to_end,
     move_cols_to_start,
-    shift,
 )
 from .exprs.html import make_hyperlink, make_tooltip
 
@@ -21,6 +20,7 @@ __all__ = [
     "case_when",
     "cycle",
     "is_every_nth_row",
+    "prepend",
     "shift",
     "make_index",
     "move_cols_to_end",
