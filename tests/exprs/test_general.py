@@ -3,7 +3,7 @@ import pytest
 from polars.testing import assert_frame_equal
 
 import turtle_island as ti
-from turtle_island.exprs.general import _get_move_cols
+from turtle_island.exprs.general import _get_move_cols, _make_concat_str
 
 
 def test__get_move_cols():
@@ -446,6 +446,34 @@ def test_cycle_list_eval(df_xy_list):
     assert_frame_equal(new_df, expected)
 
 
+def test__make_concat_str():
+    """
+    The quick brown fox jumps over the lazy dog.
+    """
+    fox, dog = "fox", "dog"
+    df = pl.DataFrame({"fox": [fox], "dog": [dog]})
+    quick, lazy = "quick", "lazy"
+    concat_str_expr = _make_concat_str(
+        f"The {quick} brown [$X] jumps over the {lazy} [$X].",
+        fox,
+        dog,
+        sep="[$X]",
+    )
+    expected = pl.concat_str(
+        [
+            pl.lit(f"The {quick} brown "),
+            fox,
+            pl.lit(f" jumps over the {lazy} "),
+            dog,
+            pl.lit("."),
+        ]
+    )
+
+    assert concat_str_expr.meta.eq(expected)
+
+    assert_frame_equal(df.select(concat_str_expr), df.select(expected))
+
+
 def test_make_concat_str():
     """
     The quick brown fox jumps over the lazy dog.
@@ -469,7 +497,7 @@ def test_make_concat_str():
     )
 
     # Since `.alias()` is now added at the end of `make_concat_str()`,
-    # the following assertion will no longer hold:
+    # the following assertion will no longer hold(checked by `test__make_concat_str()`):
     # assert concat_str_expr.meta.eq(expected)
 
     # Instead, verify the actual result
