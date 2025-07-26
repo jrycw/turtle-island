@@ -104,14 +104,35 @@ def case_when(
     df.with_columns(expr1, expr2, expr3)
     ```
     ### List Namespace Context
-    ::: {.callout-note}
-    ### To Be Determined
+    ::: {.callout-tip}
+    ### Working with Lists as Series
 
-    `case_when()` is a core feature in **Turtle Island** and works within the
-    list namespace. However, there are several details to consider (as in
-    **Turtle Island**) before fully benefiting from it. A simple, concise
-    example using `case_when()` is still in progress.
+    In the `pl.List` namespace, it may be easier to think of each row as an
+    element in a list. Conceptually, you're working with a `pl.Series`, where
+    each row corresponds to one item in the list.
     :::
+
+    Check whether each string in the list starts with the letter "a" or "A":
+    ```{python}
+    df2 = pl.DataFrame(
+        {
+            "col1": [
+                ["orange", "Lemon", "Kiwi"],
+                ["Acerola", "Cherry", "Papaya"],
+            ],
+            "col2": [
+                ["Grape", "Avocado", "apricot"],
+                ["Banana", "apple", "Mango"],
+            ],
+        }
+    )
+
+    case_list = [
+        (pl.element().str.to_lowercase().str.starts_with("a"), pl.lit("Y"))
+    ]
+    otherwise = pl.lit("N")
+
+    (df2.with_columns(pl.all().list.eval(ti.case_when(case_list, otherwise))))
     ```
     """
 
