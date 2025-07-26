@@ -543,7 +543,7 @@ def cycle(expr, offset: int = 1) -> pl.Expr:
     if offset == 0:
         return expr
     n = pl.len() - (offset % pl.len())
-    return expr.slice(n).append(expr.slice(0, n))
+    return expr.slice(n).append(expr.head(n))
 
 
 def make_concat_str(
