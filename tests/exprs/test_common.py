@@ -93,6 +93,14 @@ def test_case_when_all_forms(df_xy):
 
 
 def test_bulk_append(df_abcd):
+    exprs = [pl.col("a").last().cast(pl.Float64), pl.col("b").first()]
+    new_df = df_abcd.select(ti.bulk_append(*exprs))
+    expected = pl.DataFrame({"a": [3.0, 1.11]})
+
+    assert_frame_equal(new_df, expected)
+
+
+def test_bulk_append_pl_all(df_abcd):
     exprs = [pl.all().last(), pl.all().first()]
     new_df = df_abcd.select(ti.bulk_append(*exprs))
     expected = pl.DataFrame(
@@ -101,6 +109,22 @@ def test_bulk_append(df_abcd):
             "b": [3.33, 1.11],
             "c": [6, 4],
             "d": ["z", "x"],
+        }
+    )
+
+    assert_frame_equal(new_df, expected)
+
+
+def test_bulk_append_list_eval(df_xy_list):
+    new_df = df_xy_list.select(
+        pl.all().list.eval(
+            ti.bulk_append(pl.element().first(), pl.element().last())
+        )
+    )
+    expected = pl.DataFrame(
+        {
+            "x": [[1, 4], [5, 8]],
+            "y": [[9, 12], [13, 16]],
         }
     )
 
@@ -152,6 +176,22 @@ def test_shift_offset_zero_return_self():
     expected = ti.shift(expr, 0, fill_expr=pl.col("x").add(100))
 
     assert expr is expected
+
+
+def test_shift_list_eval(df_xy_list):
+    new_df = df_xy_list.select(
+        pl.all().list.eval(
+            ti.shift(pl.element(), 2, fill_expr=pl.element().add(10))
+        )
+    )
+    expected = pl.DataFrame(
+        {
+            "x": [[11, 12, 1, 2], [15, 16, 5, 6]],
+            "y": [[19, 20, 9, 10], [23, 24, 13, 14]],
+        }
+    )
+
+    assert_frame_equal(new_df, expected)
 
 
 def test_shift_raise_offset_not_integer():
