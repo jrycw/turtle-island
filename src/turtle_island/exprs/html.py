@@ -13,7 +13,7 @@ def make_hyperlink(
     """
     Returns a Polars expression that generates an HTML hyperlink (`<a>` tag) for each row.
 
-    ::: {.callout-tip}
+    ::: {.callout-tip collapse="true"}
     # Credit: gt-extras
     This function is heavily inspired by the [gt-extras](https://github.com/posit-dev/gt-extras) package.
     :::
@@ -77,7 +77,7 @@ def make_tooltip(
     """
     Returns a Polars expression that generates an HTML tooltip for each row.
 
-    ::: {.callout-tip}
+    ::: {.callout-tip collapse="true"}
     # Credit: gt-extras
     This function is heavily inspired by the [gt-extras](https://github.com/posit-dev/gt-extras) package.
     :::

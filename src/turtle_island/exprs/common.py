@@ -32,7 +32,7 @@ def case_when(
     Inspired by [pd.Series.case_when()](https://pandas.pydata.org/docs/reference/api/pandas.Series.case_when.html), this function offers a more ergonomic way to express chained
     conditional logic with Polars expressions.
 
-    ::: {.callout-warning}
+    ::: {.callout-warning collapse="true"}
     ### Keyword shortcut is not supported
     Passing multiple keyword arguments as equality conditions—such as `x=123` in
     `pl.when()`—is not supported in this function.
@@ -104,7 +104,7 @@ def case_when(
     df.with_columns(expr1, expr2, expr3)
     ```
     ### List Namespace Context
-    ::: {.callout-tip}
+    ::: {.callout-tip collapse="true"}
     ### Working with Lists as Series
 
     In the `pl.List` namespace, it may be easier to think of each row as an
@@ -159,7 +159,7 @@ def bulk_append(*exprs: pl.Expr) -> pl.Expr:
     """
     Combines multiple Polars expressions using [pl.Expr.append()](https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.Expr.append.html#polars-expr-append) internally.
 
-    ::: {.callout-tip}
+    ::: {.callout-tip collapse="true"}
     ### Rechunk
 
     You may consider rechunking the result of `bulk_append()` using
@@ -180,15 +180,14 @@ def bulk_append(*exprs: pl.Expr) -> pl.Expr:
     Examples
     -------
     ### DataFrame Context
-    ::: {.callout-warning}
+    ::: {.callout-caution collapse="true"}
     ### Caution When Used in `.with_columns()` Context
 
     Because `bulk_append()` may change the total number of rows, use it with
     caution inside `.with_columns()`.
     :::
 
-    `bulk_append()` takes two expressions and appends their results.
-    In this example, we append the first and last values:
+    Append the last value to the first:
     ```{python}
     import polars as pl
     import turtle_island as ti
@@ -199,7 +198,7 @@ def bulk_append(*exprs: pl.Expr) -> pl.Expr:
     df.select(ti.bulk_append(pl.all().first(), pl.all().last()))
     ```
     ### List Namespace Context
-    ::: {.callout-tip}
+    ::: {.callout-tip collapse="true"}
     ### Working with Lists as Series
 
     In the `pl.List` namespace, it may be easier to think of each row as an
@@ -207,7 +206,7 @@ def bulk_append(*exprs: pl.Expr) -> pl.Expr:
     each row corresponds to one item in the list.
     :::
 
-    A similar operation applies to lists, where the first and last elements are appended.
+    A similar operation applies to lists, where the last element is appended to the first.
     ```{python}
     df2 = pl.DataFrame(
         {
@@ -234,7 +233,7 @@ def shift(expr: pl.Expr, offset: int = 1, *, fill_expr: pl.Expr) -> pl.Expr:
     """
     A variant of [pl.Expr.shift()](https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.Expr.shift.html#polars.Expr.shift) that allows filling shifted values using another Polars expression.
 
-    ::: {.callout-warning}
+    ::: {.callout-warning collapse="true"}
     ### When `abs(offset)` exceeds the total number of rows
 
     Since expressions are evaluated lazily at runtime, their validity cannot be
@@ -281,7 +280,7 @@ def shift(expr: pl.Expr, offset: int = 1, *, fill_expr: pl.Expr) -> pl.Expr:
     )
     ```
     ### List Namespace Context
-    ::: {.callout-tip}
+    ::: {.callout-tip collapse="true"}
     ### Working with Lists as Series
 
     In the `pl.List` namespace, it may be easier to think of each row as an
@@ -322,7 +321,7 @@ def prepend(
     current DataFrame—or Series if used within the `pl.List` namespace—will be
     used by default, based on the `offset=` value.
 
-    ::: {.callout-caution}
+    ::: {.callout-important collapse="false"}
     ### Unconventional Operation
 
     `prepend()` is an unconventional operation in Polars. In most cases, similar
@@ -336,7 +335,7 @@ def prepend(
     when working within the `pl.List` namespace.
     :::
 
-    ::: {.callout-warning}
+    ::: {.callout-warning collapse="true"}
     ### When `offset=` exceeds the total number of rows
 
     Keep in mind that `prepend()` dynamically depends on the total number of
@@ -348,7 +347,7 @@ def prepend(
     need to call `prepend()` multiple times manually.
     :::
 
-    ::: {.callout-tip}
+    ::: {.callout-tip collapse="true"}
     ### Rechunk
 
     You may consider rechunking the result of `prepend()` using
@@ -376,7 +375,7 @@ def prepend(
     -------
     ### DataFrame Context
 
-    ::: {.callout-warning}
+    ::: {.callout-caution collapse="true"}
     ### Cannot be used in the `.with_columns()` context
 
     Because `prepend()` modifies the total number of rows, it cannot be used
@@ -405,7 +404,7 @@ def prepend(
     )
     ```
     ### List Namespace Context
-    ::: {.callout-tip}
+    ::: {.callout-tip collapse="true"}
     ### Working with Lists as Series
 
     In the `pl.List` namespace, it may be easier to think of each row as an
@@ -455,7 +454,7 @@ def prepend(
     ```{python}
     df2.select(pl.all().list.eval(ti.bulk_append(pl.repeat(0, 5), pl.element())))
     ```
-    ::: {.callout-note}
+    ::: {.callout-note collapse="true"}
     ### Why `bulk_append()` is not used to implement `prepend()`
 
     1. If `prepend_value=` is an expression rather than a literal, there's no

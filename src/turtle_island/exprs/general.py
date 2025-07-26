@@ -109,7 +109,7 @@ def bucketize_lit(
     )
     ```
     ### List Namespace Context
-    ::: {.callout-tip}
+    ::: {.callout-tip collapse="true"}
     ### Working with Lists as Series
 
     In the `pl.List` namespace, it may be easier to think of each row as an
@@ -152,7 +152,7 @@ def bucketize(
     This enables advanced use cases such as referencing or transforming
     existing column values.
 
-    ::: {.callout-warning}
+    ::: {.callout-warning collapse="true"}
     ### Be cautious when using `pl.lit()` as the first expression
 
     Polars will automatically infer the data type of `pl.lit()`. For example, `pl.lit(1)` is inferred as `pl.Int32`.
@@ -201,7 +201,7 @@ def bucketize(
     )
     ```
     ### List Namespace Context
-    ::: {.callout-tip}
+    ::: {.callout-tip collapse="true"}
     ### Working with Lists as Series
 
     In the `pl.List` namespace, it may be easier to think of each row as an
@@ -246,7 +246,7 @@ def is_every_nth_row(
     further processing, or with `filter()` to achieve the same result as
     `pl.Expr.gather_every()`.
 
-    ::: {.callout-warning}
+    ::: {.callout-warning collapse="true"}
     ### Ensure `offset=` does not exceed the total number of rows
 
     Since expressions are only evaluated at runtime, their validity cannot be
@@ -308,7 +308,7 @@ def is_every_nth_row(
     )
     ```
     ### List Namespace Context
-    ::: {.callout-tip}
+    ::: {.callout-tip collapse="true"}
     ### Working with Lists as Series
 
     In the `pl.List` namespace, it may be easier to think of each row as an
@@ -349,7 +349,7 @@ def move_cols_to_start(
     """
     Returns a list of Polars expressions that reorder columns so the specified columns appear first.
 
-    ::: {.callout-warning}
+    ::: {.callout-warning collapse="true"}
     ### Column type restriction
 
     You may specify either column names or data types, but not a combination of both.
@@ -373,7 +373,7 @@ def move_cols_to_start(
     -------
     ### DataFrame Context
 
-    ::: {.callout-warning}
+    ::: {.callout-caution collapse="true"}
     ### Works Only in `.select()` Context
 
     The list of expressions returned by `move_cols_to_start()` take effect only within
@@ -418,7 +418,7 @@ def move_cols_to_end(
     """
     Returns a list of Polars expressions that reorder columns so the specified columns appear last.
 
-    ::: {.callout-warning}
+    ::: {.callout-warning collapse="true"}
     ### Column type restriction
 
     You may specify either column names or data types, but not a combination of both.
@@ -442,7 +442,7 @@ def move_cols_to_end(
     -------
     ### DataFrame Context
 
-    ::: {.callout-warning}
+    ::: {.callout-caution collapse="true"}
     ### Works Only in `.select()` Context
 
     The list of expressions returned by `move_cols_to_end()` take effect only within
@@ -479,7 +479,7 @@ def cycle(expr, offset: int = 1) -> pl.Expr:
     """
     Return a Polars expression that cycles the rows by a given offset.
 
-    ::: {.callout-tip}
+    ::: {.callout-tip collapse="true"}
     ### Rechunk
 
     You may consider rechunking the result of `cycle()` using
@@ -519,7 +519,7 @@ def cycle(expr, offset: int = 1) -> pl.Expr:
     df.with_columns(ti.cycle(pl.col("x"), -4).alias("cycle"))
     ```
     ### List Namespace Context
-    ::: {.callout-tip}
+    ::: {.callout-tip collapse="true"}
     ### Working with Lists as Series
 
     In the `pl.List` namespace, it may be easier to think of each row as an
@@ -558,7 +558,7 @@ def make_concat_str(
     Internally, `make_concat_str()` splits the `template=` string based on the `sep=` value, then interleaves the literals
     with the specified column names using [pl.concat_str()](https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.concat_str.html).
 
-    ::: {.callout-caution}
+    ::: {.callout-important collapse="false"}
     ### Unstable
     This function was originally intended for internal use and is now promoted to a public API. However, it is still
     experimental and may change in future versions.

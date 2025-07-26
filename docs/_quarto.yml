@@ -66,6 +66,7 @@ format:
     theme:
       light: spacelab
       dark: darkly
+    callout-icon: false
     respect-user-color-scheme: true
     css:
       - styles.css
