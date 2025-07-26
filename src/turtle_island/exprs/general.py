@@ -5,8 +5,7 @@ import polars as pl
 from polars._typing import PolarsDataType
 
 from .._utils import _cast_datatype, _get_unique_name, _litify
-from ._helpers import _get_move_cols, _make_bucketize_casewhen
-from .common import shift
+from .common import case_when, shift
 from .core import make_index
 
 __all__ = [
@@ -18,6 +17,35 @@ __all__ = [
     "move_cols_to_end",
     "move_cols_to_start",
 ]
+
+
+def _make_bucketize_casewhen(
+    exprs: Collection[Any], *, is_litify: bool
+) -> pl.Expr:
+    if is_litify:
+        # turn items into exprs
+        exprs: list[pl.Expr] = _litify(exprs)  # type: ignore[no-redef]
+    n = len(exprs)
+    mod_expr = make_index(name=_get_unique_name()).mod(n)
+    *whenthen_exprs, otherwise_expr = exprs
+    case_list: list[tuple[pl.Expr, pl.Expr]] = [
+        (mod_expr.eq(i), expr) for i, expr in enumerate(whenthen_exprs)
+    ]
+    return case_when(case_list, otherwise_expr)
+
+
+def _get_move_cols(
+    columns: str
+    | PolarsDataType
+    | Collection[str]
+    | Collection[PolarsDataType],
+    *more_columns: str | PolarsDataType,
+) -> list[str] | list[PolarsDataType]:
+    if not isinstance(columns, str) and isinstance(columns, Collection):
+        _columns = [*columns, *more_columns]
+    else:
+        _columns = [columns, *more_columns]
+    return _columns
 
 
 def bucketize_lit(
@@ -63,11 +91,14 @@ def bucketize_lit(
 
     Examples
     -------
+    ### DataFrame Context
+
     Cycle through boolean values to mark alternating rows:
     ```{python}
     import polars as pl
     import turtle_island as ti
 
+    pl.Config.set_fmt_table_cell_list_len(10)
     df = pl.DataFrame({"x": [1, 2, 3, 4, 5]})
     df.with_columns(ti.bucketize_lit(True, False).alias("bucketized"))
     ```
@@ -75,6 +106,27 @@ def bucketize_lit(
     ```{python}
     df.with_columns(
         ti.bucketize_lit(True, False, return_dtype=pl.Int64).alias("bucketized")
+    )
+    ```
+    ### List Namespace Context
+    ::: {.callout-tip}
+    ### Working with Lists as Series
+
+    In the `pl.List` namespace, it may be easier to think of each row as an
+    element in a list. Conceptually, you're working with a `pl.Series`, where
+    each row corresponds to one item in the list.
+    :::
+
+    Cycle through boolean values to mark alternating elements:
+    ```{python}
+    df2 = pl.DataFrame(
+        {
+            "x": [[1, 2, 3, 4], [5, 6, 7, 8]],
+            "y": [[9, 10, 11, 12], [13, 14, 15, 16]],
+        }
+    )
+    df2.with_columns(
+        pl.all().list.eval(ti.bucketize_lit(True, False))
     )
     ```
     """
@@ -124,11 +176,14 @@ def bucketize(
 
     Examples
     -------
+    ### DataFrame Context
+
     Alternate between a column expression and a literal value:
     ```{python}
     import polars as pl
     import turtle_island as ti
 
+    pl.Config.set_fmt_table_cell_list_len(10)
     df = pl.DataFrame({"x": [1, 2, 3, 4, 5]})
     df.with_columns(
         ti.bucketize(pl.col("x").add(10), pl.lit(100)).alias("bucketized")
@@ -143,6 +198,29 @@ def bucketize(
         ti.bucketize(
             pl.col("x").add(10), pl.lit(100), return_dtype=pl.String
         ).alias("bucketized")
+    )
+    ```
+    ### List Namespace Context
+    ::: {.callout-tip}
+    ### Working with Lists as Series
+
+    In the `pl.List` namespace, it may be easier to think of each row as an
+    element in a list. Conceptually, you're working with a `pl.Series`, where
+    each row corresponds to one item in the list.
+    :::
+
+    Alternate between a column expression and a literal value for each element:
+    ```{python}
+    df2 = pl.DataFrame(
+        {
+            "x": [[1, 2, 3, 4], [5, 6, 7, 8]],
+            "y": [[9, 10, 11, 12], [13, 14, 15, 16]],
+        }
+    )
+    (
+    df2.with_columns(
+            pl.all().list.eval(ti.bucketize(pl.element().add(10), pl.lit(100)))
+        )
     )
     ```
     """
@@ -194,11 +272,14 @@ def is_every_nth_row(
 
     Examples
     -------
+    ### DataFrame Context
+
     Mark every second row:
     ```{python}
     import polars as pl
     import turtle_island as ti
 
+    pl.Config.set_fmt_table_cell_list_len(10)
     df = pl.DataFrame({"x": [1, 2, 3, 4, 5]})
     df.with_columns(ti.is_every_nth_row(2))
     ```
@@ -225,6 +306,25 @@ def is_every_nth_row(
         ti.is_every_nth_row(3).alias("3"),
         ti.is_every_nth_row(2).or_(ti.is_every_nth_row(3)).alias("2_or_3")
     )
+    ```
+    ### List Namespace Context
+    ::: {.callout-tip}
+    ### Working with Lists as Series
+
+    In the `pl.List` namespace, it may be easier to think of each row as an
+    element in a list. Conceptually, you're working with a `pl.Series`, where
+    each row corresponds to one item in the list.
+    :::
+
+    Mark every second element:
+    ```{python}
+    df2 = pl.DataFrame(
+        {
+            "x": [[1, 2, 3, 4], [5, 6, 7, 8]],
+            "y": [[9, 10, 11, 12], [13, 14, 15, 16]],
+        }
+    )
+    df2.with_columns(pl.all().list.eval(ti.is_every_nth_row(2)))
     ```
     """
     if n <= 0:
@@ -271,6 +371,16 @@ def move_cols_to_start(
 
     Examples
     -------
+    ### DataFrame Context
+
+    ::: {.callout-warning}
+    ### Works Only in `.select()` Context
+
+    The list of expressions returned by `move_cols_to_start()` take effect only within
+    the `select()` context. Using them in `with_columns()` will have no effect,
+    and the result will remain unchanged.
+    :::
+
     ```{python}
     import polars as pl
     import turtle_island as ti
@@ -330,6 +440,16 @@ def move_cols_to_end(
 
     Examples
     -------
+    ### DataFrame Context
+
+    ::: {.callout-warning}
+    ### Works Only in `.select()` Context
+
+    The list of expressions returned by `move_cols_to_end()` take effect only within
+    the `select()` context. Using them in `with_columns()` will have no effect,
+    and the result will remain unchanged.
+    :::
+
     ```{python}
     import polars as pl
     import turtle_island as ti
@@ -361,10 +481,10 @@ def cycle(expr, offset: int = 1) -> pl.Expr:
 
     ::: {.callout-tip}
     ### Rechunk
-    Since `cycle()` uses [pl.Expr.append()](https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.Expr.append.html#polars-expr-append) internally,
-    you may consider rechunking its result using
+
+    You may consider rechunking the result of `cycle()` using
     [pl.Expr.rechunk()](https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.Expr.rechunk.html#polars.Expr.rechunk)
-    for improved performance.
+    for better performance.
     :::
 
     Parameters
@@ -383,17 +503,39 @@ def cycle(expr, offset: int = 1) -> pl.Expr:
 
     Examples
     -------
+    ### DataFrame Context
+
     Cycle downward by 2 rows:
     ```{python}
     import polars as pl
     import turtle_island as ti
 
+    pl.Config.set_fmt_table_cell_list_len(10)
     df = pl.DataFrame({"x": [1, 2, 3, 4]})
     df.with_columns(ti.cycle(pl.col("x"), 2).alias("cycle"))
     ```
     Cycle upward by 4 rows (no visible change due to full cycle):
     ```{python}
     df.with_columns(ti.cycle(pl.col("x"), -4).alias("cycle"))
+    ```
+    ### List Namespace Context
+    ::: {.callout-tip}
+    ### Working with Lists as Series
+
+    In the `pl.List` namespace, it may be easier to think of each row as an
+    element in a list. Conceptually, you're working with a `pl.Series`, where
+    each row corresponds to one item in the list.
+    :::
+
+    Cycle downward by 2 elements:
+    ```{python}
+    df2 = pl.DataFrame(
+        {
+            "x": [[1, 2, 3, 4], [5, 6, 7, 8]],
+            "y": [[9, 10, 11, 12], [13, 14, 15, 16]],
+        }
+    )
+    df2.with_columns(pl.all().list.eval(ti.cycle(pl.element(), 2)))
     ```
     """
     if not isinstance(offset, int):
@@ -445,6 +587,8 @@ def make_concat_str(
 
     Examples
     --------
+    ### DataFrame Context
+
     Here’s an example that builds an HTML `<p>` tag from a DataFrame:
     ```{python}
     import polars as pl

@@ -39,6 +39,8 @@ def make_hyperlink(
 
     Examples
     --------
+    ### DataFrame Context
+
     Create an HTML anchor tag (`<a>`) combining link text and URL from two columns:
     ```{python}
     import polars as pl
@@ -105,6 +107,8 @@ def make_tooltip(
 
     Examples
     -------
+    ### DataFrame Context
+
     ```{python}
     import polars as pl
     import turtle_island as ti
