@@ -11,7 +11,7 @@ from .exprs.general import (
 )
 from .exprs.html import make_hyperlink, make_tooltip
 
-__version__ = "0.0.8"
+__version__ = "0.0.9"
 
 __all__ = [
     "bulk_append",
