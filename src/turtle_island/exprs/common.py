@@ -295,8 +295,9 @@ def prepend(
     expr: pl.Expr, offset: int = 1, *, prepend_expr: pl.Expr | None = None
 ) -> pl.Expr:
     """
-    Returns a Polars expression that prepends rows using the `prepend_expr=`
-    parameter. If `prepend_expr=` is not provided, the first row(s) of the
+    Returns a Polars expression that prepends rows using the `prepend_expr=` parameter.
+
+    If `prepend_expr=` is not provided, the first row(s) of the
     current DataFrame—or Series if used within the `pl.List` namespace—will be
     used by default, based on the `offset=` value.
 
