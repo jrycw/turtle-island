@@ -35,6 +35,8 @@ def make_index(offset: int = 0, *, name: str = "index") -> pl.Expr:
 
     Examples
     -------
+    ### DataFrame Context
+
     Adds a sequential index column to the DataFrame:
     ```{python}
     import polars as pl
