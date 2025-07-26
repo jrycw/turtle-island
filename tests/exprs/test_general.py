@@ -571,6 +571,8 @@ def test_make_concat_str_complex():
         "animal", pl.lit(" floats gently across the "), "location", "period"
     ).alias(name)
 
+    assert concat_str_expr.meta.eq(expected)
+
     assert_frame_equal(df.select(concat_str_expr), df.select(expected))
 
 
