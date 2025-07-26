@@ -140,6 +140,18 @@ def test_bucketize_lit_multicols(df_n):
     assert_frame_equal(new_df, expected)
 
 
+def test_bucketize_lit_list_eval(df_xy_list):
+    new_df = df_xy_list.select(pl.all().list.eval(ti.bucketize_lit(1, 0)))
+    expected = pl.DataFrame(
+        {
+            "x": [[1, 0, 1, 0], [1, 0, 1, 0]],
+            "y": [[1, 0, 1, 0], [1, 0, 1, 0]],
+        }
+    )
+
+    assert_frame_equal(new_df, expected)
+
+
 def test_bucketize_lit_raise_one_item():
     with pytest.raises(ValueError) as exc_info:
         ti.bucketize_lit(1)
@@ -186,6 +198,20 @@ def test_bucketize(df_n, exprs, result):
     name = "bucketized"
     new_df = df_n.select(ti.bucketize(*exprs).alias(name))
     expected = pl.DataFrame({name: result})
+    assert_frame_equal(new_df, expected)
+
+
+def test_bucketize_list_eval(df_xy_list):
+    new_df = df_xy_list.select(
+        pl.all().list.eval(ti.bucketize(pl.element().add(10), pl.lit(100)))
+    )
+    expected = pl.DataFrame(
+        {
+            "x": [[11, 100, 13, 100], [15, 100, 17, 100]],
+            "y": [[19, 100, 21, 100], [23, 100, 25, 100]],
+        }
+    )
+
     assert_frame_equal(new_df, expected)
 
 
@@ -337,6 +363,18 @@ def test_is_every_nth_row_offset(df_n, n, offset, s_bool):
     assert_frame_equal(new_df, expected)
 
 
+def test_is_every_nth_row_list_eval(df_xy_list):
+    new_df = df_xy_list.select(pl.all().list.eval(ti.is_every_nth_row(2)))
+    expected = pl.DataFrame(
+        {
+            "x": [[True, False, True, False], [True, False, True, False]],
+            "y": [[True, False, True, False], [True, False, True, False]],
+        }
+    )
+
+    assert_frame_equal(new_df, expected)
+
+
 @pytest.mark.parametrize("n", [0, -1, -10, -100])
 def test_is_every_nth_row_raise_neg_n(n):
     with pytest.raises(ValueError) as exc_info:
@@ -393,6 +431,18 @@ def test_cycle_raise_offset_not_integer():
 def test_cycle_pl_all(df_xy):
     new_df = df_xy.with_columns(ti.cycle(pl.all()))
     expected = pl.DataFrame({"x": [4, 1, 2, 3], "y": [8, 5, 6, 7]})
+    assert_frame_equal(new_df, expected)
+
+
+def test_cycle_list_eval(df_xy_list):
+    new_df = df_xy_list.select(pl.all().list.eval(ti.cycle(pl.element(), 2)))
+    expected = pl.DataFrame(
+        {
+            "x": [[3, 4, 1, 2], [7, 8, 5, 6]],
+            "y": [[11, 12, 9, 10], [15, 16, 13, 14]],
+        }
+    )
+
     assert_frame_equal(new_df, expected)
 
 
