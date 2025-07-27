@@ -132,7 +132,7 @@ def bucketize_lit(
     ::: {.callout-tip collapse="true"}
     ### Working with Lists as Series
 
-    In the `pl.List` namespace, it may be easier to think of each row as an
+    In the list namespace, it may be easier to think of each row as an
     element in a list. Conceptually, you're working with a `pl.Series`, where
     each row corresponds to one item in the list.
     :::
@@ -224,7 +224,7 @@ def bucketize(
     ::: {.callout-tip collapse="true"}
     ### Working with Lists as Series
 
-    In the `pl.List` namespace, it may be easier to think of each row as an
+    In the list namespace, it may be easier to think of each row as an
     element in a list. Conceptually, you're working with a `pl.Series`, where
     each row corresponds to one item in the list.
     :::
@@ -331,7 +331,7 @@ def is_every_nth_row(
     ::: {.callout-tip collapse="true"}
     ### Working with Lists as Series
 
-    In the `pl.List` namespace, it may be easier to think of each row as an
+    In the list namespace, it may be easier to think of each row as an
     element in a list. Conceptually, you're working with a `pl.Series`, where
     each row corresponds to one item in the list.
     :::
@@ -394,7 +394,7 @@ def move_cols_to_start(
     ### DataFrame Context
 
     ::: {.callout-caution collapse="true"}
-    ### Works Only in `.select()` Context
+    ### Works Only in `select()` Context
 
     The list of expressions returned by `move_cols_to_start()` take effect only within
     the `select()` context. Using them in `with_columns()` will have no effect,
@@ -405,9 +405,7 @@ def move_cols_to_start(
     import polars as pl
     import turtle_island as ti
 
-    df = pl.DataFrame(
-        {"a": [1, 2, 3], "b": ["x", "y", "z"], "c": [4.4, 5.5, 6.6]}
-    )
+    df = pl.DataFrame({"a": [1, 2, 3], "b": ["x", "y", "z"], "c": [4.4, 5.5, 6.6]})
     df
     ```
     Reorder columns so that selected columns appear first:
@@ -463,7 +461,7 @@ def move_cols_to_end(
     ### DataFrame Context
 
     ::: {.callout-caution collapse="true"}
-    ### Works Only in `.select()` Context
+    ### Works Only in `select()` Context
 
     The list of expressions returned by `move_cols_to_end()` take effect only within
     the `select()` context. Using them in `with_columns()` will have no effect,
@@ -542,7 +540,7 @@ def cycle(expr, offset: int = 1) -> pl.Expr:
     ::: {.callout-tip collapse="true"}
     ### Working with Lists as Series
 
-    In the `pl.List` namespace, it may be easier to think of each row as an
+    In the list namespace, it may be easier to think of each row as an
     element in a list. Conceptually, you're working with a `pl.Series`, where
     each row corresponds to one item in the list.
     :::

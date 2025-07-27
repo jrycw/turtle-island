@@ -107,7 +107,7 @@ def case_when(
     ::: {.callout-tip collapse="true"}
     ### Working with Lists as Series
 
-    In the `pl.List` namespace, it may be easier to think of each row as an
+    In the list namespace, it may be easier to think of each row as an
     element in a list. Conceptually, you're working with a `pl.Series`, where
     each row corresponds to one item in the list.
     :::
@@ -181,10 +181,10 @@ def bulk_append(*exprs: pl.Expr) -> pl.Expr:
     -------
     ### DataFrame Context
     ::: {.callout-caution collapse="true"}
-    ### Caution When Used in `.with_columns()` Context
+    ### Caution When Used in `with_columns()` Context
 
     Because `bulk_append()` may change the total number of rows, use it with
-    caution inside `.with_columns()`.
+    caution inside `with_columns()`.
     :::
 
     Append the last value to the first:
@@ -201,7 +201,7 @@ def bulk_append(*exprs: pl.Expr) -> pl.Expr:
     ::: {.callout-tip collapse="true"}
     ### Working with Lists as Series
 
-    In the `pl.List` namespace, it may be easier to think of each row as an
+    In the list namespace, it may be easier to think of each row as an
     element in a list. Conceptually, you're working with a `pl.Series`, where
     each row corresponds to one item in the list.
     :::
@@ -283,7 +283,7 @@ def shift(expr: pl.Expr, offset: int = 1, *, fill_expr: pl.Expr) -> pl.Expr:
     ::: {.callout-tip collapse="true"}
     ### Working with Lists as Series
 
-    In the `pl.List` namespace, it may be easier to think of each row as an
+    In the list namespace, it may be easier to think of each row as an
     element in a list. Conceptually, you're working with a `pl.Series`, where
     each row corresponds to one item in the list.
     :::
@@ -318,7 +318,7 @@ def prepend(
     Returns a Polars expression that prepends rows using the `prepend_expr=` parameter.
 
     If `prepend_expr=` is not provided, the first row(s) of the
-    current DataFrame—or Series if used within the `pl.List` namespace—will be
+    current DataFrame—or Series if used within the list namespace—will be
     used by default, based on the `offset=` value.
 
     ::: {.callout-important collapse="false"}
@@ -332,7 +332,7 @@ def prepend(
     [pl.DataFrame.extend()](https://docs.pola.rs/api/python/stable/reference/dataframe/api/polars.DataFrame.extend.html#polars.DataFrame.extend).
 
     However, it provides a convenient way to insert elements quickly
-    when working within the `pl.List` namespace.
+    when working within the list namespace.
     :::
 
     ::: {.callout-warning collapse="true"}
@@ -376,10 +376,10 @@ def prepend(
     ### DataFrame Context
 
     ::: {.callout-caution collapse="true"}
-    ### Cannot be used in the `.with_columns()` context
+    ### Cannot be used in the `with_columns()` context
 
     Because `prepend()` modifies the total number of rows, it cannot be used
-    inside `.with_columns()`.
+    inside `with_columns()`.
     :::
 
     Prepend one row using the default behavior:
@@ -407,7 +407,7 @@ def prepend(
     ::: {.callout-tip collapse="true"}
     ### Working with Lists as Series
 
-    In the `pl.List` namespace, it may be easier to think of each row as an
+    In the list namespace, it may be easier to think of each row as an
     element in a list. Conceptually, you're working with a `pl.Series`, where
     each row corresponds to one item in the list.
     :::
