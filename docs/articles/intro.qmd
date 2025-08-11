@@ -60,27 +60,20 @@ Say we have a DataFrame `df`, and we want to transform the values in `col1` and 
 ### Conventional Approach (Column-Oriented)
 ```{python}
 (
-    df
-    .with_row_index()
-    .select(
+    df.with_row_index().with_columns(
         pl.when(pl.col("index").mod(2).eq(0))
         .then(pl.col("col1", "col2"))
         .otherwise("col3"),
-        "col3",
     )
 )
 ```
 
-Using only native Polars, achieving this pattern typically requires multiple steps:
+In conventional Polars, achieving this pattern usually involves several steps:
 
-1. Add an `index` column using `pl.DataFrame.with_row_index()` to keep track of row positions.
-2. Write a `when-then-otherwise` expression that evaluates whether `(index % 2) == 0`, and use it within a `select()` context alongside the `col3` column.
+1. Add an `index` column using `pl.DataFrame.with_row_index()` to track row positions.
+2. Use a `when-then-otherwise` expression inside `with_columns()` to check whether `(index % 2) == 0`.
 
-#### Observations:
-
-* At least two context operations are involved.
-* Polars contexts run in parallel and should be minimized when possible.
-* This approach introduces column dependencies that must be materialized step by step, meaning the conditional logic can't be written until the `index` column is created.
+Because the `index` column must be created first, the conditional logic can only be defined after that step, leading to a step-by-step materialization of intermediate columns.
 
 ### Expression-Oriented Approach (Turtle Island Style)
 With **Turtle Island**, you can express the same logic in a single `with_columns()` context, thanks to expression-based helpers:
@@ -94,10 +87,21 @@ df.with_columns(
 )
 ```
 
-#### Why This Works:
 
-* `ti.is_every_nth_row()` returns a Polars expression, not a materialized column.
-* It acts like a **virtual column**, usable directly in conditional logic.
-* Since it's an expression, it doesn’t introduce column dependencies or require sequencing through multiple contexts.
+`ti.is_every_nth_row()` returns a Polars expression rather than a materialized column. Think of it as a **virtual column**—you can use it directly in conditional logic without creating intermediate columns.
 
-Additionally, `ti.case_when()` provides a more ergonomic way to write complex conditional logic. It’s fully optional, but especially helpful when dealing with multiple conditional branches. Personally, I’ve found it much cleaner and easier to maintain than chaining multiple `when-then` statements.
+Meanwhile, `ti.case_when()` offers a cleaner, more ergonomic way to write complex conditions. It’s optional, but especially useful when handling multiple branches. In practice, I’ve found it far easier to read and maintain than long chains of `when-then` statements.
+
+## 🔧 Add-ons
+Some **Turtle Island** functions also integrate with Polars’ list namespace, offering a seamless experience. For instance, you can cycle elements downward by one position using `ti.cycle()` within `.list.eval()`:
+
+```{python}
+df2 = pl.DataFrame(
+    {
+        "x": [[1, 2, 3], [4, 5, 6]],
+        "y": [[7, 8, 9], [10, 11, 12]],
+    }
+)
+
+df2.with_columns(pl.all().list.eval(ti.cycle(pl.element(), 1)))
+```
