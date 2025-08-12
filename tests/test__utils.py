@@ -3,7 +3,12 @@ import datetime
 import polars as pl
 import pytest
 
-from turtle_island._utils import _cast_datatype, _get_unique_name, _litify
+from turtle_island._utils import (
+    _cast_datatype,
+    _flatten_elems,
+    _get_unique_name,
+    _litify,
+)
 
 
 @pytest.mark.parametrize("items", [(1, 2), (3.3, 4.4), ("x", "y")])
@@ -51,3 +56,25 @@ def test__get_unique_name_raise():
 def test__cast_datatype(df_abcd, item, expected):
     new_df = df_abcd.select(_cast_datatype(pl.col("a"), item))
     assert new_df.dtypes[0] == expected
+
+
+def test__flatten_elems():
+    exprs1 = _flatten_elems((pl.lit(1), pl.lit(2)))
+    exprs2 = _flatten_elems(((pl.lit(1), pl.lit(2)),))
+
+    assert isinstance(exprs1, tuple)
+    assert isinstance(exprs2, tuple)
+    assert len(exprs1) == len(exprs2)
+
+    for expr1, expr2 in zip(exprs1, exprs2):
+        assert expr1.meta.eq(expr2)
+
+
+def test__flatten_elems_one_element():
+    exprs1 = _flatten_elems((pl.lit(1),))
+    exprs2 = _flatten_elems(((pl.lit(1),),))
+
+    assert isinstance(exprs1, tuple)
+    assert isinstance(exprs2, tuple)
+
+    assert exprs1[0].meta.eq(exprs2[0])

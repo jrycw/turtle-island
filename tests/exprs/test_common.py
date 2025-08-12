@@ -92,9 +92,15 @@ def test_case_when_all_forms(df_xy):
     assert_frame_equal(new_df, expected)
 
 
-def test_bulk_append(df_abcd):
-    exprs = [pl.col("a").last().cast(pl.Float64), pl.col("b").first()]
-    new_df = df_abcd.select(ti.bulk_append(*exprs))
+@pytest.mark.parametrize(
+    "exprs",
+    [
+        (pl.col("a").last().cast(pl.Float64), pl.col("b").first()),
+        ([pl.col("a").last().cast(pl.Float64), pl.col("b").first()]),
+    ],
+)
+def test_bulk_append(df_abcd, exprs):
+    new_df = df_abcd.select(ti.bulk_append(exprs))
     expected = pl.DataFrame({"a": [3.0, 1.11]})
 
     assert_frame_equal(new_df, expected)
@@ -131,9 +137,10 @@ def test_bulk_append_list_eval(df_xy_list):
     assert_frame_equal(new_df, expected)
 
 
-def test_bulk_append_raise():
+@pytest.mark.parametrize("exprs", [pl.lit(1), (pl.lit(1),)])
+def test_bulk_append_raise_one_element(exprs):
     with pytest.raises(ValueError) as exc_info:
-        ti.bulk_append(pl.lit(1))
+        ti.bulk_append(exprs)
 
     assert (
         "At least two Polars expressions must be provided."

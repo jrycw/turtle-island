@@ -91,6 +91,36 @@ def test_bucketize_lit(df_n, items, result):
 
 
 @pytest.mark.parametrize(
+    "items, result",
+    [
+        ((1, 2), [1, 2, 1, 2, 1, 2, 1, 2, 1]),
+        ((1.1, 2.2, 3.3), [1.1, 2.2, 3.3, 1.1, 2.2, 3.3, 1.1, 2.2, 3.3]),
+        (
+            ("one", "two", "three", "four"),
+            [
+                "one",
+                "two",
+                "three",
+                "four",
+                "one",
+                "two",
+                "three",
+                "four",
+                "one",
+            ],
+        ),
+        ((1, 1, 1), [1, 1, 1, 1, 1, 1, 1, 1, 1]),  # test same item
+    ],
+)
+def test_bucketize_lit_iterable(df_n, items, result):
+    name = "bucketized"
+    new_df = df_n.select(ti.bucketize_lit(items).alias(name))
+    expected = pl.DataFrame({name: result})
+
+    assert_frame_equal(new_df, expected)
+
+
+@pytest.mark.parametrize(
     "items, result, return_dtype",
     [
         ((1, 2), ["1", "2", "1", "2", "1", "2", "1", "2", "1"], pl.String),
@@ -152,9 +182,13 @@ def test_bucketize_lit_list_eval(df_xy_list):
     assert_frame_equal(new_df, expected)
 
 
-def test_bucketize_lit_raise_one_item():
+@pytest.mark.parametrize(
+    "items",
+    [1, (1,)],
+)
+def test_bucketize_lit_raise_one_item(items):
     with pytest.raises(ValueError) as exc_info:
-        ti.bucketize_lit(1)
+        ti.bucketize_lit(items)
 
     assert (
         "`items=` must contain a minimum of two items."
@@ -201,6 +235,36 @@ def test_bucketize(df_n, exprs, result):
     assert_frame_equal(new_df, expected)
 
 
+@pytest.mark.parametrize(
+    "exprs, result",
+    [
+        (
+            (pl.lit("one"), pl.lit("two"), pl.lit("three"), pl.lit("four")),
+            [
+                "one",
+                "two",
+                "three",
+                "four",
+                "one",
+                "two",
+                "three",
+                "four",
+                "one",
+            ],
+        ),
+        (
+            (pl.col("n").cast(pl.String), pl.col("n").add(10).cast(pl.String)),
+            ["1", "12", "3", "14", "5", "16", "7", "18", "9"],
+        ),
+    ],
+)
+def test_bucketize_iterable(df_n, exprs, result):
+    name = "bucketized"
+    new_df = df_n.select(ti.bucketize(exprs).alias(name))
+    expected = pl.DataFrame({name: result})
+    assert_frame_equal(new_df, expected)
+
+
 def test_bucketize_list_eval(df_xy_list):
     new_df = df_xy_list.select(
         pl.all().list.eval(ti.bucketize(pl.element().add(10), pl.lit(100)))
@@ -240,9 +304,13 @@ def test_bucketize_return_dtype(df_n, exprs, result, return_dtype):
     assert_frame_equal(new_df, expected)
 
 
-def test_bucketize_raise_one_item():
+@pytest.mark.parametrize(
+    "exprs",
+    [pl.lit(1), (pl.lit(1),)],
+)
+def test_bucketize_raise_one_element(exprs):
     with pytest.raises(ValueError) as exc_info:
-        ti.bucketize(pl.lit(1))
+        ti.bucketize(exprs)
 
     assert (
         "`exprs=` must contain a minimum of two expressions."

@@ -1,8 +1,11 @@
 import datetime
 import uuid
-from typing import Any, Collection
+from collections.abc import Iterable
+from typing import Any, Collection, TypeVar
 
 import polars as pl
+
+T = TypeVar("T")
 
 
 def _litify(items: Collection[Any]) -> list[pl.Expr]:
@@ -46,3 +49,14 @@ def _cast_datatype(expr: pl.Expr, item: Any) -> pl.Expr:
     elif isinstance(item, (list, tuple)):
         return expr.cast(pl.List)
     return expr
+
+
+def _flatten_elems(
+    elems: tuple[T | Iterable[T], ...],
+) -> tuple[T, ...]:
+    from polars._utils.parse.expr import _is_iterable
+
+    if len(elems) == 1 and _is_iterable(elems[0]):
+        return tuple(elems[0])  # type: ignore[arg-type]
+
+    return tuple(elems)  # type: ignore[arg-type]
