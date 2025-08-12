@@ -1,10 +1,10 @@
-from collections.abc import Collection
+from collections.abc import Collection, Iterable
 from typing import Any
 
 import polars as pl
 from polars._typing import PolarsDataType
 
-from .._utils import _cast_datatype, _get_unique_name, _litify
+from .._utils import _cast_datatype, _flatten_elems, _get_unique_name, _litify
 from .common import case_when, shift
 from .core import make_index
 
@@ -82,9 +82,10 @@ def bucketize_lit(
     Parameters
     ----------
     items
-        Literal values to cycle through. All items must be of the same type,
-        and at least two must be provided. See the table below for supported
-        types and their conversions.
+        Literal values to cycle through. You can provide these either as multiple
+        separate arguments or as a single iterable containing the values. All items
+        must be of the same type, and at least two items are required. See the table
+        below for supported types and their conversions.
 
     return_dtype
         An optional Polars data type to cast the resulting expression to.
@@ -150,18 +151,20 @@ def bucketize_lit(
     )
     ```
     """
-    if len(items) <= 1:
+    flatten_items = _flatten_elems(items)  # type: ignore[no-redef]
+    if len(flatten_items) <= 1:
         raise ValueError("`items=` must contain a minimum of two items.")
-    if len(set(type(item) for item in items)) != 1:
+    if len(set(type(item) for item in flatten_items)) != 1:
         raise ValueError("`items=` must contain only one unique type.")
-    expr = _make_bucketize_casewhen(items, is_litify=True)
+    expr = _make_bucketize_casewhen(flatten_items, is_litify=True)
     if return_dtype is not None:
         return expr.cast(return_dtype)
-    return _cast_datatype(expr, items[0])
+    return _cast_datatype(expr, flatten_items[0])
 
 
 def bucketize(
-    *exprs: pl.Expr, return_dtype: pl.DataType | pl.DataTypeExpr | None = None
+    *exprs: pl.Expr | Iterable[pl.Expr],
+    return_dtype: pl.DataType | pl.DataTypeExpr | None = None,
 ) -> pl.Expr:
     """
     Returns a Polars expression that assigns a label to each row based on its index, cycling through the provided expressions in a round-robin fashion.
@@ -183,8 +186,9 @@ def bucketize(
     Parameters
     ----------
     exprs
-        Two or more Polars expressions to cycle through.
-        All expressions must resolve to the same data type.
+        One or more `pl.Expr` objects, which can be passed as separate arguments
+        or as a single iterable containing multiple expressions. All expressions
+        must resolve to the same data type.
 
     return_dtype
         An optional Polars data type to cast the resulting expression to.
@@ -244,9 +248,10 @@ def bucketize(
     )
     ```
     """
-    if len(exprs) <= 1:
+    flatten_exprs = _flatten_elems(exprs)  # type: ignore[no-redef]
+    if len(flatten_exprs) <= 1:
         raise ValueError("`exprs=` must contain a minimum of two expressions.")
-    expr = _make_bucketize_casewhen(exprs, is_litify=False)
+    expr = _make_bucketize_casewhen(flatten_exprs, is_litify=False)
     if return_dtype is not None:
         return expr.cast(return_dtype)
     return expr

@@ -1,8 +1,9 @@
-from typing import Sequence
+from collections.abc import Iterable
+from typing import Sequence, overload
 
 import polars as pl
 
-from .._utils import _get_unique_name
+from .._utils import _flatten_elems, _get_unique_name
 from .core import make_index
 
 __all__ = ["bulk_append", "case_when", "prepend", "shift"]
@@ -27,7 +28,7 @@ def case_when(
     otherwise: pl.Expr | None = None,
 ) -> pl.Expr:
     """
-    Simplifies conditional logic in Polars by chaining multiple `when‑then‑otherwise` expressions.
+    Simplifies conditional logic in Polars by chaining multiple `when-then-otherwise` expressions.
 
     Inspired by [pd.Series.case_when()](https://pandas.pydata.org/docs/reference/api/pandas.Series.case_when.html), this function offers a more ergonomic way to express chained
     conditional logic with Polars expressions.
@@ -155,7 +156,15 @@ def case_when(
     return expr
 
 
-def bulk_append(*exprs: pl.Expr) -> pl.Expr:
+@overload
+def bulk_append(*exprs: pl.Expr) -> pl.Expr: ...
+
+
+@overload
+def bulk_append(*exprs: Iterable[pl.Expr]) -> pl.Expr: ...
+
+
+def bulk_append(*exprs: pl.Expr | Iterable[pl.Expr]) -> pl.Expr:
     """
     Combines multiple Polars expressions using [pl.Expr.append()](https://docs.pola.rs/api/python/stable/reference/expressions/api/polars.Expr.append.html#polars-expr-append) internally.
 
@@ -170,7 +179,8 @@ def bulk_append(*exprs: pl.Expr) -> pl.Expr:
     Parameters
     ----------
     exprs
-        One or more Polars expressions to be appended in sequence.
+        One or more `pl.Expr` objects passed as separate arguments, or a single
+        iterable containing multiple `pl.Expr` objects.
 
     Returns
     -------
@@ -221,9 +231,10 @@ def bulk_append(*exprs: pl.Expr) -> pl.Expr:
     )
     ```
     """
-    if len(exprs) <= 1:
+    flatten_exprs = _flatten_elems(exprs)
+    if len(flatten_exprs) <= 1:
         raise ValueError("At least two Polars expressions must be provided.")
-    expr, *rest_exprs = exprs
+    expr, *rest_exprs = flatten_exprs
     for _expr in rest_exprs:
         expr = expr.append(_expr)
     return expr
