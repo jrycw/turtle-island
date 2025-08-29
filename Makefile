@@ -10,7 +10,7 @@ install:
 	uv pip install -e ".[dev,docs,test]"
 
 upgrade:
-	uv sync --upgrade && \
+	uv sync --upgrade --all-extras && \
 	make install
 
 preview:
