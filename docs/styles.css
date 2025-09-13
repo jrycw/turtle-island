@@ -3,7 +3,8 @@
 }
 
 .quarto-dark :not(pre) > code {
-  color: #7d12ba;
+  color: #333333;
+  background-color: #FFFFFF;
 }
 
 .table a {
