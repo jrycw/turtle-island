@@ -2,6 +2,10 @@
   color: #7d12ba;
 }
 
+.quarto-dark :not(pre) > code {
+  color: #7d12ba;
+}
+
 .table a {
     text-underline-offset: 4px;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
