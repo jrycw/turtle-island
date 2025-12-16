@@ -45,6 +45,9 @@ testv3:
 mypy:
 	uv run mypy src/
 
+spell:
+	uv run codespell -L ser,te,revered,indx
+
 version:
 	@echo "Current version is $$(python -c 'import turtle_island as ti; print(ti.__version__)')"
 

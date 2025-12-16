@@ -22,6 +22,7 @@ dev = [
     "jupyterlab>=4.4.4",
     "mypy>=1.16.1",
     "pre-commit>=4.2.0",
+    "codespell>=2.4.1",
 ]
 
 docs = [
