@@ -50,7 +50,7 @@ def test_make_index_index_column_exist(df_x, offset):
                 ),
                 df_x,
             ],
-            how="horizontal",
+            how="horizontal_extend",
         ),
     )
 
@@ -83,7 +83,9 @@ def test_bucketize_index_column_exist(df_n, exprs, result):
     _df = df_n.with_row_index()
     # intentionally use `with_columns()`
     new_df = _df.with_columns(ti.bucketize(*exprs).alias(name))
-    expected = pl.concat([_df, pl.DataFrame({name: result})], how="horizontal")
+    expected = pl.concat(
+        [_df, pl.DataFrame({name: result})], how="horizontal_extend"
+    )
     assert_frame_equal(new_df, expected)
 
 
@@ -108,7 +110,7 @@ def test_is_every_nth_row_index_column_exist(df_n, n, s_bool):
     # intentionally use `with_columns()`
     new_df = _df.with_columns(expr)
     expected = pl.concat(
-        [_df, pl.DataFrame({"bool_nth_row": s_bool})], how="horizontal"
+        [_df, pl.DataFrame({"bool_nth_row": s_bool})], how="horizontal_extend"
     )
 
     assert_frame_equal(new_df, expected)
