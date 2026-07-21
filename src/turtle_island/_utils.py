@@ -47,7 +47,7 @@ def _cast_datatype(expr: pl.Expr, item: Any) -> pl.Expr:
         return expr.cast(pl.String)
     # TODO: Is it possible to cast dict -> pl.Struct here?
     elif isinstance(item, (list, tuple)):
-        return expr.cast(pl.List)
+        return pl.list(expr)
     return expr
 
 
